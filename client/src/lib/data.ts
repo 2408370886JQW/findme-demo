@@ -1,8 +1,9 @@
-import { Heart, Users, Coffee, Beer, Gamepad2, Sparkles, GraduationCap, MessageCircle, Camera, Smile } from "lucide-react";
+import { Heart, Users, Coffee, Beer, Gamepad2, Sparkles, GraduationCap, MessageCircle, Camera, Smile, PartyPopper, Flame } from "lucide-react";
 
 export interface SubCategory {
   id: string;
   name: string;
+  icon: any; // 新增图标字段
 }
 
 export interface Category {
@@ -12,7 +13,7 @@ export interface Category {
   color: string;
   description: string;
   tags: string[];
-  subCategories?: SubCategory[]; // 新增二级分类
+  subCategories?: SubCategory[];
 }
 
 export interface Deal {
@@ -26,8 +27,8 @@ export interface Deal {
 export interface Shop {
   id: string;
   name: string;
-  category: string; // 对应 Category.id
-  subCategory: string; // 对应 SubCategory.id 或 'eat'|'drink'|'play'|'joy'
+  category: string;
+  subCategory: string;
   rating: number;
   price: number;
   distance: string;
@@ -40,7 +41,7 @@ export interface Shop {
   deals?: Deal[];
 }
 
-// 更新场景数据，支持二级分类
+// 更新场景数据，为二级分类添加图标
 export const SCENES: Category[] = [
   {
     id: 'date',
@@ -50,13 +51,13 @@ export const SCENES: Category[] = [
     description: '初次见面 / 恋爱约会',
     tags: ['情侣', '暧昧对象'],
     subCategories: [
-      { id: 'date_normal', name: '约会' },
-      { id: 'party', name: '聚会' },
-      { id: 'catchup', name: '叙旧' },
-      { id: 'girls_tea', name: '闺蜜下午茶' },
-      { id: 'bros_drink', name: '兄弟喝酒' },
-      { id: 'acg', name: '二次元' },
-      { id: 'anniversary', name: '大学情侣周年纪念' }
+      { id: 'date_normal', name: '约会', icon: Heart },
+      { id: 'party', name: '聚会', icon: PartyPopper },
+      { id: 'catchup', name: '叙旧', icon: MessageCircle },
+      { id: 'girls_tea', name: '闺蜜下午茶', icon: Coffee },
+      { id: 'bros_drink', name: '兄弟喝酒', icon: Beer },
+      { id: 'acg', name: '二次元', icon: Gamepad2 },
+      { id: 'anniversary', name: '大学情侣周年纪念', icon: GraduationCap }
     ]
   },
   {
@@ -117,15 +118,12 @@ export const SCENES: Category[] = [
   }
 ];
 
-// 辅助图标导入
-import { Flame } from "lucide-react";
-
 export const MOCK_SHOPS: Shop[] = [
   {
     id: '1',
     name: 'Moonlight Bistro 月光法餐厅',
     category: 'date',
-    subCategory: 'anniversary', // 归类到二级分类
+    subCategory: 'anniversary',
     rating: 4.9,
     price: 320,
     distance: '500m',

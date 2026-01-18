@@ -96,14 +96,14 @@ export default function Home() {
                         key={sub.id}
                         onClick={() => setActiveSubScene(sub.id)}
                         className={cn(
-                          "w-full py-2 px-4 text-xs text-left transition-colors flex items-center justify-between",
+                          "w-full py-2 px-3 text-xs text-left transition-colors flex items-center gap-2",
                           activeSubScene === sub.id 
                             ? "text-red-500 bg-red-50 font-medium" 
                             : "text-gray-500 hover:bg-gray-50"
                         )}
                       >
+                        <sub.icon className={cn("w-3.5 h-3.5 shrink-0", activeSubScene === sub.id ? "text-red-500" : "text-gray-400")} />
                         <span className="truncate">{sub.name}</span>
-                        {activeSubScene === sub.id && <div className="w-1.5 h-1.5 rounded-full bg-red-500" />}
                       </button>
                     ))}
                   </div>
@@ -174,6 +174,29 @@ export default function Home() {
                       </span>
                     ))}
                   </div>
+
+                  {/* Deals Section - New Feature */}
+                  {shop.deals && shop.deals.length > 0 && (
+                    <div className="mb-2 space-y-1">
+                      {shop.deals.map((deal, i) => (
+                        <div key={i} className="flex items-center justify-between bg-red-50 px-2 py-1.5 rounded border border-red-100">
+                          <div className="flex items-center gap-2 overflow-hidden">
+                            <div className="bg-red-500 text-white text-[10px] px-1 rounded flex-shrink-0">惠</div>
+                            <span className="text-xs font-medium text-gray-800 truncate">{deal.title}</span>
+                            {deal.tags.map(tag => (
+                              <span key={tag} className="text-[10px] text-red-400 border border-red-200 px-1 rounded hidden sm:inline-block">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="flex items-baseline gap-1 flex-shrink-0">
+                            <span className="text-sm font-bold text-red-600">¥{deal.price}</span>
+                            <span className="text-[10px] text-gray-400 line-through">¥{deal.originalPrice}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Review Quote */}
                   <div className="bg-[#FFF7E6] p-2 rounded-lg flex gap-2 items-start">
