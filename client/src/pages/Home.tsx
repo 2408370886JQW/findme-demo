@@ -387,7 +387,7 @@ export default function Home() {
                     {/* 主标题 (无装饰图标) */}
                     <div className="flex items-center justify-center w-full px-1">
                       <span className={`
-                        text-[16px] font-bold tracking-wide transition-colors duration-300 whitespace-nowrap
+                        text-[14px] font-bold tracking-wide transition-colors duration-300 whitespace-nowrap
                         ${isActive ? 'text-[#FF4D4F]' : 'text-[#333333]'}
                       `}>
                         {category.name}
@@ -396,7 +396,7 @@ export default function Home() {
                     
                     {/* 胶囊副标题 */}
                     <div className={`
-                      px-1.5 py-[1px] rounded-full text-[10px] transform scale-90 transition-all duration-300 mt-0.5
+                      px-1.5 py-[1px] rounded-full text-[9px] transform scale-90 transition-all duration-300 mt-0.5
                       ${isActive 
                         ? 'bg-[#FF4D4F] text-white font-medium shadow-sm' 
                         : 'bg-[#F0F0F0] text-[#999999]'}
@@ -424,7 +424,7 @@ export default function Home() {
                                 : 'text-[#666666] font-medium hover:bg-gray-50'}
                             `}
                           >
-                            <span className={`text-[14px] ${isSubActive ? 'scale-105 inline-block' : ''}`}>
+                            <span className={`text-[12px] ${isSubActive ? 'scale-105 inline-block' : ''}`}>
                               {sub.name}
                             </span>
                             {isSubActive && (
