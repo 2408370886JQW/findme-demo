@@ -5,12 +5,14 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MapOverlay } from "@/components/MapOverlay";
+import { ShopSkeleton } from "@/components/ShopSkeleton";
 
 export default function Home() {
   const [activeScene, setActiveScene] = useState<string>('date');
   const [activeSubScene, setActiveSubScene] = useState<string | null>(null);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [activeShopId, setActiveShopId] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Filter shops based on active scene and sub-scene
   const filteredShops = MOCK_SHOPS.filter(shop => {
@@ -25,6 +27,15 @@ export default function Home() {
       setActiveScene(SCENES[0].id);
     }
   }, []);
+
+  // Simulate loading delay when changing scenes
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500); // 500ms delay to show skeleton
+    return () => clearTimeout(timer);
+  }, [activeScene, activeSubScene]);
 
   // Reset sub-scene when changing main scene
   const handleSceneChange = (sceneId: string) => {
@@ -130,121 +141,134 @@ export default function Home() {
         {/* Right Content - Shop List */}
         <div className="flex-1 bg-white overflow-y-auto p-3 pb-20">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-[11px] text-[#999]">精选 {filteredShops.length} 家入榜</div>
+            <div className="text-[11px] text-[#999]">
+              {isLoading ? "加载中..." : `精选 ${filteredShops.length} 家入榜`}
+            </div>
             <div className="bg-[#FFF5E5] text-[#FF6B00] text-[10px] px-1.5 py-0.5 rounded">距离优先</div>
           </div>
 
           <div className="space-y-6">
-            {filteredShops.map((shop, index) => (
-              <div 
-                key={shop.id} 
-                onClick={() => {
-                  setActiveShopId(shop.id);
-                  setIsMapOpen(true);
-                }}
-                className="flex flex-col gap-3 cursor-pointer group active:scale-[0.99] transition-transform duration-100"
-              >
-                {/* Image Gallery */}
-                <div className="flex gap-1 h-28 overflow-hidden rounded-lg">
-                  <div className="flex-1 relative">
-                    <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover" />
-                    {index < 3 && (
-                      <div className="absolute top-0 left-0 bg-[#C8A064] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-br-lg z-10">
-                        TOP {index + 1}
+            {isLoading ? (
+              // Skeleton Loading State
+              Array.from({ length: 3 }).map((_, i) => (
+                <ShopSkeleton key={i} />
+              ))
+            ) : (
+              // Real Data
+              <>
+                {filteredShops.map((shop, index) => (
+                  <div 
+                    key={shop.id} 
+                    onClick={() => {
+                      setActiveShopId(shop.id);
+                      setIsMapOpen(true);
+                    }}
+                    className="flex flex-col gap-3 cursor-pointer group active:scale-[0.99] transition-transform duration-100 animate-in fade-in slide-in-from-bottom-4 duration-500"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    {/* Image Gallery */}
+                    <div className="flex gap-1 h-28 overflow-hidden rounded-lg">
+                      <div className="flex-1 relative">
+                        <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover" />
+                        {index < 3 && (
+                          <div className="absolute top-0 left-0 bg-[#C8A064] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-br-lg z-10">
+                            TOP {index + 1}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <div className="w-1/3 hidden sm:block">
-                    <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover opacity-90" />
-                  </div>
-                  <div className="w-1/3 hidden sm:block relative">
-                    <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover opacity-80" />
-                    <div className="absolute bottom-1 right-1 bg-black/50 text-white text-[10px] px-1 rounded">
-                      1.0k+
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-[16px] text-[#333] leading-tight">{shop.name}</h3>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 text-[11px] text-[#999] mb-2">
-                    <span>{shop.subCategory === 'eat' ? '美食' : shop.subCategory === 'drink' ? '饮品' : '娱乐'}</span>
-                    <span>¥{shop.price}/人</span>
-                    <span className="text-[#333]">{shop.distance}</span>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    <span className="text-[10px] text-[#8B572A] bg-[#FDF5E6] px-1.5 py-0.5 rounded border border-[#F5E6D3]">
-                      扫街榜
-                    </span>
-                    {shop.tags.map(tag => (
-                      <span key={tag} className="text-[10px] text-[#666] border border-[#EEE] px-1.5 py-0.5 rounded">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Deals Section - New Feature */}
-                  {shop.deals && shop.deals.length > 0 && (
-                    <div className="mb-2 space-y-1">
-                      {shop.deals.map((deal, i) => (
-                        <div key={i} className="flex items-center justify-between bg-[#FFF0F0] px-2 py-1.5 rounded border border-[#FFE5E5]">
-                          <div className="flex items-center gap-2 overflow-hidden">
-                            <div className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-shrink-0">惠</div>
-                            <span className="text-[11px] font-medium text-[#333] truncate">{deal.title}</span>
-                            {deal.tags.map(tag => (
-                              <span key={tag} className="text-[10px] text-[#FF4D4F] border border-[#FFCCCC] px-1 rounded hidden sm:inline-block">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                          <div className="flex items-baseline gap-1 flex-shrink-0">
-                            <span className="text-[13px] font-bold text-[#FF4D4F]">¥{deal.price}</span>
-                            <span className="text-[10px] text-[#999] line-through">¥{deal.originalPrice}</span>
-                          </div>
+                      <div className="w-1/3 hidden sm:block">
+                        <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover opacity-90" />
+                      </div>
+                      <div className="w-1/3 hidden sm:block relative">
+                        <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover opacity-80" />
+                        <div className="absolute bottom-1 right-1 bg-black/50 text-white text-[10px] px-1 rounded">
+                          1.0k+
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  )}
 
-                  {/* Review Quote */}
-                  <div className="bg-[#FFF8E1] p-2 rounded-lg flex gap-2 items-start">
-                    <span className="text-[#FFB800] text-xl leading-none">“</span>
-                    <p className="text-[11px] text-[#8B572A] line-clamp-2 flex-1 pt-0.5">
-                      {shop.description}
-                    </p>
-                    <span className="text-[10px] text-[#999] whitespace-nowrap pt-0.5">{shop.reviewCount}人也在说</span>
-                  </div>
-                  
-                  {/* Bottom Info */}
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center gap-1 text-[#FF4D4F] text-[10px] font-medium">
-                      <Flame className="w-3 h-3 fill-current" />
-                      <span>近180天 {shop.reviewCount * 3} 回头客</span>
+                    {/* Content */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-bold text-[16px] text-[#333] leading-tight">{shop.name}</h3>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-[11px] text-[#999] mb-2">
+                        <span>{shop.subCategory === 'eat' ? '美食' : shop.subCategory === 'drink' ? '饮品' : '娱乐'}</span>
+                        <span>¥{shop.price}/人</span>
+                        <span className="text-[#333]">{shop.distance}</span>
+                      </div>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        <span className="text-[10px] text-[#8B572A] bg-[#FDF5E6] px-1.5 py-0.5 rounded border border-[#F5E6D3]">
+                          扫街榜
+                        </span>
+                        {shop.tags.map(tag => (
+                          <span key={tag} className="text-[10px] text-[#666] border border-[#EEE] px-1.5 py-0.5 rounded">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Deals Section - New Feature */}
+                      {shop.deals && shop.deals.length > 0 && (
+                        <div className="mb-2 space-y-1">
+                          {shop.deals.map((deal, i) => (
+                            <div key={i} className="flex items-center justify-between bg-[#FFF0F0] px-2 py-1.5 rounded border border-[#FFE5E5]">
+                              <div className="flex items-center gap-2 overflow-hidden">
+                                <div className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-shrink-0">惠</div>
+                                <span className="text-[11px] font-medium text-[#333] truncate">{deal.title}</span>
+                                {deal.tags.map(tag => (
+                                  <span key={tag} className="text-[10px] text-[#FF4D4F] border border-[#FFCCCC] px-1 rounded hidden sm:inline-block">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                              <div className="flex items-baseline gap-1 flex-shrink-0">
+                                <span className="text-[13px] font-bold text-[#FF4D4F]">¥{deal.price}</span>
+                                <span className="text-[10px] text-[#999] line-through">¥{deal.originalPrice}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Review Quote */}
+                      <div className="bg-[#FFF8E1] p-2 rounded-lg flex gap-2 items-start">
+                        <span className="text-[#FFB800] text-xl leading-none">“</span>
+                        <p className="text-[11px] text-[#8B572A] line-clamp-2 flex-1 pt-0.5">
+                          {shop.description}
+                        </p>
+                        <span className="text-[10px] text-[#999] whitespace-nowrap pt-0.5">{shop.reviewCount}人也在说</span>
+                      </div>
+                      
+                      {/* Bottom Info */}
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center gap-1 text-[#FF4D4F] text-[10px] font-medium">
+                          <Flame className="w-3 h-3 fill-current" />
+                          <span>近180天 {shop.reviewCount * 3} 回头客</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[#4A90E2] font-bold text-[11px]">
+                          <span>综合评分 {shop.rating}</span>
+                          <span className="text-[#CCC] text-[10px]">&gt;</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-[#4A90E2] font-bold text-[11px]">
-                      <span>综合评分 {shop.rating}</span>
-                      <span className="text-[#CCC] text-[10px]">&gt;</span>
-                    </div>
+                    
+                    {/* Divider */}
+                    <div className="h-px bg-[#F5F5F5] w-full mt-2" />
                   </div>
-                </div>
+                ))}
                 
-                {/* Divider */}
-                <div className="h-px bg-[#F5F5F5] w-full mt-2" />
-              </div>
-            ))}
-            
-            {/* Empty State */}
-            {filteredShops.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-gray-400">
-                <Search className="w-10 h-10 mb-2 opacity-20" />
-                <p className="text-sm">该分类下暂无推荐商家</p>
-              </div>
+                {/* Empty State */}
+                {filteredShops.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                    <Search className="w-10 h-10 mb-2 opacity-20" />
+                    <p className="text-sm">该分类下暂无推荐商家</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
