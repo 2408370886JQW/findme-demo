@@ -53,10 +53,7 @@ export const SCENES: Category[] = [
       { id: 'date_normal', name: '约会', icon: Heart },
       { id: 'party', name: '聚会', icon: PartyPopper },
       { id: 'catchup', name: '叙旧', icon: MessageCircle },
-      { id: 'girls_tea', name: '闺蜜下午茶', icon: Coffee },
-      { id: 'bros_drink', name: '兄弟喝酒', icon: Beer },
-      { id: 'acg', name: '二次元', icon: Gamepad2 },
-      { id: 'anniversary', name: '大学情侣周年纪念', icon: GraduationCap }
+      { id: 'girls_tea', name: '闺蜜下午茶', icon: Coffee }
     ]
   },
   {
@@ -93,7 +90,13 @@ export const SCENES: Category[] = [
     icon: Beer,
     color: 'text-blue-500',
     description: '男性社交聚会',
-    tags: ['兄弟', '朋友']
+    tags: ['兄弟', '朋友'],
+    subCategories: [
+      { id: 'bros_drink', name: '兄弟喝酒', icon: Beer },
+      { id: 'acg', name: '二次元', icon: Gamepad2 },
+      { id: 'bbq', name: '烧烤撸串', icon: Flame },
+      { id: 'billiards', name: '台球竞技', icon: Puzzle }
+    ]
   },
   {
     id: 'chat',
@@ -101,7 +104,13 @@ export const SCENES: Category[] = [
     icon: MessageCircle,
     color: 'text-indigo-500',
     description: '适合静态交流的空间',
-    tags: ['情侣', '闺蜜', '搭子']
+    tags: ['情侣', '闺蜜', '搭子'],
+    subCategories: [
+      { id: 'quiet_bar', name: '清吧', icon: Beer },
+      { id: 'tea_house', name: '茶馆', icon: Coffee },
+      { id: 'book_store', name: '书店', icon: GraduationCap },
+      { id: 'coffee_shop', name: '咖啡馆', icon: Coffee }
+    ]
   },
   {
     id: 'vibe',
@@ -109,7 +118,13 @@ export const SCENES: Category[] = [
     icon: Flame,
     color: 'text-red-500',
     description: '情绪与沉浸感强的消费场景',
-    tags: ['情侣', '情趣', '搭子']
+    tags: ['情侣', '情趣', '搭子'],
+    subCategories: [
+      { id: 'live_house', name: 'LiveHouse', icon: PartyPopper },
+      { id: 'club', name: '夜店', icon: Sparkles },
+      { id: 'bistro', name: '小酒馆', icon: Beer },
+      { id: 'rooftop', name: '露台酒吧', icon: Moon }
+    ]
   },
   {
     id: 'photo',
@@ -117,7 +132,13 @@ export const SCENES: Category[] = [
     icon: Camera,
     color: 'text-rose-400',
     description: '高颜值、出片率高',
-    tags: ['情侣', '闺蜜']
+    tags: ['情侣', '闺蜜'],
+    subCategories: [
+      { id: 'exhibition', name: '看展', icon: Palette },
+      { id: 'park', name: '公园', icon: Smile },
+      { id: 'landmark', name: '地标打卡', icon: Map },
+      { id: 'ins_cafe', name: '网红店', icon: Camera }
+    ]
   },
   {
     id: 'value',
@@ -125,7 +146,13 @@ export const SCENES: Category[] = [
     icon: Smile,
     color: 'text-yellow-500',
     description: '能带来放松与陪伴体验',
-    tags: ['所有人群']
+    tags: ['所有人群'],
+    subCategories: [
+      { id: 'pet_cafe', name: '猫咖狗咖', icon: Heart },
+      { id: 'massage', name: '按摩足疗', icon: Smile },
+      { id: 'bath', name: '洗浴汗蒸', icon: Sparkles },
+      { id: 'board_game', name: '剧本杀', icon: Puzzle }
+    ]
   }
 ];
 
@@ -135,7 +162,7 @@ export const MOCK_SHOPS: Shop[] = [
     id: '1',
     name: 'Moonlight Bistro 月光法餐厅',
     category: 'date',
-    subCategory: 'anniversary',
+    subCategory: 'date_normal',
     rating: 4.9,
     price: 320,
     distance: '500m',
@@ -169,7 +196,7 @@ export const MOCK_SHOPS: Shop[] = [
   {
     id: '3',
     name: 'Retro Arcade X 复古电玩城',
-    category: 'date',
+    category: 'bros',
     subCategory: 'acg',
     rating: 4.8,
     price: 80,
@@ -215,7 +242,7 @@ export const MOCK_SHOPS: Shop[] = [
   {
     id: '6',
     name: 'Brothers BBQ 兄弟烧烤',
-    category: 'date',
+    category: 'bros',
     subCategory: 'bros_drink',
     rating: 4.5,
     price: 120,
