@@ -13,6 +13,7 @@ interface MapOverlayProps {
   activeCategory?: string;
   activeScene?: string;
   onSceneChange?: (sceneId: string) => void;
+  userLocation?: { lat: number; lng: number } | null;
 }
 
 export function MapOverlay({ 
@@ -23,34 +24,16 @@ export function MapOverlay({
   activeSceneId,
   activeCategory,
   activeScene,
-  onSceneChange
+  onSceneChange,
+  userLocation: propUserLocation
 }: MapOverlayProps) {
   const [selectedShopId, setSelectedShopId] = useState<string | undefined>(activeShopId);
   const [activeSubScene, setActiveSubScene] = useState<string | null>(activeScene || null);
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [mappedShops, setMappedShops] = useState<Shop[]>([]);
   const mapRef = useRef<google.maps.Map | null>(null);
 
-  // Get user location on mount
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          // Default to Shanghai center if location fails
-          setUserLocation({ lat: 31.2304, lng: 121.4737 });
-        }
-      );
-    } else {
-      setUserLocation({ lat: 31.2304, lng: 121.4737 });
-    }
-  }, []);
+  // Use prop location or default to Shanghai
+  const userLocation = propUserLocation || { lat: 31.2304, lng: 121.4737 };
 
   // Map shops to user location
   useEffect(() => {
@@ -131,9 +114,9 @@ export function MapOverlay({
     });
 
     // Add user location marker
-    if (userLocation) {
+    if (propUserLocation) {
       new google.maps.Marker({
-        position: userLocation,
+        position: propUserLocation,
         map: map,
         title: "我的位置",
         zIndex: 999,

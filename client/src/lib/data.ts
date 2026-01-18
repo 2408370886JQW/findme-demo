@@ -237,3 +237,29 @@ export const MOCK_SHOPS: Shop[] = [
     coordinates: { lat: 31.2404, lng: 121.4907 }
   }
 ];
+
+export interface SubCategory {
+  id: string;
+  name: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  label: string;
+  subCategories: SubCategory[];
+}
+
+export const categories: Category[] = PACKAGE_TYPES.map(pkg => ({
+  id: pkg.id,
+  name: pkg.name,
+  label: pkg.subTitle,
+  subCategories: SCENE_THEMES
+    .filter(scene => scene.packageTypeId === pkg.id)
+    .map(scene => ({
+      id: scene.id,
+      name: scene.name
+    }))
+}));
+
+export const shops = MOCK_SHOPS;
