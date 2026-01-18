@@ -184,25 +184,14 @@ export default function Home() {
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#FF4D4F] rounded-r-full shadow-[2px_0_8px_rgba(255,77,79,0.3)]" />
                     )}
                     
-                    {/* 装饰图标与标题组合 */}
-                    <div className="flex items-center justify-center gap-1 w-full px-1">
-                      {/* 左侧装饰 */}
-                      <div className={`transform transition-transform duration-300 ${isActive ? 'scale-110' : 'scale-90 opacity-60'}`}>
-                        {icons.Left}
-                      </div>
-                      
-                      {/* 主标题 */}
+                    {/* 主标题 (无装饰图标) */}
+                    <div className="flex items-center justify-center w-full px-1">
                       <span className={`
                         text-[16px] font-bold tracking-wide transition-colors duration-300 whitespace-nowrap
                         ${isActive ? 'text-[#FF4D4F]' : 'text-[#333333]'}
                       `}>
                         {category.name}
                       </span>
-                      
-                      {/* 右侧装饰 */}
-                      <div className={`transform transition-transform duration-300 ${isActive ? 'scale-110' : 'scale-90 opacity-60'}`}>
-                        {icons.Right}
-                      </div>
                     </div>
                     
                     {/* 胶囊副标题 */}

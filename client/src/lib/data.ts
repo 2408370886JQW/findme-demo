@@ -47,24 +47,28 @@ export const SCENE_THEMES: SceneTheme[] = [
   { id: 'anniversary', name: '纪念日', packageTypeId: 'couple' },
   { id: 'university', name: '校园回忆', packageTypeId: 'couple' },
   { id: 'proposal', name: '求婚策划', packageTypeId: 'couple' },
+  { id: 'weekend_drink', name: '周末微醺', packageTypeId: 'couple' },
 
   // Bestie Scenes
   { id: 'afternoon_tea', name: '下午茶', packageTypeId: 'bestie' },
   { id: 'photo', name: '网红拍照', packageTypeId: 'bestie' },
   { id: 'shopping', name: '逛街探店', packageTypeId: 'bestie' },
   { id: 'spa', name: '美容SPA', packageTypeId: 'bestie' },
+  { id: 'diy', name: '手作DIY', packageTypeId: 'bestie' },
 
   // Brother Scenes
   { id: 'drink', name: '喝酒撸串', packageTypeId: 'brother' },
   { id: 'game', name: '电竞开黑', packageTypeId: 'brother' },
   { id: 'sports', name: '运动竞技', packageTypeId: 'brother' },
   { id: 'ktv', name: 'KTV狂欢', packageTypeId: 'brother' },
+  { id: 'bath', name: '洗浴汗蒸', packageTypeId: 'brother' },
 
   // Fun Scenes
   { id: 'cosplay', name: '二次元', packageTypeId: 'fun' },
   { id: 'private', name: '私密影院', packageTypeId: 'fun' },
   { id: 'roleplay', name: '剧本杀', packageTypeId: 'fun' },
   { id: 'bar', name: '主题酒吧', packageTypeId: 'fun' },
+  { id: 'escape', name: '密室逃脱', packageTypeId: 'fun' },
 ];
 
 export const MOCK_SHOPS: Shop[] = [
