@@ -1,9 +1,9 @@
-import { Heart, Users, Coffee, Beer, Gamepad2, Sparkles, GraduationCap, MessageCircle, Camera, Smile, PartyPopper, Flame } from "lucide-react";
+import { Heart, Users, Coffee, Beer, Gamepad2, Sparkles, GraduationCap, MessageCircle, Camera, Smile, PartyPopper, Flame, Puzzle, Film, Palette, Moon, Gem, ShoppingBag } from "lucide-react";
 
 export interface SubCategory {
   id: string;
   name: string;
-  icon: any; // 新增图标字段
+  icon: any;
 }
 
 export interface Category {
@@ -41,7 +41,6 @@ export interface Shop {
   deals?: Deal[];
 }
 
-// 更新场景数据，为二级分类添加图标
 export const SCENES: Category[] = [
   {
     id: 'date',
@@ -66,7 +65,13 @@ export const SCENES: Category[] = [
     icon: Sparkles,
     color: 'text-orange-500',
     description: '增进情感与互动',
-    tags: ['情侣', '搭子']
+    tags: ['情侣', '搭子'],
+    subCategories: [
+      { id: 'interactive', name: '互动体验', icon: Puzzle },
+      { id: 'private_cinema', name: '私密影院', icon: Film },
+      { id: 'diy', name: 'DIY手作', icon: Palette },
+      { id: 'night_tour', name: '浪漫夜游', icon: Moon }
+    ]
   },
   {
     id: 'girls',
@@ -74,7 +79,13 @@ export const SCENES: Category[] = [
     icon: Users,
     color: 'text-purple-500',
     description: '女性社交聚会',
-    tags: ['闺蜜', '好友']
+    tags: ['闺蜜', '好友'],
+    subCategories: [
+      { id: 'afternoon_tea', name: '精致下午茶', icon: Coffee },
+      { id: 'beauty', name: '美甲美睫', icon: Gem },
+      { id: 'shopping', name: '逛街购物', icon: ShoppingBag },
+      { id: 'photo_spot', name: '拍照打卡', icon: Camera }
+    ]
   },
   {
     id: 'bros',
@@ -119,6 +130,7 @@ export const SCENES: Category[] = [
 ];
 
 export const MOCK_SHOPS: Shop[] = [
+  // 两人约会
   {
     id: '1',
     name: 'Moonlight Bistro 月光法餐厅',
@@ -227,5 +239,97 @@ export const MOCK_SHOPS: Shop[] = [
     description: '专为大学生情侣打造的纪念日餐厅，性价比高又有仪式感。',
     reviewCount: 450,
     coordinates: { lat: 31.2334, lng: 121.4767 }
+  },
+  // 感情升温
+  {
+    id: '8',
+    name: 'Pottery Love 陶艺工坊',
+    category: 'emotion',
+    subCategory: 'diy',
+    rating: 4.9,
+    price: 168,
+    distance: '1.8km',
+    tags: ['DIY', '情侣', '手作'],
+    imageUrl: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80',
+    description: '一起动手制作专属的陶艺作品，记录甜蜜时光。',
+    reviewCount: 320,
+    coordinates: { lat: 31.2364, lng: 121.4797 },
+    deals: [
+      { title: '情侣双人陶艺体验', price: 288, originalPrice: 398, sales: 120, tags: ['包烧制', '指导'] }
+    ]
+  },
+  {
+    id: '9',
+    name: 'Starlight Cinema 星空影院',
+    category: 'emotion',
+    subCategory: 'private_cinema',
+    rating: 4.7,
+    price: 128,
+    distance: '900m',
+    tags: ['私密', '巨幕', '躺椅'],
+    imageUrl: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&q=80',
+    description: '私密包厢，海量片源，享受二人世界的观影乐趣。',
+    reviewCount: 580,
+    coordinates: { lat: 31.2274, lng: 121.4707 }
+  },
+  {
+    id: '10',
+    name: 'Night Cruise 浦江夜游',
+    category: 'emotion',
+    subCategory: 'night_tour',
+    rating: 4.6,
+    price: 150,
+    distance: '3.0km',
+    tags: ['夜景', '游船', '浪漫'],
+    imageUrl: 'https://images.unsplash.com/photo-1506351421178-63b52a2d2562?w=800&q=80',
+    description: '吹着晚风，欣赏两岸璀璨灯火，浪漫指数爆表。',
+    reviewCount: 2100,
+    coordinates: { lat: 31.2404, lng: 121.4907 }
+  },
+  // 闺蜜叙旧
+  {
+    id: '11',
+    name: 'Alice Garden 爱丽丝花园',
+    category: 'girls',
+    subCategory: 'afternoon_tea',
+    rating: 4.8,
+    price: 198,
+    distance: '600m',
+    tags: ['英式', '花园', '甜点'],
+    imageUrl: 'https://images.unsplash.com/photo-1556742393-d75f468bfcb0?w=800&q=80',
+    description: '仿佛置身童话世界的花园餐厅，下午茶颜值超高。',
+    reviewCount: 890,
+    coordinates: { lat: 31.2314, lng: 121.4757 },
+    deals: [
+      { title: '梦幻双人下午茶', price: 298, originalPrice: 468, sales: 450, tags: ['拍照必选', '限定'] }
+    ]
+  },
+  {
+    id: '12',
+    name: 'Pink Lady Nail Salon 粉红佳人',
+    category: 'girls',
+    subCategory: 'beauty',
+    rating: 4.7,
+    price: 220,
+    distance: '1.1km',
+    tags: ['美甲', '美睫', '日式'],
+    imageUrl: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=800&q=80',
+    description: '日式服务，环境优雅，和闺蜜一起变美的好去处。',
+    reviewCount: 430,
+    coordinates: { lat: 31.2344, lng: 121.4777 }
+  },
+  {
+    id: '13',
+    name: 'Art Museum 艺术美术馆',
+    category: 'girls',
+    subCategory: 'photo_spot',
+    rating: 4.9,
+    price: 100,
+    distance: '2.2km',
+    tags: ['展览', '艺术', '拍照'],
+    imageUrl: 'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=800&q=80',
+    description: '光影交错的艺术空间，随手一拍都是大片。',
+    reviewCount: 1500,
+    coordinates: { lat: 31.2384, lng: 121.4827 }
   }
 ];
