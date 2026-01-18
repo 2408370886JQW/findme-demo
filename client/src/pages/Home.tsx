@@ -66,20 +66,15 @@ export default function Home() {
 
   // 获取对应的装饰图标
   const getCategoryIcons = (categoryId: string) => {
-    const className = "w-5 h-5 text-[#C5A47E]"; // 金色质感
+    // 使用截图中的淡红色/灰色调
+    const className = "w-6 h-6 text-[#E0E0E0]"; 
+    const activeClassName = "w-6 h-6 text-[#FF8B8B]"; // 选中/高亮时的颜色
     
-    switch (categoryId) {
-      case 'couple':
-        return { Left: <CoupleLeftIcon className={className} />, Right: <CoupleRightIcon className={className} /> };
-      case 'bestie':
-        return { Left: <BestieLeftIcon className={className} />, Right: <BestieRightIcon className={className} /> };
-      case 'bro':
-        return { Left: <BroLeftIcon className={className} />, Right: <BroRightIcon className={className} /> };
-      case 'passion':
-        return { Left: <PassionLeftIcon className={className} />, Right: <PassionRightIcon className={className} /> };
-      default:
-        return { Left: <CoupleLeftIcon className={className} />, Right: <CoupleRightIcon className={className} /> };
-    }
+    // 这里为了还原截图，统一使用一种风格的麦穗，但在代码里区分一下
+    return { 
+      Left: <CoupleLeftIcon className={categoryId === activeCategory ? activeClassName : className} />, 
+      Right: <CoupleRightIcon className={categoryId === activeCategory ? activeClassName : className} /> 
+    };
   };
 
   return (
@@ -110,47 +105,65 @@ export default function Home() {
       {/* 主体内容区 */}
       <div className="flex-1 flex overflow-hidden relative">
         
-        {/* 左侧导航栏 - 增加宽度至120px，防止换行重叠 */}
-        <nav className="w-[120px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto no-scrollbar pb-20">
+        {/* 左侧导航栏 - 严格还原截图布局 */}
+        <nav className="w-[120px] flex-none bg-white flex flex-col overflow-y-auto no-scrollbar pb-20 border-r border-gray-100">
+          {/* 顶部 "附近" 下拉 (还原截图顶部) */}
+          <div className="flex items-center justify-center py-4">
+            <span className="text-lg font-bold text-[#666666]">附近</span>
+            <ChevronDown className="w-4 h-4 text-[#666666] ml-1" />
+          </div>
+
           {categories.map((category, index) => {
             const icons = getCategoryIcons(category.id);
+            const isActive = activeCategory === category.id;
             
             return (
-              <div key={category.id} className="flex flex-col w-full mb-8">
-                {/* 一级标题 (分组头) - 增加上下间距 */}
-                <div className="flex flex-col items-center justify-center pt-6 pb-3 w-full">
-                  {/* 装饰图标行 - 强制不换行 */}
-                  <div className="flex items-center justify-center gap-1 mb-1 w-full px-1 whitespace-nowrap">
+              <div key={category.id} className="flex flex-col w-full mb-2 shrink-0">
+                {/* 一级标题 (分组头) - 严格参考截图结构 */}
+                <div className="flex flex-col items-center justify-center w-full px-1">
+                  
+                  {/* 第一行：麦穗 + 标题 */}
+                  <div className="flex items-center justify-center gap-0.5 w-full whitespace-nowrap">
                     <div className="transform scale-90 flex-none">{icons.Left}</div>
-                    <span className="text-[15px] font-bold text-[#8B6E4E] tracking-wide whitespace-nowrap flex-none">
+                    <span className={`
+                      text-[16px] font-bold tracking-wide whitespace-nowrap flex-none
+                      ${isActive ? 'text-[#FF4D4F]' : 'text-[#666666]'}
+                    `}>
                       {category.name.replace('套餐', '')}榜
                     </span>
                     <div className="transform scale-90 flex-none">{icons.Right}</div>
                   </div>
                   
-                  {/* 副标题 */}
-                  <span className="text-[10px] text-[#C5A47E] transform scale-90 font-medium block mt-0.5">
-                    {category.label}
-                  </span>
-                  
-                  {/* 下箭头装饰 - 简化为纯CSS三角形 */}
-                  <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-[#C5A47E] mt-2 opacity-40"></div>
+                  {/* 第二行：胶囊副标题 (红色背景/灰色背景) */}
+                  <div className="mt-1 mb-3">
+                    <span className={`
+                      text-[10px] px-2 py-0.5 rounded-full font-medium transform scale-90 block
+                      ${isActive 
+                        ? 'bg-[#FF4D4F] text-white' 
+                        : 'bg-[#F5F5F5] text-[#999999]'}
+                    `}>
+                      {category.label}
+                    </span>
+                  </div>
+
+                  {/* 分隔线 (物理隔离，防止重叠) */}
+                  <div className="w-8 h-[1px] bg-gray-200 mb-4"></div>
                 </div>
 
-                {/* 二级菜单 (平铺列表) - 增加顶部间距 */}
-                <div className="flex flex-col w-full px-2 gap-4 mt-2">
+                {/* 二级菜单 (平铺列表) */}
+                <div className="flex flex-col w-full gap-4 mb-6">
                   {category.subCategories.map((sub) => {
                     const isSubActive = activeSubCategory === sub.id;
                     return (
                       <button
                         key={sub.id}
                         onClick={() => handleSubCategoryClick(category.id, sub.id)}
-                        className="w-full text-center transition-all duration-200"
+                        className="w-full text-center transition-all duration-200 px-1"
                       >
                         <span className={`
-                          text-[14px] transition-all duration-200 block leading-tight whitespace-nowrap
+                          text-[15px] transition-all duration-200 block leading-tight whitespace-nowrap
                           ${isSubActive 
-                            ? 'text-[#333333] font-bold scale-105' 
+                            ? 'text-[#333333] font-bold' 
                             : 'text-[#666666] font-medium'}
                         `}>
                           {sub.name}
