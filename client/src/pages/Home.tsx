@@ -64,7 +64,7 @@ export default function Home() {
     setActiveSubCategory(subId);
   };
 
-  // 获取对应的装饰图标 - 调整为更淡雅的麦穗风格
+  // 获取对应的装饰图标 - 恢复清晰显示
   const getCategoryIcons = (categoryId: string) => {
     // 默认淡灰色，选中时淡红色
     const className = "w-5 h-5 text-[#E5E5E5]"; 
@@ -121,16 +121,16 @@ export default function Home() {
                 {/* 一级标题 (分组头) */}
                 <div className="flex flex-col items-center justify-center w-full px-1">
                   
-                  {/* 第一行：淡色麦穗 + 标题 */}
+                  {/* 第一行：麦穗 + 标题 (恢复清晰度) */}
                   <div className="flex items-center justify-center gap-0.5 w-full whitespace-nowrap">
-                    <div className="transform scale-90 flex-none opacity-60">{icons.Left}</div>
+                    <div className="transform scale-90 flex-none">{icons.Left}</div>
                     <span className={`
                       text-[16px] font-bold tracking-wide whitespace-nowrap flex-none
                       ${isActive ? 'text-[#FF4D4F]' : 'text-[#666666]'}
                     `}>
                       {category.name.replace('套餐', '')}榜
                     </span>
-                    <div className="transform scale-90 flex-none opacity-60">{icons.Right}</div>
+                    <div className="transform scale-90 flex-none">{icons.Right}</div>
                   </div>
                   
                   {/* 第二行：胶囊副标题 */}
@@ -149,22 +149,27 @@ export default function Home() {
                   <div className="w-8 h-[1px] bg-gray-200 mb-4"></div>
                 </div>
 
-                {/* 二级菜单 (平铺列表) - 字体调小至13px */}
-                <div className="flex flex-col w-full gap-3 mb-6">
+                {/* 二级菜单 (平铺列表) - 恢复字体大小，增强交互反馈 */}
+                <div className="flex flex-col w-full gap-2 mb-6 px-2">
                   {category.subCategories.map((sub) => {
                     const isSubActive = activeSubCategory === sub.id;
                     return (
                       <button
                         key={sub.id}
                         onClick={() => handleSubCategoryClick(category.id, sub.id)}
-                        className="w-full text-center transition-all duration-200 px-1"
-                      >
-                        <span className={`
-                          text-[13px] transition-all duration-200 block leading-tight whitespace-nowrap
+                        className={`
+                          w-full text-center transition-all duration-200 py-2 rounded-lg relative
                           ${isSubActive 
-                            ? 'text-[#333333] font-bold' 
-                            : 'text-[#666666] font-medium'}
-                        `}>
+                            ? 'bg-[#FFF0E5] text-[#FF6B22] font-bold shadow-sm' 
+                            : 'text-[#666666] font-medium hover:bg-gray-50'}
+                        `}
+                      >
+                        {/* 选中时的左侧指示条 (可选，增强反馈) */}
+                        {isSubActive && (
+                          <div className="absolute left-1 top-1/2 transform -translate-y-1/2 w-1 h-3 bg-[#FF6B22] rounded-full"></div>
+                        )}
+                        
+                        <span className="text-[14px] block leading-tight whitespace-nowrap">
                           {sub.name}
                         </span>
                       </button>
