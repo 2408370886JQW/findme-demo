@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { X, Navigation, Star, MapPin } from "lucide-react";
+import { X, Navigation, Star, MapPin, Locate } from "lucide-react";
 import { MapView } from "@/components/Map";
 import { Shop, SCENES } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -10,48 +10,129 @@ interface MapOverlayProps {
   onClose: () => void;
   shops: Shop[];
   activeShopId?: string;
-  activeSceneId?: string; // Add active scene ID to filter sub-categories
+  activeSceneId?: string;
 }
 
 export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId }: MapOverlayProps) {
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
   const [activeSubFilter, setActiveSubFilter] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [mappedShops, setMappedShops] = useState<Shop[]>([]);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
+  const userMarkerRef = useRef<google.maps.Marker | null>(null);
 
   // Get sub-categories for the current active scene
   const currentScene = SCENES.find(s => s.id === activeSceneId);
   const subCategories = currentScene?.subCategories || [];
 
-  // Filter shops based on active sub-filter
+  // Get user location on mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          // Default to Shanghai if location access denied
+          setUserLocation({ lat: 31.2304, lng: 121.4737 });
+        }
+      );
+    } else {
+      // Default to Shanghai if geolocation not supported
+      setUserLocation({ lat: 31.2304, lng: 121.4737 });
+    }
+  }, []);
+
+  // Map shops to user location
+  useEffect(() => {
+    if (userLocation && shops.length > 0) {
+      const mapped = shops.map((shop, index) => {
+        // Generate random offset within ~2km
+        // 0.018 degrees is roughly 2km
+        const latOffset = (Math.random() - 0.5) * 0.036;
+        const lngOffset = (Math.random() - 0.5) * 0.036;
+        
+        // Calculate distance
+        const distance = Math.sqrt(Math.pow(latOffset * 111, 2) + Math.pow(lngOffset * 111 * Math.cos(userLocation.lat * Math.PI / 180), 2));
+        
+        return {
+          ...shop,
+          coordinates: {
+            lat: userLocation.lat + latOffset,
+            lng: userLocation.lng + lngOffset
+          },
+          distance: distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`
+        };
+      });
+      setMappedShops(mapped);
+    } else {
+      setMappedShops(shops);
+    }
+  }, [userLocation, shops]);
+
+  // Filter mapped shops based on active sub-filter
   const filteredShops = activeSubFilter 
-    ? shops.filter(shop => shop.subCategory === activeSubFilter)
-    : shops;
+    ? mappedShops.filter(shop => shop.subCategory === activeSubFilter)
+    : mappedShops;
 
   // Initialize map and markers
   const onMapReady = (map: google.maps.Map) => {
     mapRef.current = map;
+    if (userLocation) {
+      map.setCenter(userLocation);
+      updateUserMarker(map);
+    }
     updateMarkers(map);
+  };
+
+  // Update user marker
+  const updateUserMarker = (map: google.maps.Map) => {
+    if (!userLocation) return;
+
+    if (userMarkerRef.current) {
+      userMarkerRef.current.setMap(null);
+    }
+
+    userMarkerRef.current = new google.maps.Marker({
+      position: userLocation,
+      map: map,
+      title: "我的位置",
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 8,
+        fillColor: "#3B82F6",
+        fillOpacity: 1,
+        strokeColor: "#ffffff",
+        strokeWeight: 2,
+      },
+      zIndex: 999
+    });
   };
 
   // Update markers when filtered shops change
   useEffect(() => {
     if (mapRef.current) {
       updateMarkers(mapRef.current);
+      if (userLocation) {
+        updateUserMarker(mapRef.current);
+      }
     }
-  }, [filteredShops]);
+  }, [filteredShops, userLocation]);
 
   // Handle active shop selection from outside
   useEffect(() => {
-    if (activeShopId && mapRef.current) {
-      const shop = shops.find(s => s.id === activeShopId);
+    if (activeShopId && mapRef.current && mappedShops.length > 0) {
+      const shop = mappedShops.find(s => s.id === activeShopId);
       if (shop) {
         setSelectedShop(shop);
         mapRef.current.panTo(shop.coordinates);
         mapRef.current.setZoom(15);
       }
     }
-  }, [activeShopId, shops]);
+  }, [activeShopId, mappedShops]);
 
   const updateMarkers = (map: google.maps.Map) => {
     // Clear existing markers
@@ -65,7 +146,6 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId
         map: map,
         title: shop.name,
         animation: google.maps.Animation.DROP,
-        // Optional: Custom icon based on category could go here
       });
 
       marker.addListener("click", () => {
@@ -79,11 +159,22 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId
     // Fit bounds if there are markers
     if (filteredShops.length > 0) {
       const bounds = new google.maps.LatLngBounds();
+      if (userLocation) {
+        bounds.extend(userLocation);
+      }
       filteredShops.forEach(shop => bounds.extend(shop.coordinates));
+      
       // Don't fit bounds if only one shop is selected (to avoid too much zoom)
-      if (filteredShops.length > 1) {
+      if (filteredShops.length > 1 || (filteredShops.length === 1 && userLocation)) {
         map.fitBounds(bounds);
       }
+    }
+  };
+
+  const handleRecenter = () => {
+    if (mapRef.current && userLocation) {
+      mapRef.current.panTo(userLocation);
+      mapRef.current.setZoom(14);
     }
   };
 
@@ -143,9 +234,17 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId
         <MapView 
           className="w-full h-full"
           onMapReady={onMapReady}
-          initialCenter={{ lat: 31.2304, lng: 121.4737 }} // Shanghai center
+          initialCenter={userLocation || { lat: 31.2304, lng: 121.4737 }}
           initialZoom={13}
         />
+
+        {/* Recenter Button */}
+        <button
+          onClick={handleRecenter}
+          className="absolute top-4 right-4 bg-white p-2 rounded-lg shadow-md border border-gray-100 text-gray-600 hover:text-blue-500 transition-colors z-10"
+        >
+          <Locate className="w-5 h-5" />
+        </button>
 
         {/* Shop Card Overlay */}
         {selectedShop && (
@@ -178,6 +277,7 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId
                       <span className="text-xs font-normal text-gray-400 ml-1">分</span>
                     </div>
                     <span className="text-xs text-gray-500">¥{selectedShop.price}/人</span>
+                    <span className="text-xs text-blue-500 font-medium ml-auto">{selectedShop.distance}</span>
                   </div>
 
                   <div className="flex gap-2 mt-2">
