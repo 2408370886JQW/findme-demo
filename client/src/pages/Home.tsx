@@ -30,7 +30,7 @@ export default function Home() {
   const [showMap, setShowMap] = useState(false);
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(categories[0].id); // 默认展开第一个
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(categories[0].id);
   
   // 骨架屏加载状态
   const loading = useDelayedLoading(activeSubCategory);
@@ -66,10 +66,12 @@ export default function Home() {
     } else {
       setExpandedCategory(categoryId); // 展开
       setActiveCategory(categoryId);
-      // 默认选中第一个子分类
-      const category = categories.find(c => c.id === categoryId);
-      if (category && category.subCategories.length > 0) {
-        setActiveSubCategory(category.subCategories[0].id);
+      // Only auto-select first subcategory if we're switching to a new main category that wasn't active
+      if (activeCategory !== categoryId) {
+        const category = categories.find(c => c.id === categoryId);
+        if (category && category.subCategories.length > 0) {
+          setActiveSubCategory(category.subCategories[0].id);
+        }
       }
     }
   };
@@ -157,7 +159,7 @@ export default function Home() {
       <div className="flex-1 flex overflow-hidden relative">
         
         {/* 左侧手风琴导航栏 */}
-        <nav className="w-[100px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto border-r border-gray-100 no-scrollbar">
+        <nav className="w-[120px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto border-r border-gray-100 no-scrollbar">
           <div className="flex flex-col py-2 pb-20">
             {categories.map((category) => {
               const isActive = activeCategory === category.id;
@@ -177,8 +179,8 @@ export default function Home() {
                       ${isActive ? 'bg-white' : 'bg-transparent hover:bg-white/50'}
                     `}
                   >
-                    {/* 选中指示条 */}
-                    {isActive && (
+                    {/* 选中指示条 - 仅在展开时显示 */}
+                    {isActive && isExpanded && (
                       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#FF4D4F] rounded-r-full shadow-[2px_0_8px_rgba(255,77,79,0.3)]" />
                     )}
                     
@@ -191,8 +193,8 @@ export default function Home() {
                       
                       {/* 主标题 */}
                       <span className={`
-                        text-[15px] font-bold tracking-wide transition-colors duration-300
-                        ${isActive ? 'text-[#FF4D4F]' : 'text-[#666666]'}
+                        text-[16px] font-bold tracking-wide transition-colors duration-300 whitespace-nowrap
+                        ${isActive ? 'text-[#FF4D4F]' : 'text-[#333333]'}
                       `}>
                         {category.name}
                       </span>
@@ -205,7 +207,7 @@ export default function Home() {
                     
                     {/* 胶囊副标题 */}
                     <div className={`
-                      px-2.5 py-0.5 rounded-full text-[10px] transform scale-90 transition-all duration-300
+                      px-2.5 py-0.5 rounded-full text-[11px] transform scale-90 transition-all duration-300 mt-1
                       ${isActive 
                         ? 'bg-[#FF4D4F] text-white font-medium shadow-sm' 
                         : 'bg-[#E5E5E5] text-[#999999]'}
@@ -217,7 +219,7 @@ export default function Home() {
                   {/* 二级菜单列表 (手风琴展开) */}
                   <div className={`
                     overflow-hidden transition-all duration-300 ease-in-out bg-white
-                    ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
+                    ${isExpanded ? 'max-h-[500px] opacity-100 py-2' : 'max-h-0 opacity-0 py-0'}
                   `}>
                     <div className="flex flex-col py-1">
                       {category.subCategories.map((sub) => {
@@ -227,17 +229,17 @@ export default function Home() {
                             key={sub.id}
                             onClick={(e) => handleSubCategoryClick(e, sub.id)}
                             className={`
-                              w-full py-3 text-center transition-all duration-200 relative
+                              w-full py-3 text-center transition-all duration-200 relative flex items-center justify-center
                               ${isSubActive 
                                 ? 'text-[#FF4D4F] font-bold bg-[#FFF0F0]' 
-                                : 'text-[#333333] font-medium hover:bg-gray-50'}
+                                : 'text-[#666666] font-medium hover:bg-gray-50'}
                             `}
                           >
-                            <span className={`text-[13px] ${isSubActive ? 'scale-105 inline-block' : ''}`}>
+                            <span className={`text-[14px] ${isSubActive ? 'scale-105 inline-block' : ''}`}>
                               {sub.name}
                             </span>
                             {isSubActive && (
-                              <div className="absolute right-2 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#FF4D4F]" />
+                              <div className="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-4 bg-[#FF4D4F] rounded-r-full" />
                             )}
                           </button>
                         );
