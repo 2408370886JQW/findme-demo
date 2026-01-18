@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapPin, Search, ChevronDown, Star, Flame, ThumbsUp, Navigation } from "lucide-react";
+import { MapPin, Search, ChevronDown, Star, Flame, ThumbsUp, Navigation, ChevronRight } from "lucide-react";
 import { SCENES, MOCK_SHOPS, Shop } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -8,12 +8,15 @@ import { MapOverlay } from "@/components/MapOverlay";
 
 export default function Home() {
   const [activeScene, setActiveScene] = useState<string>('date');
+  const [activeSubScene, setActiveSubScene] = useState<string | null>(null);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [activeShopId, setActiveShopId] = useState<string | undefined>(undefined);
 
-  // Filter shops based on active scene
+  // Filter shops based on active scene and sub-scene
   const filteredShops = MOCK_SHOPS.filter(shop => {
-    return activeScene === 'all' || shop.category === activeScene;
+    const sceneMatch = activeScene === 'all' || shop.category === activeScene;
+    const subSceneMatch = !activeSubScene || shop.subCategory === activeSubScene;
+    return sceneMatch && subSceneMatch;
   });
 
   // Auto-select first scene on load
@@ -22,6 +25,16 @@ export default function Home() {
       setActiveScene(SCENES[0].id);
     }
   }, []);
+
+  // Reset sub-scene when changing main scene
+  const handleSceneChange = (sceneId: string) => {
+    if (activeScene === sceneId) {
+      // Toggle sub-menu if clicking same scene? No, keep it simple for now.
+      return;
+    }
+    setActiveScene(sceneId);
+    setActiveSubScene(null);
+  };
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden font-sans">
@@ -53,28 +66,49 @@ export default function Home() {
       {/* Main Content - Dual Column Layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Scene Navigation */}
-        <div className="w-24 bg-[#F7F8FA] flex-none overflow-y-auto hide-scrollbar">
+        <div className="w-28 bg-[#F7F8FA] flex-none overflow-y-auto hide-scrollbar flex flex-col">
           <div className="flex flex-col py-2">
             {SCENES.map((scene) => (
-              <button
-                key={scene.id}
-                onClick={() => setActiveScene(scene.id)}
-                className={cn(
-                  "relative py-4 px-2 text-xs font-medium text-center transition-colors",
-                  activeScene === scene.id 
-                    ? "bg-white text-red-500 font-bold" 
-                    : "text-gray-500 hover:bg-gray-100"
+              <div key={scene.id} className="flex flex-col">
+                <button
+                  onClick={() => handleSceneChange(scene.id)}
+                  className={cn(
+                    "relative py-4 px-2 text-xs font-medium text-center transition-colors w-full",
+                    activeScene === scene.id 
+                      ? "bg-white text-red-500 font-bold" 
+                      : "text-gray-500 hover:bg-gray-100"
+                  )}
+                >
+                  {activeScene === scene.id && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-red-500 rounded-r-full" />
+                  )}
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="leading-tight">{scene.name}</span>
+                    {activeScene === scene.id && <span className="text-[10px] scale-90 text-red-400 font-normal">精选上榜</span>}
+                  </div>
+                </button>
+                
+                {/* Sub Categories */}
+                {activeScene === scene.id && scene.subCategories && (
+                  <div className="bg-white w-full pb-2 animate-in slide-in-from-top-2 duration-200">
+                    {scene.subCategories.map(sub => (
+                      <button
+                        key={sub.id}
+                        onClick={() => setActiveSubScene(sub.id)}
+                        className={cn(
+                          "w-full py-2 px-4 text-xs text-left transition-colors flex items-center justify-between",
+                          activeSubScene === sub.id 
+                            ? "text-red-500 bg-red-50 font-medium" 
+                            : "text-gray-500 hover:bg-gray-50"
+                        )}
+                      >
+                        <span className="truncate">{sub.name}</span>
+                        {activeSubScene === sub.id && <div className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+                      </button>
+                    ))}
+                  </div>
                 )}
-              >
-                {activeScene === scene.id && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-red-500 rounded-r-full" />
-                )}
-                <div className="flex flex-col items-center gap-1">
-                  {/* Optional: Add icons if needed, but text-only is cleaner for sidebar */}
-                  <span className="leading-tight">{scene.name}</span>
-                  {activeScene === scene.id && <span className="text-[10px] scale-90 text-red-400 font-normal">精选上榜</span>}
-                </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>
@@ -96,7 +130,7 @@ export default function Home() {
                 }}
                 className="flex flex-col gap-3 cursor-pointer group"
               >
-                {/* Image Gallery (Simulated with 3 images) */}
+                {/* Image Gallery */}
                 <div className="flex gap-1 h-28 overflow-hidden rounded-lg">
                   <div className="flex-1 relative">
                     <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover" />
