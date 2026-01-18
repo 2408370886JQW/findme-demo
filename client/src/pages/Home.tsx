@@ -64,13 +64,12 @@ export default function Home() {
     setActiveSubCategory(subId);
   };
 
-  // 获取对应的装饰图标
+  // 获取对应的装饰图标 - 调整为更淡雅的麦穗风格
   const getCategoryIcons = (categoryId: string) => {
-    // 使用截图中的淡红色/灰色调
-    const className = "w-6 h-6 text-[#E0E0E0]"; 
-    const activeClassName = "w-6 h-6 text-[#FF8B8B]"; // 选中/高亮时的颜色
+    // 默认淡灰色，选中时淡红色
+    const className = "w-5 h-5 text-[#E5E5E5]"; 
+    const activeClassName = "w-5 h-5 text-[#FFD1D1]"; 
     
-    // 这里为了还原截图，统一使用一种风格的麦穗，但在代码里区分一下
     return { 
       Left: <CoupleLeftIcon className={categoryId === activeCategory ? activeClassName : className} />, 
       Right: <CoupleRightIcon className={categoryId === activeCategory ? activeClassName : className} /> 
@@ -107,7 +106,7 @@ export default function Home() {
         
         {/* 左侧导航栏 - 严格还原截图布局 */}
         <nav className="w-[120px] flex-none bg-white flex flex-col overflow-y-auto no-scrollbar pb-20 border-r border-gray-100">
-          {/* 顶部 "附近" 下拉 (还原截图顶部) */}
+          {/* 顶部 "附近" 下拉 */}
           <div className="flex items-center justify-center py-4">
             <span className="text-lg font-bold text-[#666666]">附近</span>
             <ChevronDown className="w-4 h-4 text-[#666666] ml-1" />
@@ -119,22 +118,22 @@ export default function Home() {
             
             return (
               <div key={category.id} className="flex flex-col w-full mb-2 shrink-0">
-                {/* 一级标题 (分组头) - 严格参考截图结构 */}
+                {/* 一级标题 (分组头) */}
                 <div className="flex flex-col items-center justify-center w-full px-1">
                   
-                  {/* 第一行：麦穗 + 标题 */}
+                  {/* 第一行：淡色麦穗 + 标题 */}
                   <div className="flex items-center justify-center gap-0.5 w-full whitespace-nowrap">
-                    <div className="transform scale-90 flex-none">{icons.Left}</div>
+                    <div className="transform scale-90 flex-none opacity-60">{icons.Left}</div>
                     <span className={`
                       text-[16px] font-bold tracking-wide whitespace-nowrap flex-none
                       ${isActive ? 'text-[#FF4D4F]' : 'text-[#666666]'}
                     `}>
                       {category.name.replace('套餐', '')}榜
                     </span>
-                    <div className="transform scale-90 flex-none">{icons.Right}</div>
+                    <div className="transform scale-90 flex-none opacity-60">{icons.Right}</div>
                   </div>
                   
-                  {/* 第二行：胶囊副标题 (红色背景/灰色背景) */}
+                  {/* 第二行：胶囊副标题 */}
                   <div className="mt-1 mb-3">
                     <span className={`
                       text-[10px] px-2 py-0.5 rounded-full font-medium transform scale-90 block
@@ -146,12 +145,12 @@ export default function Home() {
                     </span>
                   </div>
 
-                  {/* 分隔线 (物理隔离，防止重叠) */}
+                  {/* 分隔线 */}
                   <div className="w-8 h-[1px] bg-gray-200 mb-4"></div>
                 </div>
 
-                {/* 二级菜单 (平铺列表) */}
-                <div className="flex flex-col w-full gap-4 mb-6">
+                {/* 二级菜单 (平铺列表) - 字体调小至13px */}
+                <div className="flex flex-col w-full gap-3 mb-6">
                   {category.subCategories.map((sub) => {
                     const isSubActive = activeSubCategory === sub.id;
                     return (
@@ -161,7 +160,7 @@ export default function Home() {
                         className="w-full text-center transition-all duration-200 px-1"
                       >
                         <span className={`
-                          text-[15px] transition-all duration-200 block leading-tight whitespace-nowrap
+                          text-[13px] transition-all duration-200 block leading-tight whitespace-nowrap
                           ${isSubActive 
                             ? 'text-[#333333] font-bold' 
                             : 'text-[#666666] font-medium'}
