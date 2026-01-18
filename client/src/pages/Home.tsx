@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapPin, Search, ChevronDown, Star, Flame, ThumbsUp, Navigation, Tag, Ticket } from "lucide-react";
+import { MapPin, Search, ChevronDown, Star, Flame, ThumbsUp, Navigation } from "lucide-react";
 import { SCENES, MOCK_SHOPS, Shop } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ export default function Home() {
             <ChevronDown className="w-4 h-4 text-gray-500" />
           </div>
           <div className="flex items-center gap-2 text-amber-600 font-medium text-sm bg-amber-50 px-2 py-1 rounded-full">
-            <span>FIND ME 社交榜</span>
+            <span>高德扫街榜</span>
             <Flame className="w-3 h-3 fill-current" />
           </div>
         </div>
@@ -60,26 +60,19 @@ export default function Home() {
                 key={scene.id}
                 onClick={() => setActiveScene(scene.id)}
                 className={cn(
-                  "relative py-4 px-2 text-xs font-medium text-center transition-colors group",
+                  "relative py-4 px-2 text-xs font-medium text-center transition-colors",
                   activeScene === scene.id 
-                    ? "bg-white text-primary font-bold" 
+                    ? "bg-white text-red-500 font-bold" 
                     : "text-gray-500 hover:bg-gray-100"
                 )}
               >
                 {activeScene === scene.id && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-primary rounded-r-full" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-red-500 rounded-r-full" />
                 )}
-                <div className="flex flex-col items-center gap-2">
-                  <div className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
-                    activeScene === scene.id ? "bg-primary/10" : "bg-gray-100 group-hover:bg-gray-200"
-                  )}>
-                    <scene.icon className={cn(
-                      "w-4 h-4",
-                      activeScene === scene.id ? "text-primary" : "text-gray-400"
-                    )} />
-                  </div>
+                <div className="flex flex-col items-center gap-1">
+                  {/* Optional: Add icons if needed, but text-only is cleaner for sidebar */}
                   <span className="leading-tight">{scene.name}</span>
+                  {activeScene === scene.id && <span className="text-[10px] scale-90 text-red-400 font-normal">精选上榜</span>}
                 </div>
               </button>
             ))}
@@ -103,7 +96,7 @@ export default function Home() {
                 }}
                 className="flex flex-col gap-3 cursor-pointer group"
               >
-                {/* Image Gallery */}
+                {/* Image Gallery (Simulated with 3 images) */}
                 <div className="flex gap-1 h-28 overflow-hidden rounded-lg">
                   <div className="flex-1 relative">
                     <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover" />
@@ -139,7 +132,7 @@ export default function Home() {
                   {/* Tags */}
                   <div className="flex flex-wrap gap-1 mb-2">
                     <span className="text-[10px] text-[#8B572A] bg-[#FDF5E6] px-1.5 py-0.5 rounded border border-[#F5E6D3]">
-                      社交榜
+                      扫街榜
                     </span>
                     {shop.tags.map(tag => (
                       <span key={tag} className="text-[10px] text-gray-500 border border-gray-200 px-1.5 py-0.5 rounded">
@@ -148,38 +141,8 @@ export default function Home() {
                     ))}
                   </div>
 
-                  {/* Deals Section - NEW */}
-                  {shop.deals && shop.deals.length > 0 && (
-                    <div className="mt-2 space-y-1.5">
-                      {shop.deals.map((deal, i) => (
-                        <div key={i} className="flex items-center gap-2 bg-red-50/50 p-1.5 rounded-lg border border-red-100">
-                          <div className="bg-red-500 text-white p-1 rounded">
-                            <Ticket className="w-3 h-3" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-gray-800 truncate">{deal.title}</span>
-                              <div className="flex items-baseline gap-1">
-                                <span className="text-sm font-bold text-red-500">¥{deal.price}</span>
-                                <span className="text-[10px] text-gray-400 line-through">¥{deal.originalPrice}</span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              {deal.tags.map(tag => (
-                                <span key={tag} className="text-[10px] text-red-400 border border-red-200 px-1 rounded bg-white">
-                                  {tag}
-                                </span>
-                              ))}
-                              <span className="text-[10px] text-gray-400 ml-auto">已售{deal.sales}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
                   {/* Review Quote */}
-                  <div className="bg-[#FFF7E6] p-2 rounded-lg flex gap-2 items-start mt-2">
+                  <div className="bg-[#FFF7E6] p-2 rounded-lg flex gap-2 items-start">
                     <span className="text-orange-400 text-xl leading-none">“</span>
                     <p className="text-xs text-[#8B572A] line-clamp-2 flex-1 pt-0.5">
                       {shop.description}
