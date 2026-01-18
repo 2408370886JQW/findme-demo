@@ -72,7 +72,7 @@ export default function Home() {
                 <button
                   onClick={() => handleSceneChange(scene.id)}
                   className={cn(
-                    "relative py-4 px-1 text-center transition-colors w-full flex flex-col items-center justify-center gap-0.5",
+                    "relative py-4 px-1 text-center transition-all duration-200 ease-in-out w-full flex flex-col items-center justify-center gap-0.5 active:scale-95",
                     activeScene === scene.id 
                       ? "bg-white" 
                       : "bg-[#F7F8FA] hover:bg-[#F0F2F5]"
@@ -82,13 +82,13 @@ export default function Home() {
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-[#FF4D4F] rounded-r-full" />
                   )}
                   <span className={cn(
-                    "text-[13px] leading-tight",
+                    "text-[13px] leading-tight transition-colors duration-200",
                     activeScene === scene.id ? "font-bold text-[#FF4D4F]" : "font-medium text-[#666]"
                   )}>
                     {scene.name}
                   </span>
                   {activeScene === scene.id && (
-                    <span className="text-[10px] scale-90 text-[#FF4D4F] font-normal mt-0.5 bg-[#FFF0F0] px-1 rounded-sm">
+                    <span className="text-[10px] scale-90 text-[#FF4D4F] font-normal mt-0.5 bg-[#FFF0F0] px-1 rounded-sm animate-in fade-in zoom-in duration-200">
                       精选上榜
                     </span>
                   )}
@@ -102,18 +102,18 @@ export default function Home() {
                         key={sub.id}
                         onClick={() => setActiveSubScene(sub.id)}
                         className={cn(
-                          "w-[76px] py-2 px-1 text-center transition-colors flex items-center justify-center gap-1.5 rounded-md my-0.5",
+                          "w-[76px] py-2 px-1 text-center transition-all duration-200 ease-in-out flex items-center justify-center gap-1.5 rounded-md my-0.5 active:scale-95",
                           activeSubScene === sub.id 
                             ? "bg-[#FFF0F0]" 
                             : "hover:bg-gray-50"
                         )}
                       >
                         <sub.icon className={cn(
-                          "w-3 h-3 shrink-0", 
+                          "w-3 h-3 shrink-0 transition-colors duration-200", 
                           activeSubScene === sub.id ? "text-[#FF4D4F]" : "text-[#999]"
                         )} />
                         <span className={cn(
-                          "text-[11px] truncate",
+                          "text-[11px] truncate transition-colors duration-200",
                           activeSubScene === sub.id ? "text-[#FF4D4F] font-medium" : "text-[#666]"
                         )}>
                           {sub.name}
@@ -142,7 +142,7 @@ export default function Home() {
                   setActiveShopId(shop.id);
                   setIsMapOpen(true);
                 }}
-                className="flex flex-col gap-3 cursor-pointer group"
+                className="flex flex-col gap-3 cursor-pointer group active:scale-[0.99] transition-transform duration-100"
               >
                 {/* Image Gallery */}
                 <div className="flex gap-1 h-28 overflow-hidden rounded-lg">
@@ -253,7 +253,7 @@ export default function Home() {
       {/* Floating Map Button */}
       <button 
         onClick={() => setIsMapOpen(true)}
-        className="fixed bottom-6 right-6 w-12 h-12 bg-[#3B82F6] rounded-full shadow-lg flex items-center justify-center text-white hover:bg-blue-600 transition-colors z-50"
+        className="fixed bottom-6 right-6 w-12 h-12 bg-[#3B82F6] rounded-full shadow-lg flex items-center justify-center text-white hover:bg-blue-600 transition-colors z-50 active:scale-90"
       >
         <MapPin className="w-6 h-6" />
         <span className="sr-only">地图模式</span>
