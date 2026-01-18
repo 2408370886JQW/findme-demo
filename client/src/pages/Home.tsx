@@ -357,7 +357,7 @@ export default function Home() {
         )}
         
         {/* 左侧手风琴导航栏 */}
-        <nav className="w-[120px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto border-r border-gray-100 no-scrollbar">
+        <nav className="w-[100px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto border-r border-gray-100 no-scrollbar z-10">
           <div className="flex flex-col py-2 pb-20">
             {categories.map((category) => {
               const isActive = activeCategory === category.id;
@@ -440,9 +440,9 @@ export default function Home() {
         </nav>
 
         {/* 右侧内容区 */}
-        <main className="flex-1 flex flex-col bg-white relative w-full">
+        <main className="flex-1 flex flex-col bg-white relative min-w-0 overflow-hidden">
           {/* 顶部筛选栏 */}
-          <div className="flex-none px-4 py-3 flex items-center justify-between bg-white z-10">
+          <div className="flex-none px-4 py-3 flex items-center justify-between bg-white z-10 border-b border-gray-50">
             <div className="flex flex-col">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 {categories.find(c => c.id === activeCategory)?.subCategories.find(s => s.id === activeSubCategory)?.name}
