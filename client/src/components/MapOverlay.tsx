@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { X, Navigation, Star, MapPin } from "lucide-react";
 import { MapView } from "@/components/Map";
-import { Shop } from "@/lib/data";
+import { Shop, SCENES } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -10,12 +10,23 @@ interface MapOverlayProps {
   onClose: () => void;
   shops: Shop[];
   activeShopId?: string;
+  activeSceneId?: string; // Add active scene ID to filter sub-categories
 }
 
-export function MapOverlay({ isOpen, onClose, shops, activeShopId }: MapOverlayProps) {
+export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId }: MapOverlayProps) {
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
+  const [activeSubFilter, setActiveSubFilter] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
+
+  // Get sub-categories for the current active scene
+  const currentScene = SCENES.find(s => s.id === activeSceneId);
+  const subCategories = currentScene?.subCategories || [];
+
+  // Filter shops based on active sub-filter
+  const filteredShops = activeSubFilter 
+    ? shops.filter(shop => shop.subCategory === activeSubFilter)
+    : shops;
 
   // Initialize map and markers
   const onMapReady = (map: google.maps.Map) => {
@@ -23,12 +34,12 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId }: MapOverlayP
     updateMarkers(map);
   };
 
-  // Update markers when shops change
+  // Update markers when filtered shops change
   useEffect(() => {
     if (mapRef.current) {
       updateMarkers(mapRef.current);
     }
-  }, [shops]);
+  }, [filteredShops]);
 
   // Handle active shop selection from outside
   useEffect(() => {
@@ -48,12 +59,13 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId }: MapOverlayP
     markersRef.current = [];
 
     // Add new markers
-    shops.forEach(shop => {
+    filteredShops.forEach(shop => {
       const marker = new google.maps.Marker({
         position: shop.coordinates,
         map: map,
         title: shop.name,
         animation: google.maps.Animation.DROP,
+        // Optional: Custom icon based on category could go here
       });
 
       marker.addListener("click", () => {
@@ -63,6 +75,16 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId }: MapOverlayP
 
       markersRef.current.push(marker);
     });
+
+    // Fit bounds if there are markers
+    if (filteredShops.length > 0) {
+      const bounds = new google.maps.LatLngBounds();
+      filteredShops.forEach(shop => bounds.extend(shop.coordinates));
+      // Don't fit bounds if only one shop is selected (to avoid too much zoom)
+      if (filteredShops.length > 1) {
+        map.fitBounds(bounds);
+      }
+    }
   };
 
   if (!isOpen) return null;
@@ -70,16 +92,50 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId }: MapOverlayP
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white animate-in slide-in-from-bottom duration-300">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-gray-100 bg-white shadow-sm z-10">
-        <div className="flex items-center gap-2">
-          <div className="bg-blue-500 text-white p-1 rounded-md">
-            <MapPin className="w-4 h-4" />
+      <div className="flex flex-col border-b border-gray-100 bg-white shadow-sm z-10">
+        <div className="flex items-center justify-between p-3 pb-2">
+          <div className="flex items-center gap-2">
+            <div className="bg-blue-500 text-white p-1 rounded-md">
+              <MapPin className="w-4 h-4" />
+            </div>
+            <h2 className="font-bold text-lg text-gray-800">地图模式</h2>
           </div>
-          <h2 className="font-bold text-lg text-gray-800">地图模式</h2>
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-gray-100 rounded-full h-8 w-8">
+            <X className="w-5 h-5 text-gray-500" />
+          </Button>
         </div>
-        <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-gray-100 rounded-full h-8 w-8">
-          <X className="w-5 h-5 text-gray-500" />
-        </Button>
+
+        {/* Sub-category Filter Bar */}
+        {subCategories.length > 0 && (
+          <div className="flex items-center gap-2 px-3 pb-3 overflow-x-auto hide-scrollbar">
+            <button
+              onClick={() => setActiveSubFilter(null)}
+              className={cn(
+                "flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors border",
+                !activeSubFilter 
+                  ? "bg-blue-500 text-white border-blue-500" 
+                  : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+              )}
+            >
+              全部
+            </button>
+            {subCategories.map(sub => (
+              <button
+                key={sub.id}
+                onClick={() => setActiveSubFilter(sub.id === activeSubFilter ? null : sub.id)}
+                className={cn(
+                  "flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors border",
+                  activeSubFilter === sub.id 
+                    ? "bg-blue-500 text-white border-blue-500" 
+                    : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                )}
+              >
+                <sub.icon className="w-3 h-3" />
+                {sub.name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Map Container */}

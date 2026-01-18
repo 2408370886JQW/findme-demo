@@ -248,8 +248,9 @@ export default function Home() {
       <MapOverlay 
         isOpen={isMapOpen} 
         onClose={() => setIsMapOpen(false)} 
-        shops={filteredShops}
+        shops={MOCK_SHOPS.filter(s => s.category === activeScene)} // Pass all shops for the current scene
         activeShopId={activeShopId}
+        activeSceneId={activeScene} // Pass active scene ID
       />
     </div>
   );
