@@ -1,9 +1,8 @@
-import { useEffect, useState, useRef } from "react";
-import { X, Navigation, Star, MapPin, Locate } from "lucide-react";
-import { MapView } from "@/components/Map";
-import { Shop, SCENES } from "@/lib/data";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useRef } from "react";
+import { X, Navigation, Locate } from "lucide-react";
+import { Shop, SCENE_THEMES } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { MapView } from "./Map";
 
 interface MapOverlayProps {
   isOpen: boolean;
@@ -14,282 +13,231 @@ interface MapOverlayProps {
 }
 
 export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId }: MapOverlayProps) {
-  const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
-  const [activeSubFilter, setActiveSubFilter] = useState<string | null>(null);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [selectedShopId, setSelectedShopId] = useState<string | undefined>(activeShopId);
+  const [activeSubScene, setActiveSubScene] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [mappedShops, setMappedShops] = useState<Shop[]>([]);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
-  const userMarkerRef = useRef<google.maps.Marker | null>(null);
-
-  // Get sub-categories for the current active scene
-  const currentScene = SCENES.find(s => s.id === activeSceneId);
-  const subCategories = currentScene?.subCategories || [];
 
   // Get user location on mount
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation({ lat: latitude, lng: longitude });
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
         },
         (error) => {
           console.error("Error getting location:", error);
-          // Default to Shanghai if location access denied
+          // Default to Shanghai center if location fails
           setUserLocation({ lat: 31.2304, lng: 121.4737 });
         }
       );
     } else {
-      // Default to Shanghai if geolocation not supported
       setUserLocation({ lat: 31.2304, lng: 121.4737 });
     }
   }, []);
 
   // Map shops to user location
   useEffect(() => {
-    if (userLocation && shops.length > 0) {
-      const mapped = shops.map((shop, index) => {
-        // Generate random offset within ~2km
-        // 0.018 degrees is roughly 2km
-        const latOffset = (Math.random() - 0.5) * 0.036;
-        const lngOffset = (Math.random() - 0.5) * 0.036;
-        
-        // Calculate distance
-        const distance = Math.sqrt(Math.pow(latOffset * 111, 2) + Math.pow(lngOffset * 111 * Math.cos(userLocation.lat * Math.PI / 180), 2));
-        
-        return {
-          ...shop,
-          coordinates: {
-            lat: userLocation.lat + latOffset,
-            lng: userLocation.lng + lngOffset
-          },
-          distance: distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`
-        };
-      });
-      setMappedShops(mapped);
-    } else {
-      setMappedShops(shops);
-    }
+    if (!userLocation || shops.length === 0) return;
+
+    // Generate random offsets to place shops around user
+    const mapped = shops.map(shop => {
+      // Create a deterministic random offset based on shop ID
+      const idNum = shop.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const angle = (idNum % 360) * (Math.PI / 180);
+      const distance = 0.005 + (idNum % 20) * 0.001; // Roughly 500m to 2.5km
+
+      return {
+        ...shop,
+        coordinates: {
+          lat: userLocation.lat + Math.cos(angle) * distance,
+          lng: userLocation.lng + Math.sin(angle) * distance
+        },
+        // Recalculate distance string
+        distance: `${(distance * 111).toFixed(1)}km`
+      };
+    });
+
+    setMappedShops(mapped);
   }, [userLocation, shops]);
 
-  // Filter mapped shops based on active sub-filter
-  const filteredShops = activeSubFilter 
-    ? mappedShops.filter(shop => shop.subCategory === activeSubFilter)
+  // Sync with prop
+  useEffect(() => {
+    if (activeShopId) {
+      setSelectedShopId(activeShopId);
+    }
+  }, [activeShopId]);
+
+  // Get sub-scenes for the current active scene (package type)
+  const subScenes = activeSceneId 
+    ? SCENE_THEMES.filter(s => s.packageTypeId === activeSceneId)
+    : [];
+
+  // Filter mapped shops based on sub-scene
+  const filteredShops = activeSubScene
+    ? mappedShops.filter(s => s.sceneTheme === activeSubScene)
     : mappedShops;
 
-  // Initialize map and markers
-  const onMapReady = (map: google.maps.Map) => {
+  const selectedShop = filteredShops.find(s => s.id === selectedShopId);
+
+  // Handle map ready
+  const handleMapReady = (map: google.maps.Map) => {
     mapRef.current = map;
-    if (userLocation) {
-      map.setCenter(userLocation);
-      updateUserMarker(map);
-    }
-    updateMarkers(map);
-  };
-
-  // Update user marker
-  const updateUserMarker = (map: google.maps.Map) => {
-    if (!userLocation) return;
-
-    if (userMarkerRef.current) {
-      userMarkerRef.current.setMap(null);
-    }
-
-    userMarkerRef.current = new google.maps.Marker({
-      position: userLocation,
-      map: map,
-      title: "我的位置",
-      icon: {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: 8,
-        fillColor: "#3B82F6",
-        fillOpacity: 1,
-        strokeColor: "#ffffff",
-        strokeWeight: 2,
-      },
-      zIndex: 999
-    });
-  };
-
-  // Update markers when filtered shops change
-  useEffect(() => {
-    if (mapRef.current) {
-      updateMarkers(mapRef.current);
-      if (userLocation) {
-        updateUserMarker(mapRef.current);
-      }
-    }
-  }, [filteredShops, userLocation]);
-
-  // Handle active shop selection from outside
-  useEffect(() => {
-    if (activeShopId && mapRef.current && mappedShops.length > 0) {
-      const shop = mappedShops.find(s => s.id === activeShopId);
-      if (shop) {
-        setSelectedShop(shop);
-        mapRef.current.panTo(shop.coordinates);
-        mapRef.current.setZoom(15);
-      }
-    }
-  }, [activeShopId, mappedShops]);
-
-  const updateMarkers = (map: google.maps.Map) => {
-    // Clear existing markers
-    markersRef.current.forEach(marker => marker.setMap(null));
-    markersRef.current = [];
-
-    // Add new markers
+    
+    // Add markers for all shops
     filteredShops.forEach(shop => {
       const marker = new google.maps.Marker({
         position: shop.coordinates,
         map: map,
         title: shop.name,
-        animation: google.maps.Animation.DROP,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: shop.id === selectedShopId ? "#FF4D4F" : "#3B82F6",
+          fillOpacity: 1,
+          strokeColor: "#FFFFFF",
+          strokeWeight: 2,
+        }
       });
 
       marker.addListener("click", () => {
-        setSelectedShop(shop);
-        map.panTo(shop.coordinates);
+        setSelectedShopId(shop.id);
       });
-
-      markersRef.current.push(marker);
     });
 
-    // Fit bounds if there are markers
-    if (filteredShops.length > 0) {
-      const bounds = new google.maps.LatLngBounds();
-      if (userLocation) {
-        bounds.extend(userLocation);
-      }
-      filteredShops.forEach(shop => bounds.extend(shop.coordinates));
-      
-      // Don't fit bounds if only one shop is selected (to avoid too much zoom)
-      if (filteredShops.length > 1 || (filteredShops.length === 1 && userLocation)) {
-        map.fitBounds(bounds);
-      }
+    // Add user location marker
+    if (userLocation) {
+      new google.maps.Marker({
+        position: userLocation,
+        map: map,
+        title: "我的位置",
+        zIndex: 999,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 10,
+          fillColor: "#3B82F6",
+          fillOpacity: 1,
+          strokeColor: "#FFFFFF",
+          strokeWeight: 3,
+        }
+      });
     }
   };
 
-  const handleRecenter = () => {
-    if (mapRef.current && userLocation) {
+  // Center map on user or selected shop
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    if (selectedShop) {
+      mapRef.current.panTo(selectedShop.coordinates);
+      mapRef.current.setZoom(15);
+    } else if (userLocation) {
       mapRef.current.panTo(userLocation);
       mapRef.current.setZoom(14);
     }
-  };
+  }, [selectedShop, userLocation]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white animate-in slide-in-from-bottom duration-300">
+    <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in slide-in-from-bottom-full duration-300">
       {/* Header */}
-      <div className="flex flex-col border-b border-gray-100 bg-white shadow-sm z-10">
-        <div className="flex items-center justify-between p-3 pb-2">
-          <div className="flex items-center gap-2">
-            <div className="bg-blue-500 text-white p-1 rounded-md">
-              <MapPin className="w-4 h-4" />
-            </div>
-            <h2 className="font-bold text-lg text-gray-800">地图模式</h2>
-          </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-gray-100 rounded-full h-8 w-8">
-            <X className="w-5 h-5 text-gray-500" />
-          </Button>
-        </div>
+      <div className="flex-none px-4 py-3 flex items-center justify-between border-b border-gray-100 bg-white z-10 shadow-sm">
+        <h2 className="font-bold text-lg">地图模式</h2>
+        <button 
+          onClick={onClose}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <X className="w-6 h-6 text-gray-500" />
+        </button>
+      </div>
 
-        {/* Sub-category Filter Bar */}
-        {subCategories.length > 0 && (
-          <div className="flex items-center gap-2 px-3 pb-3 overflow-x-auto hide-scrollbar">
+      {/* Sub-scene Filter Bar */}
+      {subScenes.length > 0 && (
+        <div className="flex-none px-4 py-2 bg-white border-b border-gray-100 overflow-x-auto hide-scrollbar z-10">
+          <div className="flex gap-2">
             <button
-              onClick={() => setActiveSubFilter(null)}
+              onClick={() => setActiveSubScene(null)}
               className={cn(
-                "flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors border",
-                !activeSubFilter 
-                  ? "bg-blue-500 text-white border-blue-500" 
-                  : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors",
+                activeSubScene === null
+                  ? "bg-[#FF4D4F] text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               )}
             >
               全部
             </button>
-            {subCategories.map(sub => (
+            {subScenes.map(sub => (
               <button
                 key={sub.id}
-                onClick={() => setActiveSubFilter(sub.id === activeSubFilter ? null : sub.id)}
+                onClick={() => setActiveSubScene(sub.id)}
                 className={cn(
-                  "flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors border",
-                  activeSubFilter === sub.id 
-                    ? "bg-blue-500 text-white border-blue-500" 
-                    : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                  "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1",
+                  activeSubScene === sub.id
+                    ? "bg-[#FF4D4F] text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 )}
               >
-                <sub.icon className="w-3 h-3" />
                 {sub.name}
               </button>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Map Container */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative bg-gray-100">
         <MapView 
           className="w-full h-full"
-          onMapReady={onMapReady}
-          initialCenter={userLocation || { lat: 31.2304, lng: 121.4737 }}
-          initialZoom={13}
+          onMapReady={handleMapReady}
         />
-
-        {/* Recenter Button */}
+        
+        {/* Reset Location Button */}
         <button
-          onClick={handleRecenter}
-          className="absolute top-4 right-4 bg-white p-2 rounded-lg shadow-md border border-gray-100 text-gray-600 hover:text-blue-500 transition-colors z-10"
+          onClick={() => {
+            if (userLocation && mapRef.current) {
+              mapRef.current.panTo(userLocation);
+              mapRef.current.setZoom(14);
+              setSelectedShopId(undefined);
+            }
+          }}
+          className="absolute bottom-48 right-4 bg-white p-3 rounded-full shadow-lg text-gray-700 hover:text-[#3B82F6] active:scale-95 transition-all z-10"
         >
-          <Locate className="w-5 h-5" />
+          <Locate className="w-6 h-6" />
         </button>
 
-        {/* Shop Card Overlay */}
+        {/* Selected Shop Card */}
         {selectedShop && (
-          <div className="absolute bottom-8 left-4 right-4 z-10 animate-in slide-in-from-bottom-10 duration-300">
-            <div className="bg-white shadow-xl p-4 rounded-xl relative border border-gray-100">
-              <button 
-                onClick={() => setSelectedShop(null)}
-                className="absolute top-2 right-2 p-1 hover:bg-gray-100 rounded-full text-gray-400"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              
-              <div className="flex gap-3">
-                <div className="w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                  <img 
-                    src={selectedShop.imageUrl} 
-                    alt={selectedShop.name} 
-                    className="w-full h-full object-cover"
-                  />
+          <div className="absolute bottom-8 left-4 right-4 bg-white rounded-xl shadow-xl p-4 animate-in slide-in-from-bottom-10 duration-300 z-10">
+            <div className="flex gap-3">
+              <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                <img src={selectedShop.imageUrl} alt={selectedShop.name} className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-bold text-base truncate pr-2">{selectedShop.name}</h3>
+                  <span className="text-[#FF4D4F] font-bold text-sm whitespace-nowrap">¥{selectedShop.price}/人</span>
                 </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-base text-gray-900 truncate pr-6">{selectedShop.name}</h3>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 mt-1 mb-2">
-                    <div className="flex items-center text-amber-500 font-bold text-sm">
-                      <span>{selectedShop.rating}</span>
-                      <span className="text-xs font-normal text-gray-400 ml-1">分</span>
-                    </div>
-                    <span className="text-xs text-gray-500">¥{selectedShop.price}/人</span>
-                    <span className="text-xs text-blue-500 font-medium ml-auto">{selectedShop.distance}</span>
-                  </div>
-
-                  <div className="flex gap-2 mt-2">
-                    <Button className="flex-1 h-8 text-xs bg-blue-500 text-white hover:bg-blue-600 rounded-full font-medium shadow-sm shadow-blue-200">
-                      查看详情
-                    </Button>
-                    <Button className="w-20 h-8 p-0 bg-white border border-blue-500 text-blue-500 hover:bg-blue-50 rounded-full flex items-center justify-center gap-1 text-xs font-medium">
-                      <Navigation className="w-3 h-3" />
-                      <span>导航</span>
-                    </Button>
-                  </div>
+                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                  <span className="font-medium text-[#FFB800]">{selectedShop.rating}分</span>
+                  <span>|</span>
+                  <span>{selectedShop.distance}</span>
                 </div>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {selectedShop.tags.slice(0, 2).map(tag => (
+                    <span key={tag} className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <button className="mt-2 w-full bg-[#3B82F6] text-white text-xs font-medium py-1.5 rounded-md flex items-center justify-center gap-1 active:scale-95 transition-transform">
+                  <Navigation className="w-3 h-3" />
+                  导航前往
+                </button>
               </div>
             </div>
           </div>

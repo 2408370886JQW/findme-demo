@@ -1,50 +1,50 @@
 import { useState, useEffect } from "react";
-import { MapPin, Search, ChevronDown, Star, Flame, ThumbsUp, Navigation, ChevronRight, Locate } from "lucide-react";
-import { SCENES, MOCK_SHOPS, Shop } from "@/lib/data";
+import { MapPin, Search, ChevronDown, Flame } from "lucide-react";
+import { PACKAGE_TYPES, SCENE_THEMES, MOCK_SHOPS } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { MapOverlay } from "@/components/MapOverlay";
 import { ShopSkeleton } from "@/components/ShopSkeleton";
 
 export default function Home() {
-  const [activeScene, setActiveScene] = useState<string>('date');
-  const [activeSubScene, setActiveSubScene] = useState<string | null>(null);
+  const [activePackageType, setActivePackageType] = useState<string>('couple');
+  const [activeSceneTheme, setActiveSceneTheme] = useState<string>('date');
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [activeShopId, setActiveShopId] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Filter shops based on active scene and sub-scene
+  // Get current scenes based on active package type
+  const currentScenes = SCENE_THEMES.filter(scene => scene.packageTypeId === activePackageType);
+
+  // Filter shops based on active package type and scene theme
   const filteredShops = MOCK_SHOPS.filter(shop => {
-    const sceneMatch = activeScene === 'all' || shop.category === activeScene;
-    const subSceneMatch = !activeSubScene || shop.subCategory === activeSubScene;
-    return sceneMatch && subSceneMatch;
+    const packageMatch = shop.packageType === activePackageType;
+    const sceneMatch = shop.sceneTheme === activeSceneTheme;
+    return packageMatch && sceneMatch;
   });
 
-  // Auto-select first scene on load
+  // Auto-select first package type on load
   useEffect(() => {
-    if (SCENES.length > 0) {
-      setActiveScene(SCENES[0].id);
+    if (PACKAGE_TYPES.length > 0) {
+      setActivePackageType(PACKAGE_TYPES[0].id);
     }
   }, []);
 
-  // Simulate loading delay when changing scenes
+  // Auto-select first scene when package type changes
+  useEffect(() => {
+    const firstScene = SCENE_THEMES.find(scene => scene.packageTypeId === activePackageType);
+    if (firstScene) {
+      setActiveSceneTheme(firstScene.id);
+    }
+  }, [activePackageType]);
+
+  // Simulate loading delay when changing filters
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500); // 500ms delay to show skeleton
+    }, 500);
     return () => clearTimeout(timer);
-  }, [activeScene, activeSubScene]);
-
-  // Reset sub-scene when changing main scene
-  const handleSceneChange = (sceneId: string) => {
-    if (activeScene === sceneId) {
-      return;
-    }
-    setActiveScene(sceneId);
-    setActiveSubScene(null);
-  };
+  }, [activePackageType, activeSceneTheme]);
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden font-sans">
@@ -73,69 +73,75 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content - Dual Column Layout */}
+      {/* Main Content - Three Column Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar - Scene Navigation */}
-        <div className="w-[92px] bg-[#F7F8FA] flex-none overflow-y-auto hide-scrollbar flex flex-col pb-20">
-          <div className="flex flex-col">
-            {SCENES.map((scene) => (
-              <div key={scene.id} className="flex flex-col">
-                <button
-                  onClick={() => handleSceneChange(scene.id)}
-                  className={cn(
-                    "relative py-4 px-1 text-center transition-all duration-200 ease-in-out w-full flex flex-col items-center justify-center gap-0.5 active:scale-95",
-                    activeScene === scene.id 
-                      ? "bg-white" 
-                      : "bg-[#F7F8FA] hover:bg-[#F0F2F5]"
-                  )}
-                >
-                  {activeScene === scene.id && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-[#FF4D4F] rounded-r-full" />
-                  )}
-                  <span className={cn(
-                    "text-[13px] leading-tight transition-colors duration-200",
-                    activeScene === scene.id ? "font-bold text-[#FF4D4F]" : "font-medium text-[#666]"
-                  )}>
-                    {scene.name}
-                  </span>
-                  {activeScene === scene.id && (
-                    <span className="text-[10px] scale-90 text-[#FF4D4F] font-normal mt-0.5 bg-[#FFF0F0] px-1 rounded-sm animate-in fade-in zoom-in duration-200">
-                      精选上榜
-                    </span>
-                  )}
-                </button>
-                
-                {/* Sub Categories */}
-                {activeScene === scene.id && scene.subCategories && (
-                  <div className="bg-white w-full pb-2 animate-in slide-in-from-top-2 duration-200 flex flex-col items-center">
-                    {scene.subCategories.map(sub => (
-                      <button
-                        key={sub.id}
-                        onClick={() => setActiveSubScene(sub.id)}
-                        className={cn(
-                          "w-[76px] py-2 px-1 text-center transition-all duration-200 ease-in-out flex items-center justify-center gap-1.5 rounded-md my-0.5 active:scale-95",
-                          activeSubScene === sub.id 
-                            ? "bg-[#FFF0F0]" 
-                            : "hover:bg-gray-50"
-                        )}
-                      >
-                        <sub.icon className={cn(
-                          "w-3 h-3 shrink-0 transition-colors duration-200", 
-                          activeSubScene === sub.id ? "text-[#FF4D4F]" : "text-[#999]"
-                        )} />
-                        <span className={cn(
-                          "text-[11px] truncate transition-colors duration-200",
-                          activeSubScene === sub.id ? "text-[#FF4D4F] font-medium" : "text-[#666]"
-                        )}>
-                          {sub.name}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+        {/* Level 1 Sidebar - Package Types (Amap Style) */}
+        <div className="w-[88px] bg-[#F7F8FA] flex-none overflow-y-auto hide-scrollbar flex flex-col border-r border-gray-100 pb-20">
+          {PACKAGE_TYPES.map((type) => (
+            <button
+              key={type.id}
+              onClick={() => setActivePackageType(type.id)}
+              className={cn(
+                "relative py-6 px-1 text-center transition-all duration-200 ease-in-out w-full flex flex-col items-center justify-center gap-1.5 active:scale-95",
+                activePackageType === type.id 
+                  ? "bg-white" 
+                  : "bg-[#F7F8FA] hover:bg-[#F0F2F5]"
+              )}
+            >
+              {/* Wheat Ear Decoration (Left) */}
+              <div className={cn(
+                "absolute left-1 top-1/2 -translate-y-1/2 w-3 h-8 bg-contain bg-no-repeat opacity-50",
+                activePackageType === type.id ? "text-[#FF4D4F]" : "text-gray-300"
+              )} style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIgMnYyMCIvPjxwYXRoIGQ9Ik0xMiA2bC00IDQiLz48cGF0aCBkPSJNMTIgMTBsLTQgNCIvPjxwYXRoIGQ9Ik0xMiAxNGwtNCA0Ii8+PC9zdmc+')" }}></div>
+              
+              {/* Wheat Ear Decoration (Right) */}
+              <div className={cn(
+                "absolute right-1 top-1/2 -translate-y-1/2 w-3 h-8 bg-contain bg-no-repeat opacity-50 rotate-180",
+                activePackageType === type.id ? "text-[#FF4D4F]" : "text-gray-300"
+              )} style={{ backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIgMnYyMCIvPjxwYXRoIGQ9Ik0xMiA2bC00IDQiLz48cGF0aCBkPSJNMTIgMTBsLTQgNCIvPjxwYXRoIGQ9Ik0xMiAxNGwtNCA0Ii8+PC9zdmc+')" }}></div>
+
+              {/* Main Title */}
+              <span className={cn(
+                "text-[15px] leading-tight transition-colors duration-200 z-10",
+                activePackageType === type.id ? "font-bold text-[#FF4D4F]" : "font-medium text-[#666]"
+              )}>
+                {type.name.replace('套餐', '')}
+              </span>
+
+              {/* Sub Title Capsule */}
+              <span className={cn(
+                "text-[10px] px-1.5 py-0.5 rounded-full z-10 transform scale-90",
+                activePackageType === type.id 
+                  ? "bg-[#FF4D4F] text-white font-medium" 
+                  : "bg-[#E5E5E5] text-[#999]"
+              )}>
+                {activePackageType === type.id ? "精选上榜" : "全城·2025"}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Level 2 Sidebar - Scene Themes (Amap Style - Text Only) */}
+        <div className="w-[100px] bg-white flex-none overflow-y-auto hide-scrollbar flex flex-col border-r border-gray-100 pb-20">
+          {currentScenes.map((scene) => (
+            <button
+              key={scene.id}
+              onClick={() => setActiveSceneTheme(scene.id)}
+              className={cn(
+                "relative py-4 px-4 text-left transition-all duration-200 ease-in-out w-full flex items-center active:scale-95",
+                activeSceneTheme === scene.id 
+                  ? "bg-white" 
+                  : "hover:bg-gray-50"
+              )}
+            >
+              <span className={cn(
+                "text-[15px] truncate transition-colors duration-200",
+                activeSceneTheme === scene.id ? "font-bold text-[#FF4D4F]" : "text-[#333] font-medium"
+              )}>
+                {scene.name}
+              </span>
+            </button>
+          ))}
         </div>
 
         {/* Right Content - Shop List */}
@@ -194,7 +200,7 @@ export default function Home() {
                       </div>
                       
                       <div className="flex items-center gap-2 text-[11px] text-[#999] mb-2">
-                        <span>{shop.subCategory === 'eat' ? '美食' : shop.subCategory === 'drink' ? '饮品' : '娱乐'}</span>
+                        <span>{shop.sceneTheme === 'date' ? '约会' : '娱乐'}</span>
                         <span>¥{shop.price}/人</span>
                         <span className="text-[#333]">{shop.distance}</span>
                       </div>
@@ -211,7 +217,7 @@ export default function Home() {
                         ))}
                       </div>
 
-                      {/* Deals Section - New Feature */}
+                      {/* Deals Section */}
                       {shop.deals && shop.deals.length > 0 && (
                         <div className="mb-2 space-y-1">
                           {shop.deals.map((deal, i) => (
@@ -286,9 +292,9 @@ export default function Home() {
       <MapOverlay 
         isOpen={isMapOpen} 
         onClose={() => setIsMapOpen(false)} 
-        shops={MOCK_SHOPS.filter(s => s.category === activeScene)} // Pass all shops for the current scene
+        shops={MOCK_SHOPS.filter(s => s.packageType === activePackageType)} // Pass all shops for the current package type
         activeShopId={activeShopId}
-        activeSceneId={activeScene} // Pass active scene ID
+        activeSceneId={activePackageType} // Pass active package type ID
       />
     </div>
   );
