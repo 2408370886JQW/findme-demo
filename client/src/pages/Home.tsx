@@ -175,7 +175,7 @@ export default function Home() {
                       handleCategoryClick(category.id);
                     }}
                     className={`
-                      relative w-full py-5 flex flex-col items-center justify-center gap-1.5 transition-all duration-300 group
+                      relative w-full py-3 flex flex-col items-center justify-center gap-1 transition-all duration-300 group
                       ${isActive ? 'bg-white' : 'bg-transparent hover:bg-white/50'}
                     `}
                   >
@@ -196,7 +196,7 @@ export default function Home() {
                     
                     {/* 胶囊副标题 */}
                     <div className={`
-                      px-2.5 py-0.5 rounded-full text-[11px] transform scale-90 transition-all duration-300 mt-1
+                      px-2 py-0.5 rounded-full text-[10px] transform scale-90 transition-all duration-300 mt-0.5
                       ${isActive 
                         ? 'bg-[#FF4D4F] text-white font-medium shadow-sm' 
                         : 'bg-[#E5E5E5] text-[#999999]'}
@@ -218,7 +218,7 @@ export default function Home() {
                             key={sub.id}
                             onClick={(e) => handleSubCategoryClick(e, sub.id)}
                             className={`
-                              w-full py-3 text-center transition-all duration-200 relative flex items-center justify-center
+                              w-full py-2.5 text-center transition-all duration-200 relative flex items-center justify-center
                               ${isSubActive 
                                 ? 'text-[#FF4D4F] font-bold bg-[#FFF0F0]' 
                                 : 'text-[#666666] font-medium hover:bg-gray-50'}
