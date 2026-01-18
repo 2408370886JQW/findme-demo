@@ -186,46 +186,48 @@ export default function Home() {
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden font-sans" onClick={handleOutsideClick}>
-      {/* 顶部导航栏 */}
-      <header className="flex-none h-14 px-4 flex items-center justify-between bg-white border-b border-gray-100 z-20 shadow-sm">
-        <div className="flex items-center gap-2">
+      {/* 顶部导航栏 - 移动端优化 */}
+      <header className="flex-none h-14 px-3 flex items-center justify-between bg-white border-b border-gray-100 z-20 shadow-sm gap-2">
+        {/* Logo - 移动端只显示图标 */}
+        <div className="flex items-center gap-1 flex-shrink-0">
           <div className="w-8 h-8 bg-[#FF4D4F] rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md">F</div>
-          <span className="text-lg font-bold text-[#FF4D4F] tracking-tight">FIND ME</span>
+          <span className="text-lg font-bold text-[#FF4D4F] tracking-tight hidden md:block">FIND ME</span>
         </div>
         
-        <div className="flex-1 mx-4 max-w-md">
+        {/* 搜索框 - 自适应宽度 */}
+        <div className="flex-1 max-w-md min-w-0">
           <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#FF4D4F] transition-colors" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-[#FF4D4F] transition-colors" />
             <input 
               type="text" 
-              placeholder="搜索商家、套餐..." 
-              className="w-full h-9 pl-9 pr-4 bg-gray-50 rounded-full text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#FF4D4F]/20 focus:bg-white transition-all border border-transparent focus:border-[#FF4D4F]/20"
+              placeholder="搜索..." 
+              className="w-full h-8 pl-8 pr-3 bg-gray-50 rounded-full text-xs text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#FF4D4F]/20 focus:bg-white transition-all border border-transparent focus:border-[#FF4D4F]/20"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* 功能按钮 - 紧凑排列 */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           <button 
             onClick={() => setShowFavorites(!showFavorites)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 ${
+            className={`flex items-center justify-center w-8 h-8 rounded-full transition-all active:scale-95 ${
               showFavorites 
                 ? 'bg-[#FF4D4F] text-white shadow-md shadow-[#FF4D4F]/20' 
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             <Heart className={`w-4 h-4 ${showFavorites ? 'fill-current' : ''}`} />
-            收藏
           </button>
 
           <button 
             onClick={() => setShowMap(!showMap)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 ${
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95 whitespace-nowrap ${
               showMap 
                 ? 'bg-[#FF4D4F] text-white shadow-md shadow-[#FF4D4F]/20' 
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            <MapIcon className="w-4 h-4" />
+            <MapIcon className="w-3.5 h-3.5" />
             {showMap ? '列表' : '地图'}
           </button>
         </div>
@@ -357,7 +359,7 @@ export default function Home() {
         )}
         
         {/* 左侧手风琴导航栏 */}
-        <nav className="w-[100px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto border-r border-gray-100 no-scrollbar z-10">
+        <nav className="w-[80px] md:w-[100px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto border-r border-gray-100 no-scrollbar z-10 transition-all duration-300">
           <div className="flex flex-col py-2 pb-20">
             {categories.map((category) => {
               const isActive = activeCategory === category.id;
@@ -441,24 +443,27 @@ export default function Home() {
 
         {/* 右侧内容区 */}
         <main className="flex-1 flex flex-col bg-white relative min-w-0 overflow-hidden">
-          {/* 顶部筛选栏 */}
-          <div className="flex-none px-4 py-3 flex items-center justify-between bg-white z-10 border-b border-gray-50">
-            <div className="flex flex-col">
-              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+          {/* 顶部筛选栏 - 移动端横向滚动优化 */}
+          <div className="flex-none px-3 py-2 bg-white z-10 border-b border-gray-50 flex flex-col gap-2">
+            {/* 标题行 */}
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-gray-900 flex items-center gap-2 truncate">
                 {categories.find(c => c.id === activeCategory)?.subCategories.find(s => s.id === activeSubCategory)?.name}
-                {userLocation && (
-                  <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <MapPin className="w-3 h-3" /> 附近 5km 内推荐
-                  </span>
-                )}
               </h2>
+              {userLocation && (
+                <span className="text-[10px] font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap flex-shrink-0">
+                  <MapPin className="w-3 h-3" /> 附近
+                </span>
+              )}
             </div>
-            <div className="flex gap-2">
+            
+            {/* 筛选按钮行 - 支持横向滚动 */}
+            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-3 px-3">
               {/* 价格筛选 */}
               <select 
                 value={priceFilter}
                 onChange={(e) => setPriceFilter(e.target.value)}
-                className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors outline-none appearance-none cursor-pointer"
+                className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors outline-none appearance-none cursor-pointer border-none"
               >
                 <option value="all">价格不限</option>
                 <option value="low">¥200以下</option>
@@ -470,7 +475,7 @@ export default function Home() {
               <select 
                 value={distanceFilter}
                 onChange={(e) => setDistanceFilter(e.target.value)}
-                className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors outline-none appearance-none cursor-pointer"
+                className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors outline-none appearance-none cursor-pointer border-none"
               >
                 <option value="all">距离不限</option>
                 <option value="1km">1km内</option>
@@ -478,7 +483,8 @@ export default function Home() {
                 <option value="5km">5km内</option>
               </select>
 
-              <button className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">好评优先</button>
+              <button className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors whitespace-nowrap">好评优先</button>
+              <button className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors whitespace-nowrap">人均高低</button>
             </div>
           </div>
 
