@@ -110,35 +110,35 @@ export default function Home() {
       {/* 主体内容区 */}
       <div className="flex-1 flex overflow-hidden relative">
         
-        {/* 左侧导航栏 - 严格还原高德扫街榜风格 */}
-        <nav className="w-[100px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto no-scrollbar pb-20">
+        {/* 左侧导航栏 - 增加宽度至120px，防止换行重叠 */}
+        <nav className="w-[120px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto no-scrollbar pb-20">
           {categories.map((category, index) => {
             const icons = getCategoryIcons(category.id);
             
             return (
-              <div key={category.id} className="flex flex-col w-full mb-6">
-                {/* 一级标题 (分组头) */}
-                <div className="flex flex-col items-center justify-center pt-4 pb-2 w-full">
-                  {/* 装饰图标行 */}
-                  <div className="flex items-center justify-center gap-1 mb-0.5 w-full px-2">
-                    <div className="transform scale-90">{icons.Left}</div>
-                    <span className="text-[15px] font-bold text-[#8B6E4E] tracking-wide whitespace-nowrap">
+              <div key={category.id} className="flex flex-col w-full mb-8">
+                {/* 一级标题 (分组头) - 增加上下间距 */}
+                <div className="flex flex-col items-center justify-center pt-6 pb-3 w-full">
+                  {/* 装饰图标行 - 强制不换行 */}
+                  <div className="flex items-center justify-center gap-1 mb-1 w-full px-1 whitespace-nowrap">
+                    <div className="transform scale-90 flex-none">{icons.Left}</div>
+                    <span className="text-[15px] font-bold text-[#8B6E4E] tracking-wide whitespace-nowrap flex-none">
                       {category.name.replace('套餐', '')}榜
                     </span>
-                    <div className="transform scale-90">{icons.Right}</div>
+                    <div className="transform scale-90 flex-none">{icons.Right}</div>
                   </div>
                   
                   {/* 副标题 */}
-                  <span className="text-[10px] text-[#C5A47E] transform scale-90 font-medium">
+                  <span className="text-[10px] text-[#C5A47E] transform scale-90 font-medium block mt-0.5">
                     {category.label}
                   </span>
                   
-                  {/* 下箭头装饰 */}
-                  <div className="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-t-[4px] border-t-[#C5A47E] mt-1 opacity-50"></div>
+                  {/* 下箭头装饰 - 简化为纯CSS三角形 */}
+                  <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-[#C5A47E] mt-2 opacity-40"></div>
                 </div>
 
-                {/* 二级菜单 (平铺列表) */}
-                <div className="flex flex-col w-full px-2 gap-3 mt-1">
+                {/* 二级菜单 (平铺列表) - 增加顶部间距 */}
+                <div className="flex flex-col w-full px-2 gap-4 mt-2">
                   {category.subCategories.map((sub) => {
                     const isSubActive = activeSubCategory === sub.id;
                     return (
@@ -148,9 +148,9 @@ export default function Home() {
                         className="w-full text-center transition-all duration-200"
                       >
                         <span className={`
-                          text-[14px] transition-all duration-200 block leading-tight
+                          text-[14px] transition-all duration-200 block leading-tight whitespace-nowrap
                           ${isSubActive 
-                            ? 'text-[#333333] font-bold' 
+                            ? 'text-[#333333] font-bold scale-105' 
                             : 'text-[#666666] font-medium'}
                         `}>
                           {sub.name}
