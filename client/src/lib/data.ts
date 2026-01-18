@@ -10,6 +10,7 @@ export interface Shop {
   imageUrl: string;
   description: string;
   reviewCount: number;
+  heat?: number; // 全年热度值
   packageType: string; // 'couple' | 'bestie' | 'brother' | 'fun'
   sceneTheme: string; // 'date' | 'anniversary' | 'afternoon_tea' | 'photo' | 'drink' | 'game' | 'cosplay' | 'private'
   deals?: {
@@ -79,6 +80,7 @@ export const MOCK_SHOPS: Shop[] = [
     imageUrl: 'https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?w=800&q=80',
     description: '浪漫的法式小馆，拥有绝佳的城市夜景视野，适合情侣约会。',
     reviewCount: 1205,
+    heat: 98,
     packageType: 'couple',
     sceneTheme: 'date',
     deals: [
@@ -96,6 +98,7 @@ export const MOCK_SHOPS: Shop[] = [
     imageUrl: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=800&q=80',
     description: '在星空下小酌一杯，享受二人世界的静谧时光。',
     reviewCount: 856,
+    heat: 92,
     packageType: 'couple',
     sceneTheme: 'date',
     deals: [
@@ -115,6 +118,7 @@ export const MOCK_SHOPS: Shop[] = [
     imageUrl: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80',
     description: '被玫瑰花海包围的餐厅，提供纪念日布置服务。',
     reviewCount: 2100,
+    heat: 99,
     packageType: 'couple',
     sceneTheme: 'anniversary',
     deals: [
@@ -134,6 +138,7 @@ export const MOCK_SHOPS: Shop[] = [
     imageUrl: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80',
     description: '仿佛置身童话世界的下午茶，每一款甜点都精致得让人舍不得吃。',
     reviewCount: 3420,
+    heat: 95,
     packageType: 'bestie',
     sceneTheme: 'afternoon_tea',
     deals: [
@@ -153,6 +158,7 @@ export const MOCK_SHOPS: Shop[] = [
     imageUrl: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&q=80',
     description: '30+主题场景任拍，提供百套服装，和闺蜜拍出大片。',
     reviewCount: 1560,
+    heat: 88,
     packageType: 'bestie',
     sceneTheme: 'photo',
     deals: [
@@ -172,6 +178,7 @@ export const MOCK_SHOPS: Shop[] = [
     imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80',
     description: '大口吃肉，大碗喝酒，这就是兄弟聚会的正确打开方式。',
     reviewCount: 5600,
+    heat: 97,
     packageType: 'brother',
     sceneTheme: 'drink',
     deals: [
@@ -191,6 +198,7 @@ export const MOCK_SHOPS: Shop[] = [
     imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80',
     description: '顶级配置，专业电竞椅，带上兄弟一起开黑上分。',
     reviewCount: 2300,
+    heat: 94,
     packageType: 'brother',
     sceneTheme: 'game',
     deals: [
@@ -210,6 +218,7 @@ export const MOCK_SHOPS: Shop[] = [
     imageUrl: 'https://images.unsplash.com/photo-1560419015-7c427e8ae5ba?w=800&q=80',
     description: '二次元爱好者的天堂，定期举办Cosplay聚会。',
     reviewCount: 1890,
+    heat: 85,
     packageType: 'fun',
     sceneTheme: 'cosplay',
     deals: [
@@ -229,6 +238,7 @@ export const MOCK_SHOPS: Shop[] = [
     imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80',
     description: '私密舒适的观影空间，海量片源随心看。',
     reviewCount: 1120,
+    heat: 90,
     packageType: 'fun',
     sceneTheme: 'private',
     deals: [
