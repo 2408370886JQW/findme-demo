@@ -5,16 +5,28 @@ import { cn } from "@/lib/utils";
 import { MapView } from "./Map";
 
 interface MapOverlayProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
   shops: Shop[];
   activeShopId?: string;
   activeSceneId?: string;
+  activeCategory?: string;
+  activeScene?: string;
+  onSceneChange?: (sceneId: string) => void;
 }
 
-export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId }: MapOverlayProps) {
+export function MapOverlay({ 
+  isOpen = true, 
+  onClose, 
+  shops, 
+  activeShopId, 
+  activeSceneId,
+  activeCategory,
+  activeScene,
+  onSceneChange
+}: MapOverlayProps) {
   const [selectedShopId, setSelectedShopId] = useState<string | undefined>(activeShopId);
-  const [activeSubScene, setActiveSubScene] = useState<string | null>(null);
+  const [activeSubScene, setActiveSubScene] = useState<string | null>(activeScene || null);
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [mappedShops, setMappedShops] = useState<Shop[]>([]);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -72,9 +84,16 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId
     }
   }, [activeShopId]);
 
+  // Sync active scene from props
+  useEffect(() => {
+    if (activeScene) {
+      setActiveSubScene(activeScene);
+    }
+  }, [activeScene]);
+
   // Get sub-scenes for the current active scene (package type)
-  const subScenes = activeSceneId 
-    ? SCENE_THEMES.filter(s => s.packageTypeId === activeSceneId)
+  const subScenes = activeCategory 
+    ? SCENE_THEMES.filter(s => s.packageTypeId === activeCategory)
     : [];
 
   // Filter mapped shops based on sub-scene
@@ -90,6 +109,8 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId
     
     // Add markers for all shops
     filteredShops.forEach(shop => {
+      if (!shop.coordinates) return;
+      
       const marker = new google.maps.Marker({
         position: shop.coordinates,
         map: map,
@@ -132,7 +153,7 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId
   useEffect(() => {
     if (!mapRef.current) return;
 
-    if (selectedShop) {
+    if (selectedShop && selectedShop.coordinates) {
       mapRef.current.panTo(selectedShop.coordinates);
       mapRef.current.setZoom(15);
     } else if (userLocation) {
@@ -146,35 +167,29 @@ export function MapOverlay({ isOpen, onClose, shops, activeShopId, activeSceneId
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in slide-in-from-bottom-full duration-300">
       {/* Header */}
-      <div className="flex-none px-4 py-3 flex items-center justify-between border-b border-gray-100 bg-white z-10 shadow-sm">
-        <h2 className="font-bold text-lg">地图模式</h2>
-        <button 
-          onClick={onClose}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-        >
-          <X className="w-6 h-6 text-gray-500" />
-        </button>
-      </div>
+      {onClose && (
+        <div className="flex-none px-4 py-3 flex items-center justify-between border-b border-gray-100 bg-white z-10 shadow-sm">
+          <h2 className="font-bold text-lg">地图模式</h2>
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <X className="w-6 h-6 text-gray-500" />
+          </button>
+        </div>
+      )}
 
       {/* Sub-scene Filter Bar */}
       {subScenes.length > 0 && (
         <div className="flex-none px-4 py-2 bg-white border-b border-gray-100 overflow-x-auto hide-scrollbar z-10">
           <div className="flex gap-2">
-            <button
-              onClick={() => setActiveSubScene(null)}
-              className={cn(
-                "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors",
-                activeSubScene === null
-                  ? "bg-[#FF4D4F] text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              )}
-            >
-              全部
-            </button>
             {subScenes.map(sub => (
               <button
                 key={sub.id}
-                onClick={() => setActiveSubScene(sub.id)}
+                onClick={() => {
+                  setActiveSubScene(sub.id);
+                  onSceneChange?.(sub.id);
+                }}
                 className={cn(
                   "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1",
                   activeSubScene === sub.id

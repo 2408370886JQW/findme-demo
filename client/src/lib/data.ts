@@ -1,34 +1,8 @@
-import { Heart, Users, Coffee, Beer, Gamepad2, Sparkles, GraduationCap, MessageCircle, Camera, Smile, PartyPopper, Flame, Puzzle, Film, Palette, Moon, Gem, ShoppingBag, Gift } from "lucide-react";
-
-// 一级分类：套餐类型
-export interface PackageType {
-  id: string;
-  name: string;
-  icon: any;
-  color: string;
-}
-
-// 二级分类：场景主题
-export interface SceneTheme {
-  id: string;
-  name: string;
-  icon: any;
-  packageTypeId: string; // 关联一级分类
-}
-
-export interface Deal {
-  title: string;
-  price: number;
-  originalPrice: number;
-  sales: number;
-  tags: string[];
-}
+import { MapPin, Coffee, Utensils, GlassWater, Heart, Users, Sparkles, PartyPopper, Music, Camera, Gift, Gamepad2 } from "lucide-react";
 
 export interface Shop {
   id: string;
   name: string;
-  packageType: string; // 对应一级分类ID
-  sceneTheme: string;  // 对应二级分类ID
   rating: number;
   price: number;
   distance: string;
@@ -36,230 +10,230 @@ export interface Shop {
   imageUrl: string;
   description: string;
   reviewCount: number;
-  isHot?: boolean;
-  coordinates: { lat: number; lng: number };
-  deals?: Deal[];
+  packageType: string; // 'couple' | 'bestie' | 'brother' | 'fun'
+  sceneTheme: string; // 'date' | 'anniversary' | 'afternoon_tea' | 'photo' | 'drink' | 'game' | 'cosplay' | 'private'
+  deals?: {
+    title: string;
+    price: number;
+    originalPrice: number;
+    tags: string[];
+  }[];
+  coordinates?: { lat: number; lng: number };
 }
 
-// 定义一级分类：套餐类型
+export interface PackageType {
+  id: string;
+  name: string;
+  subTitle: string; // New field for custom capsule text
+  icon: any;
+}
+
+export interface SceneTheme {
+  id: string;
+  name: string;
+  packageTypeId: string;
+}
+
 export const PACKAGE_TYPES: PackageType[] = [
-  { id: 'couple', name: '情侣套餐', icon: Heart, color: 'text-pink-500' },
-  { id: 'girls', name: '闺蜜套餐', icon: Users, color: 'text-purple-500' },
-  { id: 'bros', name: '兄弟套餐', icon: Beer, color: 'text-blue-500' },
-  { id: 'vibe', name: '情趣套餐', icon: Flame, color: 'text-red-500' }
+  { id: 'couple', name: '情侣套餐', subTitle: '甜蜜升温', icon: Heart },
+  { id: 'bestie', name: '闺蜜套餐', subTitle: '精致打卡', icon: Sparkles },
+  { id: 'brother', name: '兄弟套餐', subTitle: '畅爽聚会', icon: Users },
+  { id: 'fun', name: '情趣套餐', subTitle: '私密探索', icon: PartyPopper },
 ];
 
-// 定义二级分类：场景主题
 export const SCENE_THEMES: SceneTheme[] = [
-  // 情侣套餐下的场景
-  { id: 'date', name: '约会', icon: Heart, packageTypeId: 'couple' },
-  { id: 'anniversary', name: '大学情侣周年纪念', icon: Gift, packageTypeId: 'couple' },
-  { id: 'interactive', name: '互动体验', icon: Puzzle, packageTypeId: 'couple' },
-  { id: 'private_cinema', name: '私密影院', icon: Film, packageTypeId: 'couple' },
-  
-  // 闺蜜套餐下的场景
-  { id: 'girls_tea', name: '闺蜜下午茶', icon: Coffee, packageTypeId: 'girls' },
-  { id: 'photo_spot', name: '拍照打卡', icon: Camera, packageTypeId: 'girls' },
-  { id: 'beauty', name: '美甲美睫', icon: Gem, packageTypeId: 'girls' },
-  { id: 'shopping', name: '逛街购物', icon: ShoppingBag, packageTypeId: 'girls' },
-  
-  // 兄弟套餐下的场景
-  { id: 'bros_drink', name: '兄弟喝酒', icon: Beer, packageTypeId: 'bros' },
-  { id: 'acg', name: '二次元', icon: Gamepad2, packageTypeId: 'bros' },
-  { id: 'bbq', name: '烧烤撸串', icon: Flame, packageTypeId: 'bros' },
-  { id: 'billiards', name: '台球竞技', icon: Puzzle, packageTypeId: 'bros' },
-  
-  // 情趣套餐下的场景
-  { id: 'night_tour', name: '浪漫夜游', icon: Moon, packageTypeId: 'vibe' },
-  { id: 'club', name: '夜店', icon: Sparkles, packageTypeId: 'vibe' },
-  { id: 'bistro', name: '小酒馆', icon: Beer, packageTypeId: 'vibe' },
-  { id: 'rooftop', name: '露台酒吧', icon: Moon, packageTypeId: 'vibe' }
+  // Couple Scenes
+  { id: 'date', name: '浪漫约会', packageTypeId: 'couple' },
+  { id: 'anniversary', name: '纪念日', packageTypeId: 'couple' },
+  { id: 'university', name: '校园回忆', packageTypeId: 'couple' },
+  { id: 'proposal', name: '求婚策划', packageTypeId: 'couple' },
+
+  // Bestie Scenes
+  { id: 'afternoon_tea', name: '下午茶', packageTypeId: 'bestie' },
+  { id: 'photo', name: '网红拍照', packageTypeId: 'bestie' },
+  { id: 'shopping', name: '逛街探店', packageTypeId: 'bestie' },
+  { id: 'spa', name: '美容SPA', packageTypeId: 'bestie' },
+
+  // Brother Scenes
+  { id: 'drink', name: '喝酒撸串', packageTypeId: 'brother' },
+  { id: 'game', name: '电竞开黑', packageTypeId: 'brother' },
+  { id: 'sports', name: '运动竞技', packageTypeId: 'brother' },
+  { id: 'ktv', name: 'KTV狂欢', packageTypeId: 'brother' },
+
+  // Fun Scenes
+  { id: 'cosplay', name: '二次元', packageTypeId: 'fun' },
+  { id: 'private', name: '私密影院', packageTypeId: 'fun' },
+  { id: 'roleplay', name: '剧本杀', packageTypeId: 'fun' },
+  { id: 'bar', name: '主题酒吧', packageTypeId: 'fun' },
 ];
 
 export const MOCK_SHOPS: Shop[] = [
-  // 情侣套餐 - 约会
+  // Couple - Date
   {
     id: '1',
     name: 'Moonlight Bistro 月光法餐厅',
-    packageType: 'couple',
-    sceneTheme: 'date',
     rating: 4.9,
     price: 320,
     distance: '500m',
     tags: ['法式', '露台', '夜景'],
-    imageUrl: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?w=800&q=80',
     description: '浪漫的法式小馆，拥有绝佳的城市夜景视野，适合情侣约会。',
     reviewCount: 1205,
-    isHot: true,
-    coordinates: { lat: 31.2304, lng: 121.4737 },
-    deals: [
-      { title: '浪漫双人烛光晚餐', price: 520, originalPrice: 888, sales: 300, tags: ['约会首选', '含红酒'] }
-    ]
-  },
-  // 情侣套餐 - 大学情侣周年纪念
-  {
-    id: '7',
-    name: 'Campus Memory 校园回忆',
     packageType: 'couple',
-    sceneTheme: 'anniversary',
-    rating: 4.8,
-    price: 180,
-    distance: '2.0km',
-    tags: ['怀旧', '创意菜', '氛围'],
-    imageUrl: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80',
-    description: '专为大学生情侣打造的纪念日餐厅，性价比高又有仪式感。',
-    reviewCount: 450,
-    coordinates: { lat: 31.2334, lng: 121.4767 },
+    sceneTheme: 'date',
     deals: [
-      { title: '周年纪念双人套餐', price: 199, originalPrice: 399, sales: 520, tags: ['送鲜花', '拍立得'] }
-    ]
+      { title: '浪漫双人烛光晚餐', price: 520, originalPrice: 888, tags: ['约会首选', '含红酒'] }
+    ],
+    coordinates: { lat: 31.2304, lng: 121.4737 }
   },
-  // 兄弟套餐 - 二次元
-  {
-    id: '3',
-    name: 'Retro Arcade X 复古电玩城',
-    packageType: 'bros',
-    sceneTheme: 'acg',
-    rating: 4.8,
-    price: 80,
-    distance: '800m',
-    tags: ['街机', '怀旧', '二次元'],
-    imageUrl: 'https://images.unsplash.com/photo-1511882150382-421056c89033?w=800&q=80',
-    description: '集合了80-90年代经典街机游戏，还有大量手办展示，二次元天堂。',
-    reviewCount: 2300,
-    isHot: true,
-    coordinates: { lat: 31.2284, lng: 121.4717 },
-    deals: [
-      { title: '全天畅玩通票', price: 68, originalPrice: 128, sales: 500, tags: ['单人', '不限时'] }
-    ]
-  },
-  // 闺蜜套餐 - 闺蜜下午茶
-  {
-    id: '11',
-    name: 'Alice Garden 爱丽丝花园',
-    packageType: 'girls',
-    sceneTheme: 'girls_tea',
-    rating: 4.8,
-    price: 198,
-    distance: '600m',
-    tags: ['英式', '花园', '甜点'],
-    imageUrl: 'https://images.unsplash.com/photo-1556742393-d75f468bfcb0?w=800&q=80',
-    description: '仿佛置身童话世界的花园餐厅，下午茶颜值超高。',
-    reviewCount: 890,
-    coordinates: { lat: 31.2314, lng: 121.4757 },
-    deals: [
-      { title: '梦幻双人下午茶', price: 298, originalPrice: 468, sales: 450, tags: ['拍照必选', '限定'] }
-    ]
-  },
-  // 情趣套餐 - 浪漫夜游
-  {
-    id: '10',
-    name: 'Night Cruise 浦江夜游',
-    packageType: 'vibe',
-    sceneTheme: 'night_tour',
-    rating: 4.6,
-    price: 150,
-    distance: '3.0km',
-    tags: ['夜景', '游船', '浪漫'],
-    imageUrl: 'https://images.unsplash.com/photo-1506351421178-63b52a2d2562?w=800&q=80',
-    description: '吹着晚风，欣赏两岸璀璨灯火，浪漫指数爆表。',
-    reviewCount: 2100,
-    coordinates: { lat: 31.2404, lng: 121.4907 }
-  },
-  // 兄弟套餐 - 兄弟喝酒
-  {
-    id: '6',
-    name: 'Brothers BBQ 兄弟烧烤',
-    packageType: 'bros',
-    sceneTheme: 'bros_drink',
-    rating: 4.5,
-    price: 120,
-    distance: '1.5km',
-    tags: ['烧烤', '啤酒', '露天'],
-    imageUrl: 'https://images.unsplash.com/photo-1555126634-323283e090fa?w=800&q=80',
-    description: '大口吃肉，大碗喝酒，兄弟聚会的不二之选。',
-    reviewCount: 670,
-    coordinates: { lat: 31.2314, lng: 121.4747 }
-  },
-  // 情侣套餐 - 互动体验
-  {
-    id: '8',
-    name: 'Pottery Love 陶艺工坊',
-    packageType: 'couple',
-    sceneTheme: 'interactive',
-    rating: 4.9,
-    price: 168,
-    distance: '1.8km',
-    tags: ['DIY', '情侣', '手作'],
-    imageUrl: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80',
-    description: '一起动手制作专属的陶艺作品，记录甜蜜时光。',
-    reviewCount: 320,
-    coordinates: { lat: 31.2364, lng: 121.4797 },
-    deals: [
-      { title: '情侣双人陶艺体验', price: 288, originalPrice: 398, sales: 120, tags: ['包烧制', '指导'] }
-    ]
-  },
-  // 情侣套餐 - 私密影院
-  {
-    id: '9',
-    name: 'Starlight Cinema 星空影院',
-    packageType: 'couple',
-    sceneTheme: 'private_cinema',
-    rating: 4.7,
-    price: 128,
-    distance: '900m',
-    tags: ['私密', '巨幕', '躺椅'],
-    imageUrl: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&q=80',
-    description: '私密包厢，海量片源，享受二人世界的观影乐趣。',
-    reviewCount: 580,
-    coordinates: { lat: 31.2274, lng: 121.4707 }
-  },
-  // 闺蜜套餐 - 美甲美睫
-  {
-    id: '12',
-    name: 'Pink Lady Nail Salon 粉红佳人',
-    packageType: 'girls',
-    sceneTheme: 'beauty',
-    rating: 4.7,
-    price: 220,
-    distance: '1.1km',
-    tags: ['美甲', '美睫', '日式'],
-    imageUrl: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=800&q=80',
-    description: '日式服务，环境优雅，和闺蜜一起变美的好去处。',
-    reviewCount: 430,
-    coordinates: { lat: 31.2344, lng: 121.4777 }
-  },
-  // 闺蜜套餐 - 拍照打卡
-  {
-    id: '13',
-    name: 'Art Museum 艺术美术馆',
-    packageType: 'girls',
-    sceneTheme: 'photo_spot',
-    rating: 4.9,
-    price: 100,
-    distance: '2.2km',
-    tags: ['展览', '艺术', '拍照'],
-    imageUrl: 'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=800&q=80',
-    description: '光影交错的艺术空间，随手一拍都是大片。',
-    reviewCount: 1500,
-    coordinates: { lat: 31.2384, lng: 121.4827 }
-  },
-  // 情趣套餐 - 夜店
   {
     id: '2',
-    name: 'Neon Cyber Bar 赛博酒馆',
-    packageType: 'vibe',
-    sceneTheme: 'club',
-    rating: 4.7,
-    price: 150,
+    name: 'Starry Sky Lounge 星空酒廊',
+    rating: 4.8,
+    price: 180,
     distance: '1.2km',
-    tags: ['赛博朋克', '特调', 'DJ'],
-    imageUrl: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=800&q=80',
-    description: '充满未来感的霓虹灯装饰，每晚都有知名DJ驻场，聚会气氛拉满。',
-    reviewCount: 890,
-    coordinates: { lat: 31.2324, lng: 121.4757 },
+    tags: ['清吧', '鸡尾酒', '氛围感'],
+    imageUrl: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=800&q=80',
+    description: '在星空下小酌一杯，享受二人世界的静谧时光。',
+    reviewCount: 856,
+    packageType: 'couple',
+    sceneTheme: 'date',
     deals: [
-      { title: '4-6人狂欢畅饮套餐', price: 666, originalPrice: 998, sales: 150, tags: ['聚会神券', '无限续杯'] }
-    ]
+      { title: '微醺双人鸡尾酒套餐', price: 298, originalPrice: 468, tags: ['特调饮品'] }
+    ],
+    coordinates: { lat: 31.2324, lng: 121.4757 }
+  },
+  
+  // Couple - Anniversary
+  {
+    id: '3',
+    name: 'Rose Garden 玫瑰花园',
+    rating: 4.9,
+    price: 520,
+    distance: '2.5km',
+    tags: ['鲜花主题', '西餐', '定制服务'],
+    imageUrl: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80',
+    description: '被玫瑰花海包围的餐厅，提供纪念日布置服务。',
+    reviewCount: 2100,
+    packageType: 'couple',
+    sceneTheme: 'anniversary',
+    deals: [
+      { title: '至尊纪念日晚宴', price: 1314, originalPrice: 1999, tags: ['包含布置', '送鲜花'] }
+    ],
+    coordinates: { lat: 31.2354, lng: 121.4787 }
+  },
+
+  // Bestie - Afternoon Tea
+  {
+    id: '4',
+    name: 'Alice\'s Tea Party 爱丽丝茶屋',
+    rating: 4.7,
+    price: 128,
+    distance: '800m',
+    tags: ['英式下午茶', '甜点', '少女心'],
+    imageUrl: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80',
+    description: '仿佛置身童话世界的下午茶，每一款甜点都精致得让人舍不得吃。',
+    reviewCount: 3420,
+    packageType: 'bestie',
+    sceneTheme: 'afternoon_tea',
+    deals: [
+      { title: '梦幻双人下午茶', price: 198, originalPrice: 368, tags: ['拍照出片', '无限续杯'] }
+    ],
+    coordinates: { lat: 31.2284, lng: 121.4717 }
+  },
+
+  // Bestie - Photo
+  {
+    id: '5',
+    name: 'Pink Dream Studio 粉色梦境馆',
+    rating: 4.6,
+    price: 88,
+    distance: '1.5km',
+    tags: ['自拍馆', '换装', '场景丰富'],
+    imageUrl: 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&q=80',
+    description: '30+主题场景任拍，提供百套服装，和闺蜜拍出大片。',
+    reviewCount: 1560,
+    packageType: 'bestie',
+    sceneTheme: 'photo',
+    deals: [
+      { title: '双人畅拍2小时', price: 128, originalPrice: 256, tags: ['服装任选', '送精修'] }
+    ],
+    coordinates: { lat: 31.2384, lng: 121.4827 }
+  },
+
+  // Brother - Drink
+  {
+    id: '6',
+    name: 'Brothers\' BBQ 兄弟烧烤',
+    rating: 4.8,
+    price: 110,
+    distance: '600m',
+    tags: ['烧烤', '啤酒', '露天'],
+    imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80',
+    description: '大口吃肉，大碗喝酒，这就是兄弟聚会的正确打开方式。',
+    reviewCount: 5600,
+    packageType: 'brother',
+    sceneTheme: 'drink',
+    deals: [
+      { title: '兄弟欢聚4人餐', price: 398, originalPrice: 588, tags: ['啤酒畅饮', '量大管饱'] }
+    ],
+    coordinates: { lat: 31.2314, lng: 121.4747 }
+  },
+
+  // Brother - Game
+  {
+    id: '7',
+    name: 'CyberZone E-Sports 赛博电竞馆',
+    rating: 4.9,
+    price: 45,
+    distance: '1.0km',
+    tags: ['电竞', 'RTX4090', '专业外设'],
+    imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80',
+    description: '顶级配置，专业电竞椅，带上兄弟一起开黑上分。',
+    reviewCount: 2300,
+    packageType: 'brother',
+    sceneTheme: 'game',
+    deals: [
+      { title: '五连坐包房通宵卡', price: 299, originalPrice: 500, tags: ['送饮料', '私密包间'] }
+    ],
+    coordinates: { lat: 31.2274, lng: 121.4707 }
+  },
+
+  // Fun - Cosplay
+  {
+    id: '8',
+    name: 'Dimension Gate 次步元之门',
+    rating: 4.7,
+    price: 98,
+    distance: '2.0km',
+    tags: ['二次元', '手办', '主题餐饮'],
+    imageUrl: 'https://images.unsplash.com/photo-1560419015-7c427e8ae5ba?w=800&q=80',
+    description: '二次元爱好者的天堂，定期举办Cosplay聚会。',
+    reviewCount: 1890,
+    packageType: 'fun',
+    sceneTheme: 'cosplay',
+    deals: [
+      { title: '单人主题套餐+周边', price: 88, originalPrice: 128, tags: ['送限定徽章'] }
+    ],
+    coordinates: { lat: 31.2334, lng: 121.4767 }
+  },
+
+  // Fun - Private
+  {
+    id: '9',
+    name: 'Secret Garden Cinema 私密花园影院',
+    rating: 4.8,
+    price: 158,
+    distance: '1.8km',
+    tags: ['私人影院', '情侣包间', '4K投影'],
+    imageUrl: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80',
+    description: '私密舒适的观影空间，海量片源随心看。',
+    reviewCount: 1120,
+    packageType: 'fun',
+    sceneTheme: 'private',
+    deals: [
+      { title: '情侣观影3小时', price: 168, originalPrice: 298, tags: ['送爆米花', '可躺看'] }
+    ],
+    coordinates: { lat: 31.2404, lng: 121.4907 }
   }
 ];
