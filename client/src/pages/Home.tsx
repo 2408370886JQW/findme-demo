@@ -1,194 +1,191 @@
-import { useState } from "react";
-import { MapPin, Search, Filter, ChevronDown, Star, Flame } from "lucide-react";
-import { SCENES, MAIN_CATEGORIES, MOCK_SHOPS, Category, Shop } from "@/lib/data";
+import { useState, useEffect } from "react";
+import { MapPin, Search, ChevronDown, Star, Flame, ThumbsUp, Navigation } from "lucide-react";
+import { SCENES, MOCK_SHOPS, Shop } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { MapOverlay } from "@/components/MapOverlay";
 
 export default function Home() {
   const [activeScene, setActiveScene] = useState<string>('date');
-  const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [activeShopId, setActiveShopId] = useState<string | undefined>(undefined);
 
+  // Filter shops based on active scene
   const filteredShops = MOCK_SHOPS.filter(shop => {
-    const sceneMatch = activeScene === 'all' || shop.category === activeScene;
-    const categoryMatch = activeCategory === 'all' || shop.subCategory === activeCategory;
-    return sceneMatch && categoryMatch;
+    return activeScene === 'all' || shop.category === activeScene;
   });
 
+  // Auto-select first scene on load
+  useEffect(() => {
+    if (SCENES.length > 0) {
+      setActiveScene(SCENES[0].id);
+    }
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#FFFDF5] pb-20 font-body">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#FFFDF5] border-b-2 border-black px-4 py-3 flex items-center justify-between neo-shadow-sm">
-        <div className="flex items-center gap-2">
-          <MapPin className="w-6 h-6 text-primary fill-current" />
-          <span className="font-display text-xl font-bold">FIND ME</span>
-          <ChevronDown className="w-4 h-4" />
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-            <input 
-              type="text" 
-              placeholder="搜索好去处..." 
-              className="pl-10 pr-4 py-2 rounded-full border-2 border-black bg-white w-48 focus:outline-none focus:ring-2 focus:ring-primary neo-shadow-sm"
-            />
+    <div className="h-screen flex flex-col bg-white overflow-hidden font-sans">
+      {/* Header - Fixed Top */}
+      <header className="flex-none bg-white z-50 px-4 py-2 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-1">
+            <span className="font-bold text-lg">乌鲁木齐市</span>
+            <ChevronDown className="w-4 h-4 text-gray-500" />
           </div>
+          <div className="flex items-center gap-2 text-amber-600 font-medium text-sm bg-amber-50 px-2 py-1 rounded-full">
+            <span>高德扫街榜</span>
+            <Flame className="w-3 h-3 fill-current" />
+          </div>
+        </div>
+        
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-4 text-sm text-gray-600 overflow-x-auto hide-scrollbar pb-1">
+          <span className="font-bold text-black shrink-0">附近</span>
+          <span className="shrink-0">排序</span>
+          <span className="text-orange-500 bg-orange-50 px-2 py-0.5 rounded shrink-0">发现好店</span>
+          <span className="shrink-0">全部美食</span>
+          <span className="shrink-0">火锅</span>
+          <span className="shrink-0">烧烤</span>
+          <span className="shrink-0">更多</span>
         </div>
       </header>
 
-      {/* Hero Banner */}
-      <div className="relative h-48 w-full overflow-hidden border-b-2 border-black">
-        <img 
-          src="/images/hero-banner.jpg" 
-          alt="Find Me City" 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-4">
-          <h1 className="text-white font-display text-3xl drop-shadow-[2px_2px_0_#000]">
-            发现你的<br/>专属场景
-          </h1>
-        </div>
-      </div>
-
-      {/* Scene Navigation */}
-      <div className="sticky top-[66px] z-40 bg-[#FFFDF5] border-b-2 border-black py-3">
-        <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex w-max space-x-4 px-4">
+      {/* Main Content - Dual Column Layout */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Sidebar - Scene Navigation */}
+        <div className="w-24 bg-[#F7F8FA] flex-none overflow-y-auto hide-scrollbar">
+          <div className="flex flex-col py-2">
             {SCENES.map((scene) => (
               <button
                 key={scene.id}
                 onClick={() => setActiveScene(scene.id)}
                 className={cn(
-                  "flex flex-col items-center gap-1 transition-all duration-200 group",
-                  activeScene === scene.id ? "scale-110" : "opacity-70 hover:opacity-100"
+                  "relative py-4 px-2 text-xs font-medium text-center transition-colors",
+                  activeScene === scene.id 
+                    ? "bg-white text-red-500 font-bold" 
+                    : "text-gray-500 hover:bg-gray-100"
                 )}
               >
-                <div className={cn(
-                  "w-14 h-14 rounded-full border-2 border-black flex items-center justify-center transition-all",
-                  scene.color,
-                  activeScene === scene.id ? "neo-shadow" : ""
-                )}>
-                  <scene.icon className="w-6 h-6 text-black" />
+                {activeScene === scene.id && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-red-500 rounded-r-full" />
+                )}
+                <div className="flex flex-col items-center gap-1">
+                  {/* Optional: Add icons if needed, but text-only is cleaner for sidebar */}
+                  <span className="leading-tight">{scene.name}</span>
+                  {activeScene === scene.id && <span className="text-[10px] scale-90 text-red-400 font-normal">精选上榜</span>}
                 </div>
-                <span className="text-xs font-bold border-black px-2 py-0.5 rounded-full bg-white border">
-                  {scene.name}
-                </span>
               </button>
             ))}
           </div>
-          <ScrollBar orientation="horizontal" className="hidden" />
-        </ScrollArea>
-      </div>
-
-      {/* Main Categories */}
-      <div className="container py-6">
-        <h2 className="font-display text-2xl mb-4 flex items-center gap-2">
-          <span className="bg-primary text-white px-2 py-1 border-2 border-black neo-shadow-sm transform -rotate-2">
-            吃喝玩乐
-          </span>
-          <span className="text-black">大本营</span>
-        </h2>
-        <div className="grid grid-cols-4 gap-3">
-          {MAIN_CATEGORIES.map((cat) => (
-            <button 
-              key={cat.id}
-              onClick={() => setActiveCategory(activeCategory === cat.id ? 'all' : cat.id)}
-              className={cn(
-                "relative aspect-square rounded-xl border-2 border-black overflow-hidden group transition-all",
-                activeCategory === cat.id ? "neo-shadow ring-2 ring-offset-2 ring-black" : "hover:neo-shadow-sm"
-              )}
-            >
-              <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
-              <div className={cn(
-                "absolute bottom-0 left-0 right-0 p-1 text-center border-t-2 border-black font-bold text-white text-sm",
-                cat.color
-              )}>
-                {cat.name}
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Shop List */}
-      <div className="container pb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-2xl">
-            附近推荐 <span className="text-sm font-body font-normal text-gray-500 ml-2">({filteredShops.length}家)</span>
-          </h2>
-          <Button variant="outline" size="sm" className="neo-button bg-white h-8 text-xs">
-            <Filter className="w-3 h-3 mr-1" /> 筛选
-          </Button>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
-          {filteredShops.map((shop) => (
-            <div 
-              key={shop.id} 
-              onClick={() => {
-                setActiveShopId(shop.id);
-                setIsMapOpen(true);
-              }}
-              className="neo-card rounded-xl overflow-hidden flex h-32 relative group cursor-pointer hover:-translate-y-1 transition-transform"
-            >
-              {/* Image */}
-              <div className="w-32 h-full relative border-r-2 border-black shrink-0">
-                <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover" />
-                {shop.isHot && (
-                  <div className="absolute top-0 left-0 bg-accent text-white text-[10px] font-bold px-2 py-1 border-b-2 border-r-2 border-black z-10">
-                    HOT
+        {/* Right Content - Shop List */}
+        <div className="flex-1 bg-white overflow-y-auto p-3 pb-20">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-xs text-gray-400">精选 {filteredShops.length} 家入榜</div>
+            <div className="bg-orange-50 text-orange-600 text-xs px-2 py-1 rounded">距离优先</div>
+          </div>
+
+          <div className="space-y-6">
+            {filteredShops.map((shop, index) => (
+              <div 
+                key={shop.id} 
+                onClick={() => {
+                  setActiveShopId(shop.id);
+                  setIsMapOpen(true);
+                }}
+                className="flex flex-col gap-3 cursor-pointer group"
+              >
+                {/* Image Gallery (Simulated with 3 images) */}
+                <div className="flex gap-1 h-28 overflow-hidden rounded-lg">
+                  <div className="flex-1 relative">
+                    <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover" />
+                    {index < 3 && (
+                      <div className="absolute top-0 left-0 bg-[#C8A064] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-br-lg z-10">
+                        TOP {index + 1}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              
-              {/* Content */}
-              <div className="flex-1 p-3 flex flex-col justify-between bg-white">
+                  <div className="w-1/3 hidden sm:block">
+                    <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover opacity-90" />
+                  </div>
+                  <div className="w-1/3 hidden sm:block relative">
+                    <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover opacity-80" />
+                    <div className="absolute bottom-1 right-1 bg-black/50 text-white text-[10px] px-1 rounded">
+                      1.0k+
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
                 <div>
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-lg leading-tight line-clamp-1">{shop.name}</h3>
-                    <span className="text-xs font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">
-                      {shop.distance}
-                    </span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-bold text-lg text-gray-900 leading-tight">{shop.name}</h3>
                   </div>
                   
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="flex items-center text-amber-500">
-                      <Star className="w-3 h-3 fill-current" />
-                      <span className="text-xs font-bold ml-0.5">{shop.rating}</span>
-                    </div>
-                    <span className="text-xs text-gray-500">¥{shop.price}/人</span>
+                  <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                    <span>{shop.subCategory === 'eat' ? '美食' : shop.subCategory === 'drink' ? '饮品' : '娱乐'}</span>
+                    <span>¥{shop.price}/人</span>
+                    <span className="text-blue-500 font-medium">{shop.distance}</span>
                   </div>
 
-                  <div className="flex flex-wrap gap-1 mt-2">
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    <span className="text-[10px] text-[#8B572A] bg-[#FDF5E6] px-1.5 py-0.5 rounded border border-[#F5E6D3]">
+                      扫街榜
+                    </span>
                     {shop.tags.map(tag => (
-                      <span key={tag} className="text-[10px] px-1.5 py-0.5 border border-black rounded-md bg-gray-50">
+                      <span key={tag} className="text-[10px] text-gray-500 border border-gray-200 px-1.5 py-0.5 rounded">
                         {tag}
                       </span>
                     ))}
                   </div>
-                </div>
 
-                <div className="flex items-center gap-1 text-xs text-gray-500 bg-gray-100 p-1.5 rounded border border-gray-200 mt-1">
-                  <Flame className="w-3 h-3 text-orange-500" />
-                  <span className="line-clamp-1">"{shop.description}"</span>
+                  {/* Review Quote */}
+                  <div className="bg-[#FFF7E6] p-2 rounded-lg flex gap-2 items-start">
+                    <span className="text-orange-400 text-xl leading-none">“</span>
+                    <p className="text-xs text-[#8B572A] line-clamp-2 flex-1 pt-0.5">
+                      {shop.description}
+                    </p>
+                    <span className="text-xs text-gray-400 whitespace-nowrap pt-0.5">{shop.reviewCount}人也在说</span>
+                  </div>
+                  
+                  {/* Bottom Info */}
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-1 text-blue-500 text-xs font-medium">
+                      <Flame className="w-3 h-3 fill-current" />
+                      <span>近180天 {shop.reviewCount * 3} 回头客</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-blue-600 font-bold text-sm">
+                      <span>综合评分 {shop.rating}</span>
+                      <span className="text-gray-300 text-xs">&gt;</span>
+                    </div>
+                  </div>
                 </div>
+                
+                {/* Divider */}
+                <div className="h-px bg-gray-100 w-full mt-2" />
               </div>
-            </div>
-          ))}
+            ))}
+            
+            {/* Empty State */}
+            {filteredShops.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                <Search className="w-10 h-10 mb-2 opacity-20" />
+                <p className="text-sm">该分类下暂无推荐商家</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Floating Map Button */}
       <button 
         onClick={() => setIsMapOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-primary rounded-full border-2 border-black neo-shadow-lg flex items-center justify-center text-white hover:scale-110 transition-transform z-50"
+        className="fixed bottom-6 right-6 w-12 h-12 bg-blue-500 rounded-full shadow-lg flex items-center justify-center text-white hover:bg-blue-600 transition-colors z-50"
       >
-        <MapPin className="w-7 h-7" />
+        <MapPin className="w-6 h-6" />
+        <span className="sr-only">地图模式</span>
       </button>
 
       <MapOverlay 
