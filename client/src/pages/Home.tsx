@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'wouter';
-import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Flame, Quote } from 'lucide-react';
-import { categories, shops, type Shop, type Category, type SubCategory } from '@/lib/data';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, ChevronUp, Star, Quote } from 'lucide-react';
+import { categories, shops } from '@/lib/data';
 import { MapOverlay } from '@/components/MapOverlay';
-import { ShopSkeleton } from '@/components/ShopSkeleton';
 import { 
   CoupleLeftIcon, CoupleRightIcon, 
-  BestieLeftIcon, BestieRightIcon, 
-  BroLeftIcon, BroRightIcon, 
-  PassionLeftIcon, PassionRightIcon 
 } from '@/components/CategoryIcons';
 
 // 模拟加载延迟 Hook
@@ -29,7 +24,6 @@ export default function Home() {
   const [activeSubCategory, setActiveSubCategory] = useState<string>(categories[0].subCategories[0].id);
   const [showMap, setShowMap] = useState(false);
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
-  const [locationError, setLocationError] = useState<string | null>(null);
   
   // 骨架屏加载状态
   const loading = useDelayedLoading(activeSubCategory);
@@ -46,7 +40,6 @@ export default function Home() {
         },
         (error) => {
           console.error("Error getting location:", error);
-          setLocationError("无法获取您的位置，已显示默认推荐");
         }
       );
     }
@@ -64,22 +57,10 @@ export default function Home() {
     setActiveSubCategory(subId);
   };
 
-  // 获取对应的装饰图标 - 恢复清晰显示
-  const getCategoryIcons = (categoryId: string) => {
-    // 默认淡灰色，选中时淡红色
-    const className = "w-5 h-5 text-[#E5E5E5]"; 
-    const activeClassName = "w-5 h-5 text-[#FFD1D1]"; 
-    
-    return { 
-      Left: <CoupleLeftIcon className={categoryId === activeCategory ? activeClassName : className} />, 
-      Right: <CoupleRightIcon className={categoryId === activeCategory ? activeClassName : className} /> 
-    };
-  };
-
   return (
     <div className="h-screen flex flex-col bg-[#F5F5F5] overflow-hidden font-sans">
       {/* 顶部导航栏 */}
-      <header className="flex-none h-12 px-4 flex items-center justify-between bg-white z-20">
+      <header className="flex-none h-12 px-4 flex items-center justify-between bg-white z-20 border-b border-gray-100">
         <div className="flex items-center gap-1">
           <span className="text-base font-bold text-[#333333]">北京市</span>
           <ChevronDown className="w-4 h-4 text-[#333333]" />
@@ -104,53 +85,49 @@ export default function Home() {
       {/* 主体内容区 */}
       <div className="flex-1 flex overflow-hidden relative">
         
-        {/* 左侧导航栏 - 严格还原截图布局 */}
-        <nav className="w-[120px] flex-none bg-white flex flex-col overflow-y-auto no-scrollbar pb-20 border-r border-gray-100">
-          {/* 顶部 "附近" 下拉 */}
-          <div className="flex items-center justify-center py-4">
-            <span className="text-lg font-bold text-[#666666]">附近</span>
-            <ChevronDown className="w-4 h-4 text-[#666666] ml-1" />
+        {/* 左侧导航栏 - 严格复刻高德扫街榜样式 */}
+        <nav className="w-[110px] flex-none bg-white flex flex-col overflow-y-auto no-scrollbar pb-20 border-r border-gray-100">
+          {/* 顶部 "全城" 下拉 (对应截图左上角) */}
+          <div className="flex items-center justify-center py-4 sticky top-0 bg-white z-10">
+            <span className="text-[15px] font-bold text-[#333333]">全城</span>
+            <ChevronDown className="w-3 h-3 text-[#333333] ml-1" />
           </div>
 
-          {categories.map((category, index) => {
-            const icons = getCategoryIcons(category.id);
-            const isActive = activeCategory === category.id;
+          {categories.map((category) => {
+            // 样式复刻：一级标题使用金棕色麦穗装饰
+            // 对应截图中的 "状元榜"、"扫街榜" 等分组头
             
             return (
-              <div key={category.id} className="flex flex-col w-full mb-2 shrink-0">
+              <div key={category.id} className="flex flex-col w-full mb-4 shrink-0">
                 {/* 一级标题 (分组头) */}
-                <div className="flex flex-col items-center justify-center w-full px-1">
+                <div className="flex flex-col items-center justify-center w-full px-1 mb-3">
                   
-                  {/* 第一行：麦穗 + 标题 (恢复清晰度) */}
-                  <div className="flex items-center justify-center gap-0.5 w-full whitespace-nowrap">
-                    <div className="transform scale-90 flex-none">{icons.Left}</div>
-                    <span className={`
-                      text-[16px] font-bold tracking-wide whitespace-nowrap flex-none
-                      ${isActive ? 'text-[#FF4D4F]' : 'text-[#666666]'}
-                    `}>
+                  {/* 第一行：麦穗 + 标题 */}
+                  <div className="flex items-center justify-center gap-1 w-full whitespace-nowrap">
+                    {/* 左麦穗 (金棕色) */}
+                    <CoupleLeftIcon className="w-4 h-4 text-[#C49D73]" />
+                    
+                    <span className="text-[15px] font-bold text-[#8B6E4E] tracking-wide whitespace-nowrap">
                       {category.name.replace('套餐', '')}榜
                     </span>
-                    <div className="transform scale-90 flex-none">{icons.Right}</div>
+                    
+                    {/* 右麦穗 (金棕色) */}
+                    <CoupleRightIcon className="w-4 h-4 text-[#C49D73]" />
                   </div>
                   
-                  {/* 第二行：胶囊副标题 */}
-                  <div className="mt-1 mb-3">
-                    <span className={`
-                      text-[10px] px-2 py-0.5 rounded-full font-medium transform scale-90 block
-                      ${isActive 
-                        ? 'bg-[#FF4D4F] text-white' 
-                        : 'bg-[#F5F5F5] text-[#999999]'}
-                    `}>
+                  {/* 第二行：小字副标题 (对应截图中的 "年度精选"、"烟火万象") */}
+                  <div className="mt-0.5">
+                    <span className="text-[10px] text-[#C49D73] opacity-80 transform scale-90 block">
                       {category.label}
                     </span>
                   </div>
-
-                  {/* 分隔线 */}
-                  <div className="w-8 h-[1px] bg-gray-200 mb-4"></div>
+                  
+                  {/* 底部小三角指示 (可选，增加精致感) */}
+                  <div className="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-t-[4px] border-t-[#C49D73] mt-1 opacity-30"></div>
                 </div>
 
-                {/* 二级菜单 (平铺列表) - 恢复字体大小，增强交互反馈 */}
-                <div className="flex flex-col w-full gap-2 mb-6 px-2">
+                {/* 二级菜单 (平铺列表) */}
+                <div className="flex flex-col w-full gap-1 px-0">
                   {category.subCategories.map((sub) => {
                     const isSubActive = activeSubCategory === sub.id;
                     return (
@@ -158,24 +135,31 @@ export default function Home() {
                         key={sub.id}
                         onClick={() => handleSubCategoryClick(category.id, sub.id)}
                         className={`
-                          w-full text-center transition-all duration-200 py-2 rounded-lg relative
-                          ${isSubActive 
-                            ? 'bg-[#FFF0E5] text-[#FF6B22] font-bold shadow-sm' 
-                            : 'text-[#666666] font-medium hover:bg-gray-50'}
+                          w-full text-center py-2.5 relative group
+                          ${isSubActive ? 'bg-white' : 'bg-white'}
                         `}
                       >
-                        {/* 选中时的左侧指示条 (可选，增强反馈) */}
+                        {/* 选中时的左侧指示条 (高德红) */}
                         {isSubActive && (
-                          <div className="absolute left-1 top-1/2 transform -translate-y-1/2 w-1 h-3 bg-[#FF6B22] rounded-full"></div>
+                          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-[3px] h-4 bg-[#FF4D4F] rounded-r-full"></div>
                         )}
                         
-                        <span className="text-[14px] block leading-tight whitespace-nowrap">
+                        {/* 文字样式 */}
+                        <span className={`
+                          text-[14px] block leading-tight whitespace-nowrap transition-colors duration-200
+                          ${isSubActive 
+                            ? 'text-[#FF4D4F] font-bold' // 选中：红字加粗
+                            : 'text-[#666666] font-medium group-hover:text-[#333333]'} // 未选中：深灰
+                        `}>
                           {sub.name}
                         </span>
                       </button>
                     );
                   })}
                 </div>
+                
+                {/* 分组分隔线 (淡灰色) */}
+                <div className="w-12 h-[1px] bg-gray-100 mx-auto mt-3"></div>
               </div>
             );
           })}
@@ -186,10 +170,7 @@ export default function Home() {
           
           {/* 顶部筛选栏 (胶囊按钮) */}
           <div className="flex-none mb-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
-            <button className="flex-none px-3 py-1.5 bg-white rounded-lg text-xs font-bold text-[#333333] shadow-sm flex items-center gap-1">
-              全城 <ChevronDown className="w-3 h-3" />
-            </button>
-            <button className="flex-none px-3 py-1.5 bg-[#FFF0E5] text-[#FF6B22] rounded-lg text-xs font-bold">
+            <button className="flex-none px-3 py-1.5 bg-[#FFF0E5] text-[#FF6B22] rounded-lg text-xs font-bold shadow-sm">
               评分优先 <ChevronDown className="w-3 h-3 inline ml-0.5" />
             </button>
             <button className="flex-none px-3 py-1.5 bg-[#FF4D4F] text-white rounded-lg text-xs font-bold shadow-sm shadow-[#FF4D4F]/20">
