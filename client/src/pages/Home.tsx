@@ -483,7 +483,7 @@ export default function Home() {
         )}
         
         {/* 左侧手风琴导航栏 - 高德风格重构 */}
-        <nav className="w-[100px] flex-none bg-background flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-30 transition-all duration-300 relative">
+        <nav className="w-[88px] flex-none bg-background flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-30 transition-all duration-300 relative">
           {/* 顶部全城筛选 */}
           <div className="flex items-center justify-center py-4 cursor-pointer hover:text-[#FF4D4F] transition-colors">
             <span className="text-sm font-bold text-foreground/80">全城</span>
@@ -502,72 +502,35 @@ export default function Home() {
               const titleColor = isPrimary ? 'text-[#FF5500]' : 'text-[#666666]';
               const subtitleBg = isPrimary ? 'bg-[#FF5500]' : 'bg-[#999999]';
               
-              // 映射图标
-              const iconMap: Record<string, string> = {
-                'couple': '/images/icon_couple.png',
-                'bestie': '/images/icon_friends.png',
-                'bro': '/images/icon_bros.png',
-                'intimate': '/images/icon_intimate.png'
-              };
-              const iconPath = iconMap[category.id] || '';
-
               return (
                 <div key={category.id} className="flex flex-col items-center relative">
                   {/* 分隔线 (除了第一个) */}
                   {index > 0 && (
-                    <div className="w-8 h-[1px] bg-border/60 absolute -top-3 left-1/2 -translate-x-1/2"></div>
+                    <div className="w-6 h-[1px] bg-border/30 absolute -top-4 left-1/2 -translate-x-1/2"></div>
                   )}
 
-                  {/* 一级菜单项 - 榜单头部风格 */}
+                  {/* 一级菜单项 - 极简精致风格 */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleCategoryClick(category.id);
                     }}
-                    className="relative w-full flex flex-col items-center justify-center gap-1 group cursor-pointer"
+                    className="relative w-full flex flex-col items-center justify-center gap-1.5 group cursor-pointer py-1"
                   >
-                    {/* 麦穗装饰 */}
-                    <div className="relative flex items-center justify-center w-full">
-                      {/* 左麦穗 */}
-                      <svg width="16" height="32" viewBox="0 0 16 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-2 top-1/2 -translate-y-1/2 opacity-30">
-                        <path d="M8 4C6 6 4 10 4 16C4 22 6 26 8 28" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M12 8C10 10 9 13 9 16C9 19 10 22 12 24" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M15 12C14 13 13.5 14.5 13.5 16C13.5 17.5 14 19 15 20" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
-                      </svg>
-
-                      {/* 右麦穗 */}
-                      <svg width="16" height="32" viewBox="0 0 16 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute right-2 top-1/2 -translate-y-1/2 opacity-30 transform scale-x-[-1]">
-                        <path d="M8 4C6 6 4 10 4 16C4 22 6 26 8 28" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M12 8C10 10 9 13 9 16C9 19 10 22 12 24" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
-                        <path d="M15 12C14 13 13.5 14.5 13.5 16C13.5 17.5 14 19 15 20" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
-                      </svg>
-
-                      {/* 主标题容器 */}
-                      <div className="flex flex-col items-center z-10">
-                        {/* 3D金属图标 */}
-                        {iconPath && (
-                          <img 
-                            src={iconPath} 
-                            alt={category.name} 
-                            className="w-8 h-8 object-contain mb-1 drop-shadow-sm"
-                          />
-                        )}
-                        {/* 主标题 */}
-                        <span className={`text-[13px] font-medium tracking-wide ${titleColor}`}>
-                          {category.name}
-                        </span>
-                      </div>
-                    </div>
+                    {/* 主标题 - 纤细精致 */}
+                    <span className={`text-[13px] font-medium tracking-wide ${titleColor} opacity-90`}>
+                      {category.name}
+                    </span>
                     
-                    {/* 副标题胶囊 */}
-                    <div className={`px-2 py-0.5 rounded-full ${subtitleBg} text-white text-[10px] font-medium scale-90`}>
+                    {/* 副标题胶囊 - 保持原样 */}
+                    <div className={`px-2.5 py-0.5 rounded-full ${subtitleBg} text-white text-[10px] font-normal scale-90 shadow-sm`}>
                       {subtitle}
                     </div>
                   </button>
 
                   {/* 二级菜单列表 */}
                   <div className={`
-                    w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col items-center gap-3 mt-3
+                    w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col items-center gap-3 mt-4
                     ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
                   `}>
                     {category.subCategories.map((sub, subIndex) => {
@@ -580,11 +543,11 @@ export default function Home() {
                           key={sub.id}
                           onClick={(e) => handleSubCategoryClick(e, sub.id)}
                           className={`
-                            text-[12px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20
+                            text-[11px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20 tracking-wide
                             ${isHighlight 
-                              ? 'bg-[#FFF0F0] text-[#FF4D4F] font-bold px-3 py-1 rounded-full' 
-                              : 'text-[#333333] hover:text-[#000000] font-medium'}
-                            ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-bold' : ''}
+                              ? 'bg-[#FFF0F0] text-[#FF4D4F] font-medium px-3 py-1 rounded-full shadow-sm' 
+                              : 'text-[#444444] hover:text-[#000000] font-normal'}
+                            ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-medium' : ''}
                           `}
                         >
                           {sub.name}
@@ -592,7 +555,7 @@ export default function Home() {
                       );
                     })}
                     {/* 底部留白 */}
-                    <div className="h-1"></div>
+                    <div className="h-2"></div>
                   </div>
                 </div>
               );
