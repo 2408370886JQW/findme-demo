@@ -502,6 +502,15 @@ export default function Home() {
               const titleColor = isPrimary ? 'text-[#FF5500]' : 'text-[#666666]';
               const subtitleBg = isPrimary ? 'bg-[#FF5500]' : 'bg-[#999999]';
               
+              // 映射图标
+              const iconMap: Record<string, string> = {
+                'couple': '/images/icon_couple.png',
+                'bestie': '/images/icon_friends.png',
+                'bro': '/images/icon_bros.png',
+                'intimate': '/images/icon_intimate.png'
+              };
+              const iconPath = iconMap[category.id] || '';
+
               return (
                 <div key={category.id} className="flex flex-col items-center relative">
                   {/* 分隔线 (除了第一个) */}
@@ -533,10 +542,21 @@ export default function Home() {
                         <path d="M15 12C14 13 13.5 14.5 13.5 16C13.5 17.5 14 19 15 20" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
                       </svg>
 
-                      {/* 主标题 */}
-                      <span className={`text-[14px] font-bold tracking-wide z-10 ${titleColor}`}>
-                        {category.name}
-                      </span>
+                      {/* 主标题容器 */}
+                      <div className="flex flex-col items-center z-10">
+                        {/* 3D金属图标 */}
+                        {iconPath && (
+                          <img 
+                            src={iconPath} 
+                            alt={category.name} 
+                            className="w-8 h-8 object-contain mb-1 drop-shadow-sm"
+                          />
+                        )}
+                        {/* 主标题 */}
+                        <span className={`text-[13px] font-medium tracking-wide ${titleColor}`}>
+                          {category.name}
+                        </span>
+                      </div>
                     </div>
                     
                     {/* 副标题胶囊 */}
@@ -562,9 +582,9 @@ export default function Home() {
                           className={`
                             text-[12px] transition-all duration-200 relative flex items-center justify-center
                             ${isHighlight 
-                              ? 'bg-[#FFF0F0] text-[#FF4D4F] font-medium px-3 py-1 rounded-full' 
-                              : 'text-foreground/70 hover:text-foreground font-normal'}
-                            ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-medium' : ''}
+                              ? 'bg-[#FFF0F0] text-[#FF4D4F] font-bold px-3 py-1 rounded-full' 
+                              : 'text-foreground/70 hover:text-foreground font-medium'}
+                            ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-bold' : ''}
                           `}
                         >
                           {sub.name}
@@ -583,7 +603,7 @@ export default function Home() {
         {/* 右侧内容区 */}
         <main className="flex-1 flex flex-col bg-background relative min-w-0 overflow-hidden">
           {/* 顶部筛选栏 - 移动端横向滚动优化 */}
-          <div className="flex-none px-3 py-2 bg-background/80 backdrop-blur-md z-10 border-b border-border/50 flex flex-col gap-2">
+          <div className="flex-none px-3 py-2 bg-background/80 backdrop-blur-md z-20 border-b border-border/50 flex flex-col gap-2">
             {/* 标题行 */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 overflow-hidden">
