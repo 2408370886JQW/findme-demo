@@ -558,15 +558,7 @@ export default function Home() {
                       </span>
                     </div>
                     
-                    {/* 胶囊副标题 */}
-                    <div className={`
-                      px-1.5 py-[1px] rounded-full text-[9px] transform scale-90 transition-all duration-300 mt-0.5
-                      ${isActive 
-                        ? 'bg-[#FF4D4F] text-white font-medium shadow-sm' 
-                        : 'bg-muted text-muted-foreground'}
-                    `}>
-                      {category.label}
-                    </div>
+
                   </button>
 
                   {/* 二级菜单列表 (手风琴展开) */}
@@ -582,13 +574,13 @@ export default function Home() {
                             key={sub.id}
                             onClick={(e) => handleSubCategoryClick(e, sub.id)}
                             className={`
-                              w-full py-2 text-center transition-all duration-200 relative flex items-center justify-center
+                              w-full py-1.5 text-center transition-all duration-200 relative flex items-center justify-center
                               ${isSubActive 
-                                ? 'text-[#FF4D4F] font-bold bg-[#FF4D4F]/5' 
-                                : 'text-muted-foreground font-medium hover:bg-muted/50'}
+                                ? 'text-[#FF4D4F] font-medium bg-[#FF4D4F]/5' 
+                                : 'text-muted-foreground/80 font-normal hover:bg-muted/30'}
                             `}
                           >
-                            <span className={`text-[11px] ${isSubActive ? 'scale-105 inline-block' : ''}`}>
+                            <span className={`text-[11px] ${isSubActive ? 'scale-100 inline-block' : ''}`}>
                               {sub.name}
                             </span>
                             {isSubActive && (
