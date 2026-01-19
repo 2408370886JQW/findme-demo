@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { X, Download, Share2, MapPin, Star } from 'lucide-react';
+import { X, Download, Share2, MapPin, Star, Ticket } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { Shop } from '@/lib/data';
 
@@ -103,6 +103,25 @@ export function ShareModal({ shop, onClose }: ShareModalProps) {
                     {tag}
                   </span>
                 ))}
+              </div>
+
+              {/* Coupon Section */}
+              <div className="mt-2 relative bg-[#FFF0F0] border border-[#FFD6D6] rounded-lg p-3 flex items-center justify-between overflow-hidden">
+                <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full border-r border-[#FFD6D6]" />
+                <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full border-l border-[#FFD6D6]" />
+                
+                <div className="flex flex-col z-10">
+                  <span className="text-[10px] text-[#FF4D4F] font-medium">凭此图到店享</span>
+                  <span className="text-lg font-bold text-[#FF4D4F] leading-none mt-0.5">8.8折优惠</span>
+                </div>
+                
+                <div className="flex flex-col items-end z-10">
+                  <div className="flex items-center gap-1 text-[#FF4D4F]">
+                    <Ticket className="w-3 h-3" />
+                    <span className="text-[10px] font-mono font-bold">FINDME-888</span>
+                  </div>
+                  <span className="text-[9px] text-[#FF4D4F]/70 mt-0.5">限时优惠 截屏保存</span>
+                </div>
               </div>
 
               {/* Divider */}
