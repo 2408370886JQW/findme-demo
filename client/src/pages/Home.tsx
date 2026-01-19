@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'wouter';
-import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
+import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2, Moon, Sun, MessageSquare, Camera } from 'lucide-react';
 import { categories, shops, type Shop, type Category, type SubCategory } from '@/lib/data';
 import { MapOverlay } from '@/components/MapOverlay';
 import { ShopSkeleton } from '@/components/ShopSkeleton';
@@ -11,293 +10,324 @@ import {
   PassionLeftIcon, PassionRightIcon 
 } from '@/components/CategoryIcons';
 
-// 模拟加载延迟 Hook
-function useDelayedLoading(dependency: any, delay = 500) {
-  const [loading, setLoading] = useState(false);
-  
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), delay);
-    return () => clearTimeout(timer);
-  }, [dependency]);
-  
-  return loading;
-}
+// 模拟用户位置 (上海市中心)
+const MOCK_USER_LOCATION = { lat: 31.2304, lng: 121.4737 };
 
 export default function Home() {
-  const [activeCategory, setActiveCategory] = useState<string>(categories[0].id);
-  const [activeSubCategory, setActiveSubCategory] = useState<string>(categories[0].subCategories[0].id);
+  const [activeCategory, setActiveCategory] = useState<string>('couple');
+  const [activeSubCategory, setActiveSubCategory] = useState<string>('date');
+  const [expandedCategory, setExpandedCategory] = useState<string | null>('couple');
   const [showMap, setShowMap] = useState(false);
-  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
-  const [locationError, setLocationError] = useState<string | null>(null);
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(categories[0].id);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [showFavorites, setShowFavorites] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState(MOCK_USER_LOCATION);
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  // 筛选状态
-  const [priceFilter, setPriceFilter] = useState<string>('all'); // all, low, medium, high
-  const [distanceFilter, setDistanceFilter] = useState<string>('all'); // all, 1km, 3km, 5km
-  
-  // 骨架屏加载状态
-  const loading = useDelayedLoading(activeSubCategory);
-
-  // 获取用户位置
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          setLocationError("无法获取您的位置，已显示默认推荐");
-        }
-      );
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    const saved = localStorage.getItem('favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [filters, setFilters] = useState({
+    price: 'all', // all, low (<200), mid (200-500), high (>500)
+    distance: 'all', // all, near (<1km), mid (1-3km), far (>3km)
+    cuisine: 'all' // all, western, bar, bbq, etc.
+  });
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
     }
-  }, []);
-
-  // 过滤商家逻辑
-  const filteredShops = shops.filter(shop => {
-    // 基础分类过滤
-    if (shop.packageType !== activeCategory || shop.sceneTheme !== activeSubCategory) return false;
-    
-    // 价格过滤
-    if (priceFilter !== 'all') {
-      if (priceFilter === 'low' && shop.price > 200) return false;
-      if (priceFilter === 'medium' && (shop.price <= 200 || shop.price > 500)) return false;
-      if (priceFilter === 'high' && shop.price <= 500) return false;
-    }
-    
-    // 距离过滤 (简单模拟，实际应计算坐标距离)
-    if (distanceFilter !== 'all') {
-      const dist = parseFloat(shop.distance);
-      const unit = shop.distance.includes('km') ? 'km' : 'm';
-      const distInKm = unit === 'km' ? dist : dist / 1000;
-      
-      if (distanceFilter === '1km' && distInKm > 1) return false;
-      if (distanceFilter === '3km' && distInKm > 3) return false;
-      if (distanceFilter === '5km' && distInKm > 5) return false;
-    }
-    
-    return true;
+    return false;
   });
 
-  // 处理一级菜单点击
-  const handleCategoryClick = (categoryId: string) => {
-    if (expandedCategory === categoryId) {
-      setExpandedCategory(null); // 收起
+  // 监听暗色模式变化
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (isDarkMode) {
+      root.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
     } else {
-      setExpandedCategory(categoryId); // 展开
-      setActiveCategory(categoryId);
-      // Only auto-select first subcategory if we're switching to a new main category that wasn't active
-      if (activeCategory !== categoryId) {
-        const category = categories.find(c => c.id === categoryId);
-        if (category && category.subCategories.length > 0) {
-          setActiveSubCategory(category.subCategories[0].id);
-        }
-      }
+      root.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
   };
 
-  // 处理二级菜单点击
-  const handleSubCategoryClick = (e: React.MouseEvent, subId: string) => {
-    e.stopPropagation(); // 阻止冒泡，防止触发一级菜单点击
-    setActiveSubCategory(subId);
-  };
+  // 保存收藏状态
+  useEffect(() => {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+  }, [favorites]);
 
-  // 点击空白处收起菜单
-  const handleOutsideClick = () => {
-    // 可选：点击空白处是否收起所有菜单？
-    // setExpandedCategory(null); 
-  };
-
-  // 切换收藏状态
   const toggleFavorite = (e: React.MouseEvent, shopId: string) => {
     e.stopPropagation();
     setFavorites(prev => 
       prev.includes(shopId) 
-        ? prev.filter(id => id !== shopId) 
+        ? prev.filter(id => id !== shopId)
         : [...prev, shopId]
     );
   };
 
-  // 打开商家详情
-  const handleShopClick = (shop: Shop) => {
-    setSelectedShop(shop);
-    setCurrentImageIndex(0);
-  };
+  // 模拟加载效果
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [activeCategory, activeSubCategory]);
 
-  // 关闭商家详情
-  const closeShopDetail = () => {
-    setSelectedShop(null);
-  };
-
-  // 切换图片
-  const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // 模拟多图：这里简单用同一张图演示，实际应从 shop.images 获取
-    // 假设有3张图
-    setCurrentImageIndex(prev => (prev + 1) % 3);
-  };
-
-  const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentImageIndex(prev => (prev - 1 + 3) % 3);
-  };
-
-  // 获取对应的装饰图标
-  const getCategoryIcons = (categoryId: string, isActive: boolean) => {
-    const color = isActive ? "#FF4D4F" : "#999999";
-    const className = "w-8 h-8 transition-colors duration-300";
-    
-    switch (categoryId) {
-      case 'couple':
-        return {
-          Left: <CoupleLeftIcon className={className} color={color} />,
-          Right: <CoupleRightIcon className={className} color={color} />
-        };
-      case 'bestie':
-        return {
-          Left: <BestieLeftIcon className={className} color={color} />,
-          Right: <BestieRightIcon className={className} color={color} />
-        };
-      case 'bro':
-        return {
-          Left: <BroLeftIcon className={className} color={color} />,
-          Right: <BroRightIcon className={className} color={color} />
-        };
-      case 'passion':
-        return {
-          Left: <PassionLeftIcon className={className} color={color} />,
-          Right: <PassionRightIcon className={className} color={color} />
-        };
-      default:
-        return {
-          Left: <CoupleLeftIcon className={className} color={color} />,
-          Right: <CoupleRightIcon className={className} color={color} />
-        };
+  // 处理一级分类点击
+  const handleCategoryClick = (categoryId: string) => {
+    if (activeCategory !== categoryId) {
+      setActiveCategory(categoryId);
+      // 默认选中第一个子分类
+      const category = categories.find(c => c.id === categoryId);
+      if (category && category.subCategories.length > 0) {
+        setActiveSubCategory(category.subCategories[0].id);
+      }
+      // 展开当前分类
+      setExpandedCategory(categoryId);
+    } else {
+      // 如果点击已选中的分类，切换展开/收起状态
+      setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
     }
   };
 
+  // 处理二级分类点击
+  const handleSubCategoryClick = (e: React.MouseEvent, subCategoryId: string) => {
+    e.stopPropagation();
+    setActiveSubCategory(subCategoryId);
+  };
+
+  // 获取当前分类的图标组件
+  const getCategoryIcons = (categoryId: string, isActive: boolean) => {
+    switch (categoryId) {
+      case 'couple':
+        return { Left: CoupleLeftIcon, Right: CoupleRightIcon };
+      case 'bestie':
+        return { Left: BestieLeftIcon, Right: BestieRightIcon };
+      case 'brother':
+        return { Left: BroLeftIcon, Right: BroRightIcon };
+      case 'fun':
+        return { Left: PassionLeftIcon, Right: PassionRightIcon };
+      default:
+        return { Left: CoupleLeftIcon, Right: CoupleRightIcon };
+    }
+  };
+
+  // 筛选逻辑
+  const filteredShops = shops.filter(shop => {
+    // 基础分类筛选
+    if (shop.packageType !== activeCategory || shop.sceneTheme !== activeSubCategory) {
+      return false;
+    }
+    
+    // 价格筛选
+    if (filters.price !== 'all') {
+      if (filters.price === 'low' && shop.price >= 200) return false;
+      if (filters.price === 'mid' && (shop.price < 200 || shop.price > 500)) return false;
+      if (filters.price === 'high' && shop.price <= 500) return false;
+    }
+
+    // 距离筛选 (简单模拟，实际应计算坐标距离)
+    if (filters.distance !== 'all') {
+      const dist = parseFloat(shop.distance);
+      const isKm = shop.distance.includes('km');
+      const distInKm = isKm ? dist : dist / 1000;
+      
+      if (filters.distance === 'near' && distInKm >= 1) return false;
+      if (filters.distance === 'mid' && (distInKm < 1 || distInKm > 3)) return false;
+      if (filters.distance === 'far' && distInKm <= 3) return false;
+    }
+
+    return true;
+  });
+
+  // 收藏列表筛选
+  const favoriteShops = shops.filter(shop => favorites.includes(shop.id));
+
+  // 处理图片轮播
+  const nextImage = (e: React.MouseEvent, images: string[]) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = (e: React.MouseEvent, images: string[]) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden font-sans" onClick={handleOutsideClick}>
-      {/* 顶部导航栏 - 移动端优化 */}
-      <header className="flex-none h-14 px-3 flex items-center justify-between bg-white border-b border-gray-100 z-20 shadow-sm gap-2">
-        {/* Logo - 移动端只显示图标 */}
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <div className="w-8 h-8 bg-[#FF4D4F] rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md">F</div>
-          <span className="text-lg font-bold text-[#FF4D4F] tracking-tight hidden md:block">FIND ME</span>
-        </div>
-        
-        {/* 搜索框 - 自适应宽度 */}
-        <div className="flex-1 max-w-md min-w-0">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-[#FF4D4F] transition-colors" />
-            <input 
-              type="text" 
-              placeholder="搜索..." 
-              className="w-full h-8 pl-8 pr-3 bg-gray-50 rounded-full text-xs text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#FF4D4F]/20 focus:bg-white transition-all border border-transparent focus:border-[#FF4D4F]/20"
-            />
+    <div className="flex flex-col h-screen bg-background transition-colors duration-300">
+      {/* 顶部导航栏 - 移动端优化布局 */}
+      <header className="flex-none bg-background border-b border-border px-3 py-2 z-20 sticky top-0">
+        <div className="flex items-center justify-between gap-2 max-w-full overflow-hidden">
+          {/* Logo & Brand */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-8 h-8 bg-[#FF4D4F] rounded-lg flex items-center justify-center shadow-lg shadow-[#FF4D4F]/20">
+              <MapPin className="text-white w-5 h-5" />
+            </div>
+            <h1 className="text-lg font-black tracking-tighter text-foreground hidden sm:block">
+              FIND <span className="text-[#FF4D4F]">ME</span>
+            </h1>
           </div>
-        </div>
 
-        {/* 功能按钮 - 紧凑排列 */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          <button 
-            onClick={() => setShowFavorites(!showFavorites)}
-            className={`flex items-center justify-center w-8 h-8 rounded-full transition-all active:scale-95 ${
-              showFavorites 
-                ? 'bg-[#FF4D4F] text-white shadow-md shadow-[#FF4D4F]/20' 
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            <Heart className={`w-4 h-4 ${showFavorites ? 'fill-current' : ''}`} />
-          </button>
+          {/* Search Bar - 自适应宽度 */}
+          <div className="flex-1 max-w-md mx-2">
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-muted-foreground group-focus-within:text-[#FF4D4F] transition-colors" />
+              </div>
+              <input
+                type="text"
+                className="w-full bg-muted/50 border-none rounded-full py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-[#FF4D4F]/20 focus:bg-background transition-all"
+                placeholder="搜索好去处..."
+              />
+            </div>
+          </div>
 
-          <button 
-            onClick={() => setShowMap(!showMap)}
-            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95 whitespace-nowrap ${
-              showMap 
-                ? 'bg-[#FF4D4F] text-white shadow-md shadow-[#FF4D4F]/20' 
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            <MapIcon className="w-3.5 h-3.5" />
-            {showMap ? '列表' : '地图'}
-          </button>
+          {/* Action Buttons - 紧凑排列 */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <button 
+              onClick={toggleDarkMode}
+              className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </button>
+            <button 
+              onClick={() => setShowFavorites(!showFavorites)}
+              className={`p-2 rounded-full transition-colors ${showFavorites ? 'bg-[#FF4D4F]/10 text-[#FF4D4F]' : 'hover:bg-muted text-muted-foreground hover:text-foreground'}`}
+            >
+              <Heart className={`w-5 h-5 ${showFavorites ? 'fill-current' : ''}`} />
+            </button>
+            <button 
+              onClick={() => setShowMap(!showMap)}
+              className={`
+                flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold transition-all
+                ${showMap 
+                  ? 'bg-[#FF4D4F] text-white shadow-lg shadow-[#FF4D4F]/30' 
+                  : 'bg-muted text-foreground hover:bg-muted/80'}
+              `}
+            >
+              <MapIcon className="w-4 h-4" />
+              <span className="hidden xs:inline">地图</span>
+            </button>
+          </div>
         </div>
       </header>
 
       {/* 主体内容区 */}
       <div className="flex-1 flex overflow-hidden relative">
-
-        {/* 商家详情弹窗 */}
-        {selectedShop && (
-          <div className="absolute inset-0 z-50 bg-white flex flex-col animate-in slide-in-from-right duration-300">
-            {/* 顶部导航 */}
-            <div className="flex-none h-14 px-4 flex items-center justify-between bg-white border-b border-gray-100">
-              <button onClick={closeShopDetail} className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors">
-                <ChevronLeft className="w-6 h-6 text-gray-700" />
+        {/* 收藏夹浮层 */}
+        {showFavorites && (
+          <div className="absolute inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col animate-in fade-in duration-200">
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <Heart className="w-5 h-5 fill-[#FF4D4F] text-[#FF4D4F]" />
+                我的收藏
+              </h2>
+              <button 
+                onClick={() => setShowFavorites(false)}
+                className="p-2 hover:bg-muted rounded-full text-muted-foreground"
+              >
+                <X className="w-5 h-5" />
               </button>
-              <span className="font-bold text-lg text-gray-900">商家详情</span>
-              <div className="flex gap-2">
-                <button onClick={(e) => toggleFavorite(e, selectedShop.id)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Heart className={`w-6 h-6 ${favorites.includes(selectedShop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-700'}`} />
-                </button>
-                <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                  <Share2 className="w-6 h-6 text-gray-700" />
-                </button>
-              </div>
             </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              {favoriteShops.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {favoriteShops.map(shop => (
+                    <div key={shop.id} className="bg-card rounded-xl p-3 flex gap-3 shadow-sm border border-border" onClick={() => {
+                      setSelectedShop(shop);
+                      setShowFavorites(false);
+                    }}>
+                      <img src={shop.imageUrl} alt={shop.name} className="w-24 h-24 rounded-lg object-cover flex-none" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-bold text-foreground truncate">{shop.name}</h3>
+                          <button onClick={(e) => toggleFavorite(e, shop.id)}>
+                            <Heart className="w-4 h-4 fill-[#FF4D4F] text-[#FF4D4F]" />
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-1 text-[#FF9900] text-xs mt-1">
+                          <Star className="w-3 h-3 fill-current" />
+                          <span className="font-bold">{shop.rating}</span>
+                          <span className="text-muted-foreground ml-1">¥{shop.price}/人</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {shop.tags.slice(0, 2).map((tag, i) => (
+                            <span key={i} className="text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                  <Heart className="w-12 h-12 mb-2 opacity-20" />
+                  <p>暂无收藏店铺</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
-            {/* 内容滚动区 */}
-            <div className="flex-1 overflow-y-auto pb-20">
-              {/* 图片轮播 */}
-              <div className="relative w-full h-64 bg-gray-100 group">
-                <img 
-                  src={selectedShop.imageUrl} 
-                  alt={selectedShop.name} 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
-                
-                {/* 轮播控制 */}
-                <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/30 text-white rounded-full hover:bg-black/50 transition-colors backdrop-blur-sm">
+        {/* 商家详情浮层 */}
+        {selectedShop && (
+          <div className="absolute inset-0 z-40 bg-background flex flex-col animate-in slide-in-from-bottom duration-300">
+            {/* 详情页头部 */}
+            <div className="relative h-64 flex-none">
+              <img src={selectedShop.imageUrl} alt={selectedShop.name} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              
+              {/* 导航栏 */}
+              <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center text-white">
+                <button 
+                  onClick={() => setSelectedShop(null)}
+                  className="w-8 h-8 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors"
+                >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/30 text-white rounded-full hover:bg-black/50 transition-colors backdrop-blur-sm">
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-                
-                {/* 指示器 */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  {[0, 1, 2].map(i => (
-                    <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentImageIndex ? 'bg-white w-3' : 'bg-white/50'}`} />
-                  ))}
+                <div className="flex gap-3">
+                  <button 
+                    onClick={(e) => toggleFavorite(e, selectedShop.id)}
+                    className="w-8 h-8 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors"
+                  >
+                    <Heart className={`w-5 h-5 ${favorites.includes(selectedShop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-white'}`} />
+                  </button>
+                  <button className="w-8 h-8 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors">
+                    <Share2 className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
 
-              {/* 商家信息 */}
-              <div className="p-5">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{selectedShop.name}</h1>
-                <div className="flex items-center gap-3 text-sm text-gray-600 mb-4">
-                  <div className="flex items-center text-[#FF9900] font-bold">
-                    <Star className="w-4 h-4 fill-current mr-1" />
-                    {selectedShop.rating}
+              {/* 底部信息 */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <h1 className="text-2xl font-bold mb-2">{selectedShop.name}</h1>
+                <div className="flex items-center gap-3 text-sm opacity-90">
+                  <div className="flex items-center gap-1 text-[#FF9900]">
+                    <Star className="w-4 h-4 fill-current" />
+                    <span className="font-bold">{selectedShop.rating}</span>
                   </div>
                   <span>¥{selectedShop.price}/人</span>
                   <span>{selectedShop.distance}</span>
                 </div>
+              </div>
+            </div>
 
-                {/* 标签 */}
-                <div className="flex flex-wrap gap-2 mb-6">
+            {/* 详情内容 - 可滚动 */}
+            <div className="flex-1 overflow-y-auto bg-background">
+              <div className="p-4 space-y-6">
+                {/* 标签栏 */}
+                <div className="flex flex-wrap gap-2">
                   {selectedShop.tags.map((tag, i) => (
-                    <span key={i} className="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs rounded-full font-medium">
+                    <span key={i} className="px-2.5 py-1 bg-muted text-muted-foreground text-xs rounded-full">
                       {tag}
                     </span>
                   ))}
@@ -305,15 +335,15 @@ export default function Home() {
 
                 {/* 优惠套餐 */}
                 <div className="mb-8">
-                  <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
                     <span className="w-1 h-4 bg-[#FF4D4F] rounded-full"></span>
                     超值套餐
                   </h2>
                   <div className="space-y-3">
                     {selectedShop.deals?.map((deal, i) => (
-                      <div key={i} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex justify-between items-center">
+                      <div key={i} className="bg-card border border-border rounded-xl p-4 shadow-sm flex justify-between items-center">
                         <div>
-                          <h3 className="font-bold text-gray-900 mb-1">{deal.title}</h3>
+                          <h3 className="font-bold text-foreground mb-1">{deal.title}</h3>
                           <div className="flex gap-2 mb-1">
                             {deal.tags.map((t, idx) => (
                               <span key={idx} className="text-[10px] text-[#FF4D4F] border border-[#FF4D4F]/30 px-1 rounded">
@@ -326,20 +356,121 @@ export default function Home() {
                           <div className="text-[#FF4D4F] font-bold text-lg">
                             <span className="text-xs">¥</span>{deal.price}
                           </div>
-                          <div className="text-gray-400 text-xs line-through">¥{deal.originalPrice}</div>
+                          <div className="text-muted-foreground/50 text-xs line-through">¥{deal.originalPrice}</div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
+                {/* 评价板块 */}
+                <div className="mb-8 pt-4 border-t border-border">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-foreground flex items-center gap-2">
+                      <span className="w-1 h-4 bg-[#FF4D4F] rounded-full"></span>
+                      用户评价 ({selectedShop.reviewCount})
+                    </h3>
+                    <button className="text-xs text-[#FF4D4F] font-medium flex items-center gap-1">
+                      查看全部 <ChevronRight className="w-3 h-3" />
+                    </button>
+                  </div>
+
+                  {/* 评分概览 */}
+                  <div className="flex items-center gap-4 mb-6 bg-muted/30 p-3 rounded-xl">
+                    <div className="text-center pr-4 border-r border-border">
+                      <div className="text-3xl font-bold text-[#FF9900]">{selectedShop.rating}</div>
+                      <div className="text-xs text-muted-foreground mt-1">综合评分</div>
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">口味</span>
+                        <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-[#FF9900] w-[95%]"></div>
+                        </div>
+                        <span className="text-foreground font-medium">4.9</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">环境</span>
+                        <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-[#FF9900] w-[98%]"></div>
+                        </div>
+                        <span className="text-foreground font-medium">5.0</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">服务</span>
+                        <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-[#FF9900] w-[92%]"></div>
+                        </div>
+                        <span className="text-foreground font-medium">4.8</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 评价列表 */}
+                  <div className="space-y-6">
+                    {selectedShop.reviews && selectedShop.reviews.length > 0 ? (
+                      selectedShop.reviews.map((review) => (
+                        <div key={review.id} className="border-b border-border pb-4 last:border-0">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <img src={review.userAvatar} alt={review.userName} className="w-8 h-8 rounded-full object-cover" />
+                              <div>
+                                <div className="text-sm font-bold text-foreground">{review.userName}</div>
+                                <div className="flex items-center gap-1">
+                                  <div className="flex">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <Star 
+                                        key={i} 
+                                        className={`w-2.5 h-2.5 ${i < Math.floor(review.rating) ? 'fill-[#FF9900] text-[#FF9900]' : 'text-gray-300 dark:text-gray-600'}`} 
+                                      />
+                                    ))}
+                                  </div>
+                                  <span className="text-[10px] text-muted-foreground">{review.date}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-sm text-foreground mb-2 leading-relaxed">{review.content}</p>
+                          {review.images && review.images.length > 0 && (
+                            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                              {review.images.map((img, idx) => (
+                                <img key={idx} src={img} alt="review" className="w-24 h-24 rounded-lg object-cover flex-none" />
+                              ))}
+                            </div>
+                          )}
+                          {review.tags && review.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {review.tags.map((tag, idx) => (
+                                <span key={idx} className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                        <p className="text-sm">暂无评价，快来抢沙发吧！</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 写评价按钮 */}
+                  <button className="w-full mt-4 py-2.5 rounded-full border border-[#FF4D4F] text-[#FF4D4F] font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#FF4D4F]/5 transition-colors">
+                    <Camera className="w-4 h-4" />
+                    写评价
+                  </button>
+                </div>
+
                 {/* 商家介绍 */}
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
                     <span className="w-1 h-4 bg-[#FF4D4F] rounded-full"></span>
                     商家介绍
                   </h2>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
                     {selectedShop.description}
                   </p>
                 </div>
@@ -347,8 +478,8 @@ export default function Home() {
             </div>
             
             {/* 底部按钮 */}
-            <div className="flex-none p-4 bg-white border-t border-gray-100 flex gap-3">
-              <button className="flex-1 py-3 rounded-full bg-gray-100 text-gray-900 font-bold text-sm hover:bg-gray-200 transition-colors">
+            <div className="flex-none p-4 bg-background border-t border-border flex gap-3">
+              <button className="flex-1 py-3 rounded-full bg-muted text-foreground font-bold text-sm hover:bg-muted/80 transition-colors">
                 导航到店
               </button>
               <button className="flex-1 py-3 rounded-full bg-[#FF4D4F] text-white font-bold text-sm hover:bg-[#ff3336] transition-colors shadow-lg shadow-[#FF4D4F]/30">
@@ -359,7 +490,7 @@ export default function Home() {
         )}
         
         {/* 左侧手风琴导航栏 */}
-        <nav className="w-[80px] md:w-[100px] flex-none bg-[#F7F8FA] flex flex-col overflow-y-auto border-r border-gray-100 no-scrollbar z-10 transition-all duration-300">
+        <nav className="w-[80px] md:w-[100px] flex-none bg-muted/30 flex flex-col overflow-y-auto border-r border-border no-scrollbar z-10 transition-all duration-300">
           <div className="flex flex-col py-2 pb-20">
             {categories.map((category) => {
               const isActive = activeCategory === category.id;
@@ -376,7 +507,7 @@ export default function Home() {
                     }}
                     className={`
                       relative w-full py-2.5 flex flex-col items-center justify-center gap-0.5 transition-all duration-300 group
-                      ${isActive ? 'bg-white' : 'bg-transparent hover:bg-white/50'}
+                      ${isActive ? 'bg-background' : 'bg-transparent hover:bg-background/50'}
                     `}
                   >
                     {/* 选中指示条 - 仅在展开时显示 */}
@@ -388,7 +519,7 @@ export default function Home() {
                     <div className="flex items-center justify-center w-full px-1">
                       <span className={`
                         text-[14px] font-bold tracking-wide transition-colors duration-300 whitespace-nowrap
-                        ${isActive ? 'text-[#FF4D4F]' : 'text-[#333333]'}
+                        ${isActive ? 'text-[#FF4D4F]' : 'text-foreground'}
                       `}>
                         {category.name}
                       </span>
@@ -399,7 +530,7 @@ export default function Home() {
                       px-1.5 py-[1px] rounded-full text-[9px] transform scale-90 transition-all duration-300 mt-0.5
                       ${isActive 
                         ? 'bg-[#FF4D4F] text-white font-medium shadow-sm' 
-                        : 'bg-[#F0F0F0] text-[#999999]'}
+                        : 'bg-muted text-muted-foreground'}
                     `}>
                       {category.label}
                     </div>
@@ -407,7 +538,7 @@ export default function Home() {
 
                   {/* 二级菜单列表 (手风琴展开) */}
                   <div className={`
-                    overflow-hidden transition-all duration-300 ease-in-out bg-white
+                    overflow-hidden transition-all duration-300 ease-in-out bg-background
                     ${isExpanded ? 'max-h-[500px] opacity-100 py-2' : 'max-h-0 opacity-0 py-0'}
                   `}>
                     <div className="flex flex-col py-1">
@@ -420,8 +551,8 @@ export default function Home() {
                             className={`
                               w-full py-2 text-center transition-all duration-200 relative flex items-center justify-center
                               ${isSubActive 
-                                ? 'text-[#FF4D4F] font-bold bg-[#FFF0F0]' 
-                                : 'text-[#666666] font-medium hover:bg-gray-50'}
+                                ? 'text-[#FF4D4F] font-bold bg-[#FF4D4F]/5' 
+                                : 'text-muted-foreground font-medium hover:bg-muted/50'}
                             `}
                           >
                             <span className={`text-[12px] ${isSubActive ? 'scale-105 inline-block' : ''}`}>
@@ -442,210 +573,155 @@ export default function Home() {
         </nav>
 
         {/* 右侧内容区 */}
-        <main className="flex-1 flex flex-col bg-white relative min-w-0 overflow-hidden">
+        <main className="flex-1 flex flex-col bg-background relative min-w-0 overflow-hidden">
           {/* 顶部筛选栏 - 移动端横向滚动优化 */}
-          <div className="flex-none px-3 py-2 bg-white z-10 border-b border-gray-50 flex flex-col gap-2">
+          <div className="flex-none px-3 py-2 bg-background z-10 border-b border-border flex flex-col gap-2">
             {/* 标题行 */}
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-gray-900 flex items-center gap-2 truncate">
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2 truncate">
                 {categories.find(c => c.id === activeCategory)?.subCategories.find(s => s.id === activeSubCategory)?.name}
               </h2>
-              {userLocation && (
-                <span className="text-[10px] font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full flex items-center gap-1 whitespace-nowrap flex-shrink-0">
-                  <MapPin className="w-3 h-3" /> 附近
-                </span>
-              )}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
+                <Locate className="w-3 h-3" />
+                <span>距您 500m</span>
+              </div>
             </div>
-            
-            {/* 筛选按钮行 - 支持横向滚动 */}
-            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-3 px-3">
-              {/* 价格筛选 */}
+
+            {/* 筛选按钮组 - 横向滚动 */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
               <select 
-                value={priceFilter}
-                onChange={(e) => setPriceFilter(e.target.value)}
-                className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors outline-none appearance-none cursor-pointer border-none"
+                className="bg-muted text-foreground text-xs px-3 py-1.5 rounded-full border-none outline-none appearance-none min-w-[80px] text-center"
+                value={filters.price}
+                onChange={(e) => setFilters({...filters, price: e.target.value})}
               >
                 <option value="all">价格不限</option>
                 <option value="low">¥200以下</option>
-                <option value="medium">¥200-500</option>
+                <option value="mid">¥200-500</option>
                 <option value="high">¥500以上</option>
               </select>
 
-              {/* 距离筛选 */}
               <select 
-                value={distanceFilter}
-                onChange={(e) => setDistanceFilter(e.target.value)}
-                className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors outline-none appearance-none cursor-pointer border-none"
+                className="bg-muted text-foreground text-xs px-3 py-1.5 rounded-full border-none outline-none appearance-none min-w-[80px] text-center"
+                value={filters.distance}
+                onChange={(e) => setFilters({...filters, distance: e.target.value})}
               >
                 <option value="all">距离不限</option>
-                <option value="1km">1km内</option>
-                <option value="3km">3km内</option>
-                <option value="5km">5km内</option>
+                <option value="near">1km内</option>
+                <option value="mid">1-3km</option>
+                <option value="far">3km外</option>
               </select>
 
-              <button className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors whitespace-nowrap">好评优先</button>
-              <button className="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors whitespace-nowrap">人均高低</button>
+              <button className="bg-muted text-foreground text-xs px-3 py-1.5 rounded-full whitespace-nowrap">
+                好评优先
+              </button>
+              <button className="bg-muted text-foreground text-xs px-3 py-1.5 rounded-full whitespace-nowrap">
+                人均高低
+              </button>
             </div>
           </div>
 
           {/* 商家列表 */}
-          <div className="flex-1 overflow-y-auto px-4 pb-20 scroll-smooth">
-            {showFavorites ? (
-              // 收藏列表视图
-              <div className="space-y-4 py-2">
-                {shops.filter(s => favorites.includes(s.id)).length > 0 ? (
-                  shops.filter(s => favorites.includes(s.id)).map((shop) => (
-                    <div 
-                      key={shop.id} 
-                      onClick={() => handleShopClick(shop)}
-                      className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden active:scale-[0.99] relative cursor-pointer"
-                    >
-                      {/* 收藏按钮 */}
-                      <button 
-                        onClick={(e) => toggleFavorite(e, shop.id)}
-                        className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all active:scale-90"
-                      >
-                        <Heart className={`w-4 h-4 ${favorites.includes(shop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400'}`} />
-                      </button>
+          <div className="flex-1 overflow-y-auto p-3 space-y-3 pb-20">
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, i) => <ShopSkeleton key={i} />)
+            ) : (
+              filteredShops.map((shop) => (
+                <div 
+                  key={shop.id}
+                  onClick={() => setSelectedShop(shop)}
+                  className="bg-card rounded-xl overflow-hidden shadow-sm border border-border active:scale-[0.98] transition-transform duration-200"
+                >
+                  <div className="flex p-3 gap-3">
+                    {/* 左侧图片 */}
+                    <div className="relative w-24 h-24 flex-none rounded-lg overflow-hidden bg-muted">
+                      <img 
+                        src={shop.imageUrl} 
+                        alt={shop.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      {shop.packageType === 'couple' && (
+                        <div className="absolute top-0 left-0 bg-[#FF4D4F] text-white text-[10px] px-1.5 py-0.5 rounded-br-lg font-medium">
+                          {shop.sceneTheme === 'date' ? '浪漫' : '精选'}
+                        </div>
+                      )}
+                    </div>
 
-                      <div className="flex p-3 gap-3">
-                        {/* 图片容器 */}
-                        <div className="relative w-24 h-24 flex-none rounded-lg overflow-hidden bg-gray-100">
-                          <img 
-                            src={shop.imageUrl} 
-                            alt={shop.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          {shop.tags && shop.tags.length > 0 && (
-                            <div className="absolute top-0 left-0 bg-[#FF4D4F] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-br-lg shadow-sm">
-                              {shop.tags[0]}
-                            </div>
-                          )}
+                    {/* 右侧信息 */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                      <div>
+                        <div className="flex justify-between items-start gap-2">
+                          <h3 className="text-[15px] font-bold text-foreground leading-tight truncate">
+                            {shop.name}
+                          </h3>
+                          <span className="text-[10px] text-muted-foreground whitespace-nowrap flex-none mt-0.5">
+                            {shop.distance}
+                          </span>
                         </div>
                         
-                        {/* 内容容器 */}
-                        <div className="flex-1 flex flex-col justify-between min-w-0">
-                          <div>
-                            <div className="flex justify-between items-start">
-                              <h3 className="font-bold text-gray-900 text-base truncate pr-2">{shop.name}</h3>
-                              <span className="text-xs text-gray-400 whitespace-nowrap font-medium">{shop.distance}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                              <div className="flex items-center text-[#FF9900] font-bold bg-[#FFF7E6] px-1 rounded">
-                                <Star className="w-3 h-3 fill-current mr-0.5" />
-                                {shop.rating}
-                              </div>
-                              <span>¥{shop.price}/人</span>
-                            </div>
-                            <div className="flex flex-wrap gap-1 mt-1.5">
-                              {shop.tags.slice(1).map((tag, index) => (
-                                <span key={index} className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <div className="flex items-center gap-0.5">
+                            <Star className="w-3 h-3 fill-[#FF9900] text-[#FF9900]" />
+                            <span className="text-xs font-bold text-[#FF9900]">{shop.rating}</span>
                           </div>
+                          <span className="text-xs text-muted-foreground">¥{shop.price}/人</span>
                         </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-                    <Heart className="w-12 h-12 mb-2 opacity-20" />
-                    <p className="text-sm">暂无收藏商家</p>
-                  </div>
-                )}
-              </div>
-            ) : loading ? (
-              // 骨架屏加载状态
-              <div className="space-y-4 animate-pulse">
-                {[1, 2, 3].map((i) => (
-                  <ShopSkeleton key={i} />
-                ))}
-              </div>
-            ) : (
-              // 真实数据列表
-              <div className="space-y-4">
-                {filteredShops.map((shop) => (
-                  <div 
-                    key={shop.id} 
-                    onClick={() => handleShopClick(shop)}
-                    className="group bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden active:scale-[0.99] relative cursor-pointer"
-                  >
-                    {/* 收藏按钮 */}
-                    <button 
-                      onClick={(e) => toggleFavorite(e, shop.id)}
-                      className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm shadow-sm hover:bg-white dark:hover:bg-black/70 transition-all active:scale-90 opacity-0 group-hover:opacity-100"
-                    >
-                      <Heart className={`w-4 h-4 ${favorites.includes(shop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400 dark:text-gray-300'}`} />
-                    </button>
 
-                    <div className="flex p-3 gap-3">
-                      {/* 图片容器 */}
-                      <div className="relative w-24 h-24 flex-none rounded-lg overflow-hidden bg-muted">
-                        <img 
-                          src={shop.imageUrl} 
-                          alt={shop.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                        {shop.tags && shop.tags.length > 0 && (
-                          <div className="absolute top-0 left-0 bg-[#FF4D4F] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-br-lg shadow-sm">
-                            {shop.tags[0]}
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* 内容容器 */}
-                      <div className="flex-1 flex flex-col justify-between min-w-0">
-                        <div>
-                          <div className="flex justify-between items-start">
-                            <h3 className="font-bold text-foreground text-base truncate pr-2">{shop.name}</h3>
-                            <span className="text-xs text-muted-foreground whitespace-nowrap font-medium">{shop.distance}</span>
-                          </div>
-                          
-                          <div className="flex items-center gap-1 mt-1">
-                            <Star className="w-3.5 h-3.5 text-[#FF9500] fill-[#FF9500]" />
-                            <span className="text-sm font-bold text-[#FF9500]">{shop.rating}</span>
-                            <span className="text-xs text-muted-foreground ml-1">¥{shop.price}/人</span>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-1.5 mt-2">
-                            {shop.tags.slice(1).map((tag, idx) => (
-                              <span key={idx} className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {shop.tags.slice(0, 3).map((tag, idx) => (
+                            <span 
+                              key={idx}
+                              className="text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground rounded-[4px]"
+                            >
+                              {tag}
+                            </span>
+                          ))}
                         </div>
                       </div>
                     </div>
-                    
-                    {/* 底部优惠条 */}
-                    {shop.deals && shop.deals.length > 0 && (
-                      <div className="px-3 py-2.5 bg-[#FFF7F7] dark:bg-[#FF4D4F]/5 border-t border-[#FFF0F0] dark:border-[#FF4D4F]/10 flex justify-between items-center">
+                  </div>
+
+                  {/* 底部优惠条 */}
+                  {shop.deals && shop.deals.length > 0 && (
+                    <div className="px-3 pb-3 pt-0">
+                      <div className="bg-[#FF4D4F]/5 rounded-lg p-2 flex items-center justify-between border border-[#FF4D4F]/10">
                         <div className="flex items-center gap-2 overflow-hidden">
-                          <span className="flex-none w-4 h-4 bg-[#FF4D4F] text-white text-[10px] font-bold flex items-center justify-center rounded">团</span>
-                          <span className="text-xs text-foreground truncate font-medium">{shop.deals[0].title}</span>
+                          <span className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-none">团</span>
+                          <span className="text-xs text-foreground truncate">{shop.deals[0].title}</span>
                         </div>
-                        <div className="flex items-baseline gap-1 flex-none ml-2">
-                          <span className="text-sm font-bold text-[#FF4D4F]">¥{shop.deals[0].price}</span>
-                          <span className="text-[10px] text-muted-foreground/50 line-through decoration-gray-300">¥{shop.deals[0].originalPrice}</span>
+                        <div className="flex items-baseline gap-1 flex-none pl-2">
+                          <span className="text-[#FF4D4F] text-sm font-bold">¥{shop.deals[0].price}</span>
+                          <span className="text-muted-foreground/50 text-[10px] line-through">¥{shop.deals[0].originalPrice}</span>
                         </div>
                       </div>
-                    )}
-                  </div>
-                ))}
-                
-                {/* 底部提示 */}
-                <div className="py-6 text-center">
-                  <p className="text-xs text-muted-foreground/50">已经到底啦，去其他分类看看吧 ~</p>
+                    </div>
+                  )}
                 </div>
+              ))
+            )}
+            
+            {!isLoading && filteredShops.length > 0 && (
+              <div className="text-center py-4 text-xs text-muted-foreground/50">
+                已经到底啦，去其他分类看看吧 ~
+              </div>
+            )}
+
+            {!isLoading && filteredShops.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Search className="w-12 h-12 mb-2 opacity-20" />
+                <p className="text-sm">暂无符合条件的商家</p>
+                <button 
+                  onClick={() => setFilters({price: 'all', distance: 'all', cuisine: 'all'})}
+                  className="mt-4 text-[#FF4D4F] text-xs border border-[#FF4D4F] px-4 py-1.5 rounded-full"
+                >
+                  清除筛选
+                </button>
               </div>
             )}
           </div>
         </main>
 
-        {/* 地图覆盖层 */}
+        {/* 地图浮层 */}
         {showMap && (
           <MapOverlay 
             shops={filteredShops} 

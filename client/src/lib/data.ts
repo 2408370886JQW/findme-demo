@@ -19,6 +19,18 @@ export interface Shop {
     tags: string[];
   }[];
   coordinates?: { lat: number; lng: number };
+  reviews?: Review[];
+}
+
+export interface Review {
+  id: string;
+  userName: string;
+  userAvatar: string;
+  rating: number;
+  date: string;
+  content: string;
+  images?: string[];
+  tags?: string[];
 }
 
 export interface PackageType {
@@ -88,7 +100,28 @@ export const MOCK_SHOPS: Shop[] = [
     deals: [
       { title: '浪漫双人烛光晚餐', price: 520, originalPrice: 888, tags: ['约会首选', '含红酒'] }
     ],
-    coordinates: { lat: 31.2304, lng: 121.4737 }
+    coordinates: { lat: 31.2304, lng: 121.4737 },
+    reviews: [
+      {
+        id: 'r1',
+        userName: 'Alice',
+        userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
+        rating: 5,
+        date: '2023-10-15',
+        content: '环境真的太棒了！露台夜景无敌，服务也很周到，男朋友求婚成功啦！',
+        images: ['https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&q=80', 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&q=80'],
+        tags: ['求婚圣地', '夜景美']
+      },
+      {
+        id: 'r2',
+        userName: 'Bob',
+        userAvatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&q=80',
+        rating: 4.5,
+        date: '2023-10-10',
+        content: '菜品味道不错，尤其是牛排，就是价格稍微有点贵，不过为了这个环境也值了。',
+        tags: ['牛排好吃']
+      }
+    ]
   },
   {
     id: '2',
@@ -105,7 +138,19 @@ export const MOCK_SHOPS: Shop[] = [
     deals: [
       { title: '微醺双人鸡尾酒套餐', price: 298, originalPrice: 468, tags: ['特调饮品'] }
     ],
-    coordinates: { lat: 31.2324, lng: 121.4757 }
+    coordinates: { lat: 31.2324, lng: 121.4757 },
+    reviews: [
+      {
+        id: 'r3',
+        userName: 'Cathy',
+        userAvatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&q=80',
+        rating: 5,
+        date: '2023-10-12',
+        content: '氛围感拉满！驻唱歌手声音很好听，鸡尾酒颜值也很高，适合和男朋友一起来。',
+        images: ['https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&q=80'],
+        tags: ['氛围好', '驻唱好听']
+      }
+    ]
   },
   
   // Couple - Anniversary
@@ -181,7 +226,18 @@ export const MOCK_SHOPS: Shop[] = [
     deals: [
       { title: '兄弟欢聚4人餐', price: 398, originalPrice: 588, tags: ['啤酒畅饮', '量大管饱'] }
     ],
-    coordinates: { lat: 31.2314, lng: 121.4747 }
+    coordinates: { lat: 31.2314, lng: 121.4747 },
+    reviews: [
+      {
+        id: 'r4',
+        userName: 'David',
+        userAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80',
+        rating: 5,
+        date: '2023-10-08',
+        content: '肉串很大，啤酒很冰，老板人也很豪爽，兄弟聚会首选！',
+        tags: ['量大', '老板热情']
+      }
+    ]
   },
 
   // Brother - Game
