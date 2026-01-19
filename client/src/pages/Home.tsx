@@ -633,7 +633,7 @@ export default function Home() {
 
             {/* 猜你喜欢推荐卡片 (仅在有推荐且非加载状态显示) */}
             {!isLoading && guessYouLike.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 mb-1">
+              <div className="flex gap-2 overflow-x-auto pb-2 mb-1 pr-4">
                 {guessYouLike.map(shop => (
                   <div 
                     key={`guess-${shop.id}`}
