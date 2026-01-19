@@ -570,19 +570,19 @@ export default function Home() {
                   <div 
                     key={shop.id} 
                     onClick={() => handleShopClick(shop)}
-                    className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden active:scale-[0.99] relative cursor-pointer"
+                    className="group bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden active:scale-[0.99] relative cursor-pointer"
                   >
                     {/* 收藏按钮 */}
                     <button 
                       onClick={(e) => toggleFavorite(e, shop.id)}
-                      className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all active:scale-90 opacity-0 group-hover:opacity-100"
+                      className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm shadow-sm hover:bg-white dark:hover:bg-black/70 transition-all active:scale-90 opacity-0 group-hover:opacity-100"
                     >
-                      <Heart className={`w-4 h-4 ${favorites.includes(shop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400'}`} />
+                      <Heart className={`w-4 h-4 ${favorites.includes(shop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400 dark:text-gray-300'}`} />
                     </button>
 
                     <div className="flex p-3 gap-3">
                       {/* 图片容器 */}
-                      <div className="relative w-24 h-24 flex-none rounded-lg overflow-hidden bg-gray-100">
+                      <div className="relative w-24 h-24 flex-none rounded-lg overflow-hidden bg-muted">
                         <img 
                           src={shop.imageUrl} 
                           alt={shop.name}
@@ -599,19 +599,19 @@ export default function Home() {
                       <div className="flex-1 flex flex-col justify-between min-w-0">
                         <div>
                           <div className="flex justify-between items-start">
-                            <h3 className="font-bold text-gray-900 text-base truncate pr-2">{shop.name}</h3>
-                            <span className="text-xs text-gray-400 whitespace-nowrap font-medium">{shop.distance}</span>
+                            <h3 className="font-bold text-foreground text-base truncate pr-2">{shop.name}</h3>
+                            <span className="text-xs text-muted-foreground whitespace-nowrap font-medium">{shop.distance}</span>
                           </div>
                           
                           <div className="flex items-center gap-1 mt-1">
                             <Star className="w-3.5 h-3.5 text-[#FF9500] fill-[#FF9500]" />
                             <span className="text-sm font-bold text-[#FF9500]">{shop.rating}</span>
-                            <span className="text-xs text-gray-400 ml-1">¥{shop.price}/人</span>
+                            <span className="text-xs text-muted-foreground ml-1">¥{shop.price}/人</span>
                           </div>
                           
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {shop.tags.slice(1).map((tag, idx) => (
-                              <span key={idx} className="text-[10px] text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
+                              <span key={idx} className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border">
                                 {tag}
                               </span>
                             ))}
@@ -622,14 +622,14 @@ export default function Home() {
                     
                     {/* 底部优惠条 */}
                     {shop.deals && shop.deals.length > 0 && (
-                      <div className="px-3 py-2.5 bg-[#FFF7F7] border-t border-[#FFF0F0] flex justify-between items-center">
+                      <div className="px-3 py-2.5 bg-[#FFF7F7] dark:bg-[#FF4D4F]/5 border-t border-[#FFF0F0] dark:border-[#FF4D4F]/10 flex justify-between items-center">
                         <div className="flex items-center gap-2 overflow-hidden">
                           <span className="flex-none w-4 h-4 bg-[#FF4D4F] text-white text-[10px] font-bold flex items-center justify-center rounded">团</span>
-                          <span className="text-xs text-gray-700 truncate font-medium">{shop.deals[0].title}</span>
+                          <span className="text-xs text-foreground truncate font-medium">{shop.deals[0].title}</span>
                         </div>
                         <div className="flex items-baseline gap-1 flex-none ml-2">
                           <span className="text-sm font-bold text-[#FF4D4F]">¥{shop.deals[0].price}</span>
-                          <span className="text-[10px] text-gray-400 line-through decoration-gray-300">¥{shop.deals[0].originalPrice}</span>
+                          <span className="text-[10px] text-muted-foreground/50 line-through decoration-gray-300">¥{shop.deals[0].originalPrice}</span>
                         </div>
                       </div>
                     )}
@@ -638,7 +638,7 @@ export default function Home() {
                 
                 {/* 底部提示 */}
                 <div className="py-6 text-center">
-                  <p className="text-xs text-gray-400">已经到底啦，去其他分类看看吧 ~</p>
+                  <p className="text-xs text-muted-foreground/50">已经到底啦，去其他分类看看吧 ~</p>
                 </div>
               </div>
             )}
