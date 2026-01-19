@@ -555,7 +555,7 @@ export default function Home() {
                                 : 'text-muted-foreground font-medium hover:bg-muted/50'}
                             `}
                           >
-                            <span className={`text-[12px] ${isSubActive ? 'scale-105 inline-block' : ''}`}>
+                            <span className={`text-[11px] ${isSubActive ? 'scale-105 inline-block' : ''}`}>
                               {sub.name}
                             </span>
                             {isSubActive && (
