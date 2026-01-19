@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2, Moon, Sun, MessageSquare, Camera, Sparkles, Trophy, ShoppingBag } from 'lucide-react';
+import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2, Moon, Sun, MessageSquare, Camera, Sparkles, Trophy, ShoppingBag, Menu } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { categories, shops, type Shop, type Category, type SubCategory, type Order } from '@/lib/data';
 import { MapOverlay } from '@/components/MapOverlay';
 import { ShareModal } from '@/components/ShareModal';
@@ -40,6 +41,7 @@ export default function Home() {
     cuisine: 'all' // all, western, bar, bbq, etc.
   });
   const [guessYouLike, setGuessYouLike] = useState<Shop[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // 处理通知点击跳转
   const handleNotificationClick = (order: Order) => {
@@ -204,10 +206,107 @@ export default function Home() {
         <div className="flex items-center justify-between gap-2 max-w-full overflow-hidden">
           {/* Logo & Brand */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-8 h-8 bg-[#FF4D4F] rounded-lg flex items-center justify-center shadow-lg shadow-[#FF4D4F]/20">
+            {/* 移动端菜单按钮 */}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <button className="md:hidden p-2 -ml-2 rounded-full hover:bg-muted text-foreground">
+                  <Menu className="w-6 h-6" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[280px] p-0 bg-background border-r border-border/50">
+                <div className="flex flex-col h-full">
+                  <div className="p-4 border-b border-border/50 flex items-center gap-2">
+                    <div className="w-8 h-8 bg-[#FF4D4F] rounded-lg flex items-center justify-center shadow-lg shadow-[#FF4D4F]/20">
+                      <MapPin className="text-white w-5 h-5" />
+                    </div>
+                    <h1 className="text-lg font-black tracking-tighter text-foreground">
+                      FIND <span className="text-[#FF4D4F]">ME</span>
+                    </h1>
+                  </div>
+                  <div className="flex-1 overflow-y-auto py-4">
+                    {/* 移动端侧边栏内容复用 */}
+                    <div className="flex flex-col gap-6 px-4">
+                      {/* 顶部全城筛选 */}
+                      <div className="flex items-center justify-center py-2 cursor-pointer hover:text-[#FF4D4F] transition-colors border-b border-border/30 pb-4">
+                        <span className="text-sm font-bold text-foreground/80">全城</span>
+                        <ChevronDown className="w-3 h-3 ml-1 text-muted-foreground" />
+                      </div>
+                      
+                      {categories.map((category, index) => {
+                        const isActive = activeCategory === category.id;
+                        const isExpanded = expandedCategory === category.id;
+                        const subtitle = getCategorySubtitle(category.id);
+                        
+                        const isSelected = isActive || isExpanded;
+                        const titleColor = isSelected ? 'text-[#FF5500]' : 'text-[#333333]';
+                        
+                        return (
+                          <div key={category.id} className="flex flex-col items-center relative">
+                            {/* 分隔线 */}
+                            {index > 0 && (
+                              <div className="w-full h-[1px] bg-border/30 absolute -top-3 left-0"></div>
+                            )}
+
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCategoryClick(category.id);
+                              }}
+                              className="relative w-full flex items-center justify-between py-2 group cursor-pointer hover:opacity-80 transition-opacity"
+                            >
+                              <div className="flex items-center gap-3">
+                                <span className={`text-[14px] font-medium tracking-wide ${titleColor} transition-colors duration-200`}>
+                                  {category.name}
+                                </span>
+                                <div className={`px-2 py-0.5 rounded-full ${isSelected ? 'bg-[#FF5500]' : 'bg-[#FF8855]'} text-white text-[10px] font-normal shadow-sm transition-colors duration-200`}>
+                                  {subtitle}
+                                </div>
+                              </div>
+                              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {/* 二级菜单列表 */}
+                            <div className={`
+                              w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col gap-2 pl-4
+                              ${isExpanded ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0'}
+                            `}>
+                              {category.subCategories.map((sub, subIndex) => {
+                                const isSubActive = activeSubCategory === sub.id;
+                                const isHighlight = subIndex === 0;
+                                
+                                return (
+                                  <button
+                                    key={sub.id}
+                                    onClick={(e) => {
+                                      handleSubCategoryClick(e, sub.id);
+                                      setIsMobileMenuOpen(false); // 选择后关闭菜单
+                                    }}
+                                    className={`
+                                      text-[13px] transition-all duration-200 relative flex items-center justify-start cursor-pointer z-20 tracking-wide py-1.5
+                                      ${isHighlight 
+                                        ? 'text-[#FF4D4F] font-medium' 
+                                        : 'text-[#444444] hover:text-[#000000] font-normal'}
+                                      ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-medium' : ''}
+                                    `}
+                                  >
+                                    {sub.name}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            <div className="w-8 h-8 bg-[#FF4D4F] rounded-lg hidden md:flex items-center justify-center shadow-lg shadow-[#FF4D4F]/20">
               <MapPin className="text-white w-5 h-5" />
             </div>
-            <h1 className="text-lg font-black tracking-tighter text-foreground hidden sm:block">
+            <h1 className="text-lg font-black tracking-tighter text-foreground hidden md:block">
               FIND <span className="text-[#FF4D4F]">ME</span>
             </h1>
           </div>
@@ -482,8 +581,8 @@ export default function Home() {
           </div>
         )}
         
-        {/* 左侧手风琴导航栏 - 高德风格重构 */}
-        <nav className="w-[88px] flex-none bg-background flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-30 transition-all duration-300 relative">
+        {/* 左侧手风琴导航栏 - 高德风格重构 (仅桌面端显示) */}
+        <nav className="hidden md:flex w-[88px] flex-none bg-background flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-30 transition-all duration-300 relative">
           {/* 顶部全城筛选 */}
           <div className="flex items-center justify-center py-4 cursor-pointer hover:text-[#FF4D4F] transition-colors">
             <span className="text-sm font-bold text-foreground/80">全城</span>
