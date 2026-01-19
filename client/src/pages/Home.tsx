@@ -534,7 +534,7 @@ export default function Home() {
                       </svg>
 
                       {/* 主标题 */}
-                      <span className={`text-[15px] font-black tracking-wide z-10 ${titleColor}`}>
+                      <span className={`text-[14px] font-bold tracking-wide z-10 ${titleColor}`}>
                         {category.name}
                       </span>
                     </div>
@@ -560,11 +560,11 @@ export default function Home() {
                           key={sub.id}
                           onClick={(e) => handleSubCategoryClick(e, sub.id)}
                           className={`
-                            text-[13px] transition-all duration-200 relative flex items-center justify-center
+                            text-[12px] transition-all duration-200 relative flex items-center justify-center
                             ${isHighlight 
-                              ? 'bg-[#FFF0F0] text-[#FF4D4F] font-bold px-3 py-1 rounded-full' 
-                              : 'text-foreground/70 hover:text-foreground font-medium'}
-                            ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-bold' : ''}
+                              ? 'bg-[#FFF0F0] text-[#FF4D4F] font-medium px-3 py-1 rounded-full' 
+                              : 'text-foreground/70 hover:text-foreground font-normal'}
+                            ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-medium' : ''}
                           `}
                         >
                           {sub.name}
