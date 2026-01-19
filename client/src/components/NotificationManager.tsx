@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { MOCK_ORDERS } from '@/lib/data';
+import { MOCK_ORDERS, Order } from '@/lib/data';
 import { toast } from 'sonner';
 import { Bell } from 'lucide-react';
 
-export function NotificationManager() {
+interface NotificationManagerProps {
+  onNotificationClick: (order: Order) => void;
+}
+
+export function NotificationManager({ onNotificationClick }: NotificationManagerProps) {
   const notifiedOrders = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -26,16 +30,28 @@ export function NotificationManager() {
         if (diff > 0 && diff <= threeHours && !notifiedOrders.current.has(order.id)) {
           // 1. 触发 Web Notification (系统级推送)
           if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification('FIND ME 订单提醒', {
+            const notification = new Notification('FIND ME 订单提醒', {
               body: `您的订单【${order.shopName}】即将过期，请尽快使用！`,
               icon: '/vite.svg', // 使用默认图标
               tag: order.id
             });
+            
+            notification.onclick = () => {
+              window.focus();
+              onNotificationClick(order);
+              notification.close();
+            };
           }
 
           // 2. 触发应用内 Toast (模拟短信)
           toast.custom((t) => (
-            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg p-4 flex gap-3 w-full max-w-md animate-in slide-in-from-top-2 duration-300">
+            <div 
+              onClick={() => {
+                onNotificationClick(order);
+                toast.dismiss(t);
+              }}
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg p-4 flex gap-3 w-full max-w-md animate-in slide-in-from-top-2 duration-300 cursor-pointer hover:bg-muted/50 transition-colors"
+            >
               <div className="bg-[#FF4D4F]/10 p-2 rounded-full h-fit">
                 <Bell className="w-5 h-5 text-[#FF4D4F]" />
               </div>
@@ -44,8 +60,9 @@ export function NotificationManager() {
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   您的订单 <span className="font-bold text-foreground">{order.dealTitle}</span> 还有不到3小时过期，请及时到店核销，以免造成损失。
                 </p>
-                <div className="mt-2 text-[10px] text-muted-foreground/50">
-                  刚刚
+                <div className="mt-2 text-[10px] text-muted-foreground/50 flex justify-between items-center">
+                  <span>刚刚</span>
+                  <span className="text-[#FF4D4F] font-medium">点击查看详情 &gt;</span>
                 </div>
               </div>
             </div>
@@ -64,7 +81,7 @@ export function NotificationManager() {
     const interval = setInterval(checkExpiringOrders, 60 * 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [onNotificationClick]);
 
   return null; // 此组件不渲染任何可见 UI
 }

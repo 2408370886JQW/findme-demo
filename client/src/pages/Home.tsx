@@ -6,6 +6,7 @@ import { ShareModal } from '@/components/ShareModal';
 import { ShopSkeleton } from '@/components/ShopSkeleton';
 import { OrderList } from '@/components/OrderList';
 import { OrderDetail } from '@/components/OrderDetail';
+import { NotificationManager } from '@/components/NotificationManager';
 import { 
   CoupleLeftIcon, CoupleRightIcon, 
   BestieLeftIcon, BestieRightIcon, 
@@ -39,6 +40,13 @@ export default function Home() {
     cuisine: 'all' // all, western, bar, bbq, etc.
   });
   const [guessYouLike, setGuessYouLike] = useState<Shop[]>([]);
+  
+  // 处理通知点击跳转
+  const handleNotificationClick = (order: Order) => {
+    setShowOrders(true);
+    setSelectedOrder(order);
+  };
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark' || 
@@ -253,6 +261,9 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {/* 全局通知管理器 */}
+      <NotificationManager onNotificationClick={handleNotificationClick} />
 
       {/* 主体内容区 */}
       <div className="flex-1 flex overflow-hidden relative">
