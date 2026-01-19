@@ -568,7 +568,7 @@ export default function Home() {
                       `}></div>
 
                       <span className={`
-                        text-[13px] font-bold tracking-wide transition-colors duration-300 whitespace-nowrap z-10
+                        text-[12px] font-bold tracking-wide transition-colors duration-300 whitespace-nowrap z-10
                         ${isActive ? 'text-foreground scale-105' : 'text-muted-foreground/70'}
                       `}>
                         {category.name}
