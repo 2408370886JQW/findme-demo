@@ -165,6 +165,22 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  
+  .glass {
+    @apply bg-background/80 backdrop-blur-md border-b border-border/50;
+  }
+  
+  .glass-card {
+    @apply bg-card/90 backdrop-blur-sm border border-border/50 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 @layer components {

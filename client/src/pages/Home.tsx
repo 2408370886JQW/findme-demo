@@ -163,7 +163,7 @@ export default function Home() {
   return (
     <div className="flex flex-col h-screen bg-background transition-colors duration-300">
       {/* 顶部导航栏 - 移动端优化布局 */}
-      <header className="flex-none bg-background border-b border-border px-3 py-2 z-20 sticky top-0">
+      <header className="flex-none glass px-3 py-2 z-20 sticky top-0">
         <div className="flex items-center justify-between gap-2 max-w-full overflow-hidden">
           {/* Logo & Brand */}
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -223,7 +223,7 @@ export default function Home() {
       <div className="flex-1 flex overflow-hidden relative">
         {/* 收藏夹浮层 */}
         {showFavorites && (
-          <div className="absolute inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col animate-in fade-in duration-200">
+          <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-xl flex flex-col animate-in fade-in duration-200">
             <div className="flex items-center justify-between p-4 border-b border-border">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Heart className="w-5 h-5 fill-[#FF4D4F] text-[#FF4D4F]" />
@@ -280,7 +280,7 @@ export default function Home() {
 
         {/* 商家详情浮层 */}
         {selectedShop && (
-          <div className="absolute inset-0 z-40 bg-background flex flex-col animate-in slide-in-from-bottom duration-300">
+          <div className="absolute inset-0 z-40 bg-background/95 backdrop-blur-xl flex flex-col animate-in slide-in-from-bottom duration-300">
             {/* 详情页头部 */}
             <div className="relative h-64 flex-none">
               <img src={selectedShop.imageUrl} alt={selectedShop.name} className="w-full h-full object-cover" />
@@ -490,7 +490,7 @@ export default function Home() {
         )}
         
         {/* 左侧手风琴导航栏 */}
-        <nav className="w-[80px] md:w-[100px] flex-none bg-muted/30 flex flex-col overflow-y-auto border-r border-border no-scrollbar z-10 transition-all duration-300">
+        <nav className="w-[80px] md:w-[100px] flex-none bg-muted/30 backdrop-blur-sm flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-10 transition-all duration-300">
           <div className="flex flex-col py-2 pb-20">
             {categories.map((category) => {
               const isActive = activeCategory === category.id;
@@ -575,7 +575,7 @@ export default function Home() {
         {/* 右侧内容区 */}
         <main className="flex-1 flex flex-col bg-background relative min-w-0 overflow-hidden">
           {/* 顶部筛选栏 - 移动端横向滚动优化 */}
-          <div className="flex-none px-3 py-2 bg-background z-10 border-b border-border flex flex-col gap-2">
+          <div className="flex-none px-3 py-2 bg-background/80 backdrop-blur-md z-10 border-b border-border/50 flex flex-col gap-2">
             {/* 标题行 */}
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-foreground flex items-center gap-2 truncate">
@@ -629,7 +629,7 @@ export default function Home() {
                 <div 
                   key={shop.id}
                   onClick={() => setSelectedShop(shop)}
-                  className="bg-card rounded-xl overflow-hidden shadow-sm border border-border active:scale-[0.98] transition-transform duration-200"
+                  className="glass-card rounded-xl overflow-hidden active:scale-[0.98] cursor-pointer"
                 >
                   <div className="flex p-3 gap-3">
                     {/* 左侧图片 */}
