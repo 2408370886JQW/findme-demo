@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2, Moon, Sun, MessageSquare, Camera } from 'lucide-react';
 import { categories, shops, type Shop, type Category, type SubCategory } from '@/lib/data';
 import { MapOverlay } from '@/components/MapOverlay';
+import { ShareModal } from '@/components/ShareModal';
 import { ShopSkeleton } from '@/components/ShopSkeleton';
 import { 
   CoupleLeftIcon, CoupleRightIcon, 
@@ -18,6 +19,7 @@ export default function Home() {
   const [activeSubCategory, setActiveSubCategory] = useState<string>('date');
   const [expandedCategory, setExpandedCategory] = useState<string | null>('couple');
   const [showMap, setShowMap] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userLocation, setUserLocation] = useState(MOCK_USER_LOCATION);
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
@@ -301,7 +303,10 @@ export default function Home() {
                   >
                     <Heart className={`w-5 h-5 ${favorites.includes(selectedShop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-white'}`} />
                   </button>
-                  <button className="w-8 h-8 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors">
+                  <button 
+                    onClick={() => setShowShare(true)}
+                    className="w-8 h-8 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center hover:bg-black/50 transition-colors"
+                  >
                     <Share2 className="w-5 h-5" />
                   </button>
                 </div>
@@ -730,6 +735,14 @@ export default function Home() {
             activeCategory={activeCategory}
             activeScene={activeSubCategory}
             onSceneChange={setActiveSubCategory}
+          />
+        )}
+
+        {/* Share Modal */}
+        {showShare && selectedShop && (
+          <ShareModal
+            shop={selectedShop}
+            onClose={() => setShowShare(false)}
           />
         )}
       </div>
