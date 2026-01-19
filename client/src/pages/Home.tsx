@@ -16,7 +16,7 @@ const MOCK_USER_LOCATION = { lat: 31.2304, lng: 121.4737 };
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState<string>('couple');
-  const [activeSubCategory, setActiveSubCategory] = useState<string>('date');
+  const [activeSubCategory, setActiveSubCategory] = useState<string>('couple_date');
   const [expandedCategory, setExpandedCategory] = useState<string | null>('couple');
   const [showMap, setShowMap] = useState(false);
   const [showShare, setShowShare] = useState(false);
@@ -89,15 +89,15 @@ export default function Home() {
     
     // 根据时间段决定推荐类型
     if (hour >= 6 && hour < 11) {
-      recommendType = 'afternoon_tea'; // 早上推荐咖啡/早茶 (暂用下午茶代替)
+      recommendType = 'bestie_chat'; // 早上推荐咖啡/早茶
     } else if (hour >= 11 && hour < 14) {
-      recommendType = 'date'; // 中午推荐约会餐厅
+      recommendType = 'couple_date'; // 中午推荐约会餐厅
     } else if (hour >= 14 && hour < 17) {
-      recommendType = 'afternoon_tea'; // 下午推荐下午茶
+      recommendType = 'bestie_photo'; // 下午推荐下午茶/拍照
     } else if (hour >= 17 && hour < 21) {
-      recommendType = 'date'; // 晚上推荐晚餐
+      recommendType = 'couple_relax'; // 晚上推荐浪漫晚餐
     } else {
-      recommendType = 'drink'; // 深夜推荐酒吧/烧烤
+      recommendType = 'brother_party'; // 深夜推荐酒吧/烧烤
     }
 
     // 筛选推荐店铺 (排除当前分类，增加多样性)
