@@ -558,7 +558,15 @@ export default function Home() {
                       </span>
                     </div>
                     
-
+                    {/* 胶囊副标题 */}
+                    <div className={`
+                      px-1.5 py-[1px] rounded-full text-[9px] transform scale-90 transition-all duration-300 mt-0.5
+                      ${isActive 
+                        ? 'bg-[#FF4D4F] text-white font-medium shadow-sm' 
+                        : 'bg-muted text-muted-foreground'}
+                    `}>
+                      {category.label}
+                    </div>
                   </button>
 
                   {/* 二级菜单列表 (手风琴展开) */}
