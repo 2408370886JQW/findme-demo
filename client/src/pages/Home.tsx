@@ -483,7 +483,7 @@ export default function Home() {
         )}
         
         {/* 左侧手风琴导航栏 - 高德风格重构 */}
-        <nav className="w-[100px] flex-none bg-background flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-10 transition-all duration-300">
+        <nav className="w-[100px] flex-none bg-background flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-30 transition-all duration-300 relative">
           {/* 顶部全城筛选 */}
           <div className="flex items-center justify-center py-4 cursor-pointer hover:text-[#FF4D4F] transition-colors">
             <span className="text-sm font-bold text-foreground/80">全城</span>
@@ -580,10 +580,10 @@ export default function Home() {
                           key={sub.id}
                           onClick={(e) => handleSubCategoryClick(e, sub.id)}
                           className={`
-                            text-[12px] transition-all duration-200 relative flex items-center justify-center
+                            text-[12px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20
                             ${isHighlight 
                               ? 'bg-[#FFF0F0] text-[#FF4D4F] font-bold px-3 py-1 rounded-full' 
-                              : 'text-foreground/70 hover:text-foreground font-medium'}
+                              : 'text-[#333333] hover:text-[#000000] font-medium'}
                             ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-bold' : ''}
                           `}
                         >
