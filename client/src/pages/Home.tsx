@@ -728,7 +728,7 @@ export default function Home() {
                 onClick={() => setFilters(prev => ({ ...prev, distance: 'all' }))}
                 className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors ${filters.distance === 'all' ? 'bg-foreground text-background font-bold' : 'bg-muted text-muted-foreground'}`}
               >
-                距离不限
+                姬绮伟
               </button>
               <button className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs whitespace-nowrap">
                 好评优先
