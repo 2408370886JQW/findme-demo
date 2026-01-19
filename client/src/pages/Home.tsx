@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2, Moon, Sun, MessageSquare, Camera } from 'lucide-react';
+import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2, Moon, Sun, MessageSquare, Camera, Sparkles } from 'lucide-react';
 import { categories, shops, type Shop, type Category, type SubCategory } from '@/lib/data';
 import { MapOverlay } from '@/components/MapOverlay';
 import { ShareModal } from '@/components/ShareModal';
@@ -34,6 +34,7 @@ export default function Home() {
     distance: 'all', // all, near (<1km), mid (1-3km), far (>3km)
     cuisine: 'all' // all, western, bar, bbq, etc.
   });
+  const [guessYouLike, setGuessYouLike] = useState<Shop[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark' || 
@@ -80,6 +81,33 @@ export default function Home() {
     }, 800);
     return () => clearTimeout(timer);
   }, [activeCategory, activeSubCategory]);
+
+  // 智能推荐逻辑
+  useEffect(() => {
+    const hour = new Date().getHours();
+    let recommendType = '';
+    
+    // 根据时间段决定推荐类型
+    if (hour >= 6 && hour < 11) {
+      recommendType = 'afternoon_tea'; // 早上推荐咖啡/早茶 (暂用下午茶代替)
+    } else if (hour >= 11 && hour < 14) {
+      recommendType = 'date'; // 中午推荐约会餐厅
+    } else if (hour >= 14 && hour < 17) {
+      recommendType = 'afternoon_tea'; // 下午推荐下午茶
+    } else if (hour >= 17 && hour < 21) {
+      recommendType = 'date'; // 晚上推荐晚餐
+    } else {
+      recommendType = 'drink'; // 深夜推荐酒吧/烧烤
+    }
+
+    // 筛选推荐店铺 (排除当前分类，增加多样性)
+    const recommendations = shops
+      .filter(shop => shop.sceneTheme === recommendType || shop.rating >= 4.8)
+      .sort(() => Math.random() - 0.5) // 随机排序
+      .slice(0, 2); // 只取2个
+
+    setGuessYouLike(recommendations);
+  }, []);
 
   // 处理一级分类点击
   const handleCategoryClick = (categoryId: string) => {
@@ -583,14 +611,50 @@ export default function Home() {
           <div className="flex-none px-3 py-2 bg-background/80 backdrop-blur-md z-10 border-b border-border/50 flex flex-col gap-2">
             {/* 标题行 */}
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2 truncate">
-                {categories.find(c => c.id === activeCategory)?.subCategories.find(s => s.id === activeSubCategory)?.name}
-              </h2>
+              <div className="flex items-center gap-3 overflow-hidden">
+                <h2 className="text-base font-bold text-foreground flex items-center gap-2 truncate">
+                  {categories.find(c => c.id === activeCategory)?.subCategories.find(s => s.id === activeSubCategory)?.name}
+                </h2>
+                
+                {/* 猜你喜欢入口 */}
+                <div className="flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-[#FF4D4F]/10 to-[#FF9900]/10 rounded-full border border-[#FF4D4F]/20">
+                  <Sparkles className="w-3 h-3 text-[#FF4D4F] animate-pulse" />
+                  <span className="text-[10px] font-medium bg-clip-text text-transparent bg-gradient-to-r from-[#FF4D4F] to-[#FF9900]">
+                    猜你喜欢
+                  </span>
+                </div>
+              </div>
+
               <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
                 <Locate className="w-3 h-3" />
                 <span>距您 500m</span>
               </div>
             </div>
+
+            {/* 猜你喜欢推荐卡片 (仅在有推荐且非加载状态显示) */}
+            {!isLoading && guessYouLike.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 mb-1">
+                {guessYouLike.map(shop => (
+                  <div 
+                    key={`guess-${shop.id}`}
+                    onClick={() => setSelectedShop(shop)}
+                    className="flex-none w-48 bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-2 flex gap-2 cursor-pointer hover:bg-card/80 transition-colors"
+                  >
+                    <img src={shop.imageUrl} className="w-12 h-12 rounded-md object-cover flex-none" alt={shop.name} />
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] px-1 rounded bg-[#FF4D4F] text-white flex-none">荐</span>
+                        <h4 className="text-xs font-bold truncate text-foreground">{shop.name}</h4>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] text-[#FF9900] font-bold">★{shop.rating}</span>
+                        <span className="text-[10px] text-muted-foreground truncate">{shop.sceneTheme === 'drink' ? '深夜微醺' : '当下热门'}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* 筛选按钮组 - 横向滚动 */}
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
