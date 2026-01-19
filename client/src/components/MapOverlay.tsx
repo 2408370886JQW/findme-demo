@@ -30,6 +30,8 @@ export function MapOverlay({
   const [selectedShopId, setSelectedShopId] = useState<string | undefined>(activeShopId);
   const [activeSubScene, setActiveSubScene] = useState<string | null>(activeScene || null);
   const [mappedShops, setMappedShops] = useState<Shop[]>([]);
+  const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null);
+  const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
 
   // Use prop location or default to Shanghai
@@ -90,6 +92,18 @@ export function MapOverlay({
   const handleMapReady = (map: google.maps.Map) => {
     mapRef.current = map;
     
+    // Initialize DirectionsRenderer
+    const renderer = new google.maps.DirectionsRenderer({
+      map,
+      suppressMarkers: true, // We use our own markers
+      polylineOptions: {
+        strokeColor: "#3B82F6",
+        strokeWeight: 5,
+        strokeOpacity: 0.8,
+      },
+    });
+    setDirectionsRenderer(renderer);
+    
     // Add markers for all shops
     filteredShops.forEach(shop => {
       if (!shop.coordinates) return;
@@ -136,6 +150,9 @@ export function MapOverlay({
   useEffect(() => {
     if (!mapRef.current) return;
 
+    // If route is active, don't auto-pan (let directions renderer handle bounds)
+    if (routeInfo) return;
+
     if (selectedShop && selectedShop.coordinates) {
       mapRef.current.panTo(selectedShop.coordinates);
       mapRef.current.setZoom(15);
@@ -143,7 +160,44 @@ export function MapOverlay({
       mapRef.current.panTo(userLocation);
       mapRef.current.setZoom(14);
     }
-  }, [selectedShop, userLocation]);
+  }, [selectedShop, userLocation, routeInfo]);
+
+  // Handle navigation
+  const handleNavigate = () => {
+    if (!selectedShop?.coordinates || !userLocation || !mapRef.current || !directionsRenderer) return;
+
+    const directionsService = new google.maps.DirectionsService();
+
+    directionsService.route(
+      {
+        origin: userLocation,
+        destination: selectedShop.coordinates,
+        travelMode: google.maps.TravelMode.WALKING, // Default to walking for local discovery
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK && result) {
+          directionsRenderer.setDirections(result);
+          
+          // Extract distance and duration
+          const leg = result.routes[0].legs[0];
+          setRouteInfo({
+            distance: leg.distance?.text || "",
+            duration: leg.duration?.text || "",
+          });
+        } else {
+          console.error("Directions request failed due to " + status);
+        }
+      }
+    );
+  };
+
+  // Clear route when shop selection changes or closed
+  useEffect(() => {
+    if (!selectedShopId) {
+      directionsRenderer?.setDirections({ routes: [] } as any);
+      setRouteInfo(null);
+    }
+  }, [selectedShopId, directionsRenderer]);
 
   if (!isOpen) return null;
 
@@ -232,10 +286,31 @@ export function MapOverlay({
                     </span>
                   ))}
                 </div>
-                <button className="mt-2 w-full bg-[#3B82F6] text-white text-xs font-medium py-1.5 rounded-md flex items-center justify-center gap-1 active:scale-95 transition-transform">
-                  <Navigation className="w-3 h-3" />
-                  导航前往
-                </button>
+                {routeInfo ? (
+                  <div className="mt-2 w-full bg-gray-50 rounded-md p-2 flex items-center justify-between text-xs">
+                    <div className="flex flex-col">
+                      <span className="font-bold text-gray-900">{routeInfo.duration}</span>
+                      <span className="text-gray-500">{routeInfo.distance}</span>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        directionsRenderer?.setDirections({ routes: [] } as any);
+                        setRouteInfo(null);
+                      }}
+                      className="text-gray-400 hover:text-gray-600 p-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={handleNavigate}
+                    className="mt-2 w-full bg-[#3B82F6] text-white text-xs font-medium py-1.5 rounded-md flex items-center justify-center gap-1 active:scale-95 transition-transform hover:bg-[#2563EB]"
+                  >
+                    <Navigation className="w-3 h-3" />
+                    导航前往
+                  </button>
+                )}
               </div>
             </div>
           </div>
