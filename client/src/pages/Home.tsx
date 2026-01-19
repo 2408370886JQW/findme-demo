@@ -581,8 +581,8 @@ export default function Home() {
           </div>
         )}
         
-        {/* 左侧手风琴导航栏 - 高德风格重构 (仅桌面端显示) */}
-        <nav className="hidden md:flex w-[88px] flex-none bg-background flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-30 transition-all duration-300 relative">
+        {/* 左侧手风琴导航栏 - 高德风格重构 */}
+        <nav className="w-[88px] flex-none bg-background flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-30 transition-all duration-300 relative">
           {/* 顶部全城筛选 */}
           <div className="flex items-center justify-center py-4 cursor-pointer hover:text-[#FF4D4F] transition-colors">
             <span className="text-sm font-bold text-foreground/80">全城</span>
