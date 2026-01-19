@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #F2F2F2;
+            color: #1A1A1A;
+            padding: 60px 40px; /* reduced horizontal padding to save space */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Element */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background-color: #0052CC;
+        }
+
+        /* Header */
+        .header-section {
+            margin-bottom: 40px; /* slightly reduced */
+            border-bottom: 2px solid #E0E0E0;
+            padding-bottom: 20px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px; /* reduced gap to save vertical space */
+            flex-grow: 1;
+        }
+
+        .tech-card {
+            background: #FFFFFF;
+            padding: 28px; /* reduced padding */
+            border-top: 6px solid #0052CC;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px; /* reduced */
+            border-bottom: 1px solid #EEE;
+            padding-bottom: 12px; /* reduced */
+        }
+
+        .card-icon {
+            font-size: 32px;
+            color: #0052CC;
+            margin-right: 16px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 82, 204, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .api-method {
+            font-family: 'Courier New', monospace;
+            background: #F0F4FF;
+            color: #0052CC;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px; /* reduced */
+            display: inline-block;
+            align-self: flex-start;
+        }
+
+        .process-list {
+            list-style: none;
+        }
+
+        .process-item {
+            display: flex;
+            margin-bottom: 12px; /* reduced */
+            position: relative;
+        }
+
+        .process-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            font-size: 14px;
+            font-weight: 900;
+            color: #FFF;
+            background: #0052CC;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-content {
+            flex-grow: 1;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1A1A1A;
+        }
+
+        .step-desc {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* Sync Visualization in Right Card */
+        .sync-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* reduced */
+            margin-top: 6px; /* slightly reduced */
+        }
+
+        .sync-node {
+            background: #F9F9F9;
+            padding: 12px; /* reduced */
+            border-left: 4px solid #999;
+            display: flex;
+            align-items: center;
+        }
+
+        .sync-node.active {
+            background: #F0F7FF;
+            border-left-color: #0052CC;
+        }
+
+        .node-icon {
+            font-size: 20px;
+            color: #555;
+            margin-right: 12px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .sync-node.active .node-icon {
+            color: #0052CC;
+        }
+
+        .node-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .node-sub {
+            font-size: 14px;
+            color: #777;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px; /* moved up to reduce lowest position */
+            left: 40px;
+            font-size: 14px;
+            color: #999;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 20px; /* aligned with footer */
+            right: 40px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0052CC;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h1 class="main-title">核心接口 - 核销验证</h1>
+            <p class="subtitle">Core API: Redemption Verification & Real-time Sync</p>
+        </div>
+
+        <div class="content-grid">
+            <!-- Left Column: API Logic -->
+            <div class="tech-card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-qrcode"></i></div>
+                    <div class="card-title">商家核销接口</div>
+                </div>
+                
+                <div class="api-method">POST /api/v1/merchant/redeem</div>
+
+                <ul class="process-list">
+                    <li class="process-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">校验有效性 (Validation)</div>
+                            <div class="step-desc">检查券码是否存在，验证订单状态是否为 <code>PAID</code>。</div>
+                        </div>
+                    </li>
+                    <li class="process-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">状态变更 (State Transition)</div>
+                            <div class="step-desc">原子操作更新订单状态：<code>PAID</code> &rarr; <code>USED</code>。</div>
+                        </div>
+                    </li>
+                    <li class="process-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">审计日志 (Audit Log)</div>
+                            <div class="step-desc">记录核销时间、操作商家ID及设备信息，确保可追溯。</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right Column: WebSocket Sync -->
+            <div class="tech-card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-sync-alt"></i></div>
+                    <div class="card-title">双端实时通知</div>
+                </div>
+
+                <div class="sync-flow">
+                    <div class="sync-node active">
+                        <div class="node-icon"><i class="fas fa-server"></i></div>
+                        <div>
+                            <div class="node-text">服务端 (Server)</div>
+                            <div class="node-sub">核销成功后，广播 WebSocket 消息</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sync-node">
+                        <div class="node-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <div>
+                            <div class="node-text">用户端 (User App)</div>
+                            <div class="node-sub">接收 <code>order_redeemed</code> 事件 &rarr; 触发“盖章”动画</div>
+                        </div>
+                    </div>
+
+                    <div class="sync-node">
+                        <div class="node-icon"><i class="fas fa-store"></i></div>
+                        <div>
+                            <div class="node-text">商家端 (Merchant App)</div>
+                            <div class="node-sub">接收 <code>redemption_success</code> 事件 &rarr; 显示核销详情</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">FIND ME Group Buying System Architecture</div>
+        <div class="page-number">07</div>
+    </div>
+</body>
+</html>

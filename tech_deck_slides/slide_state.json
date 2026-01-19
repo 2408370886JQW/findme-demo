@@ -1,0 +1,132 @@
+{
+  "project_info": {
+    "title": "核心目标与范围",
+    "created": 1768825330.5787735,
+    "last_updated": 1768825741.6839502,
+    "total_slides": 10
+  },
+  "slides": [
+    {
+      "id": "slide_1_goals",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "slide_2_ux_list",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "slide_3_ux_checkout",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "slide_4_model_deal",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "slide_5_model_order",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "slide_6_api_transaction",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "slide_7_api_redemption",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "slide_8_seq_purchase",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "slide_9_seq_redemption",
+      "state": "edited",
+      "pageNum": 9
+    },
+    {
+      "id": "slide_10_summary",
+      "state": "edited",
+      "pageNum": 10
+    }
+  ],
+  "outline": [
+    {
+      "id": "slide_1_goals",
+      "title": "核心目标与范围",
+      "summary": "构建从发现到核销的完整团购交易闭环，涵盖前端交互与后端能力，旨在提升转化率与数据准确性。",
+      "image_plan": "",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_2_ux_list",
+      "title": "交互体验 - 视觉诱导与沉浸",
+      "summary": "列表页通过主色调强调价格折扣，详情页利用共享元素转场与结构化菜单营造沉浸感。",
+      "image_plan": "/home/ubuntu/findme-demo/slides_assets/ux_list_view.png - This image perfectly illustrates the \"列表诱导\" (list inducement) and \"视觉重心\" (visual focus) mentioned in the slide, showing a clear price, discount, and \"抢购\" button.",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_3_ux_checkout",
+      "title": "交互体验 - 下单与核销",
+      "summary": "底部浮层实现丝滑下单，全屏动画反馈支付成功，屏幕高亮与盖章动画增强核销仪式感。",
+      "image_plan": "/home/ubuntu/findme-demo/slides_assets/ux_redemption.png - This image directly shows the \"核销仪式\" (redemption ritual) with the \"REDEEMED\" stamp, confetti animation, and QR code, matching the slide's content on celebratory payment feedback and nuclear verification.",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_4_model_deal",
+      "title": "数据模型 - 套餐 (Deal)",
+      "summary": "结构化设计菜单与购买须知，明确库存、销量及状态流转等关键字段定义。",
+      "image_plan": "/home/ubuntu/findme-demo/slides_assets/ux_detail_view.png - This image shows a structured menu with items and prices, which directly relates to the \"结构化商品管理\" and \"结构化菜单\" mentioned in the slide, specifically the time-axis/multi-level classification for a deal.",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_5_model_order",
+      "title": "数据模型 - 订单 (Order)",
+      "summary": "定义订单状态机流转逻辑，以及基于算法混淆生成的12位唯一核销码凭证体系。",
+      "image_plan": "",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_6_api_transaction",
+      "title": "核心接口 - 交易链路",
+      "summary": "详解下单接口的Redis原子预扣库存机制，以及支付回调的验签、状态变更与消息推送逻辑。",
+      "image_plan": "/home/ubuntu/findme-demo/slides_assets/architecture_overview.png - This image is a perfect system architecture diagram showing the flow between User App, Merchant App, API Gateway, Order Service, Payment Service, Redis, and DB, which is ideal for illustrating the \"核心接口\" and transaction flow.",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_7_api_redemption",
+      "title": "核心接口 - 核销验证",
+      "summary": "阐述商家核销接口的校验逻辑，以及通过WebSocket实现的双端实时状态同步机制。",
+      "image_plan": "",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_8_seq_purchase",
+      "title": "系统时序 - 购买流程",
+      "summary": "梳理从用户下单、库存预扣、支付回调到生成核销码的全链路时序交互。",
+      "image_plan": "",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_9_seq_redemption",
+      "title": "系统时序 - 核销流程",
+      "summary": "展示用户出示、商家扫码、服务端校验及双端推送的闭环流程与安全机制。",
+      "image_plan": "",
+      "slide_template_key": ""
+    },
+    {
+      "id": "slide_10_summary",
+      "title": "总结与下一步",
+      "summary": "回顾极致交互与严谨逻辑的技术亮点，规划后续开发排期、压测及埋点工作。",
+      "image_plan": "",
+      "slide_template_key": ""
+    }
+  ]
+}

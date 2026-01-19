@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #F2F2F2;
+            color: #1A1A1A;
+            padding: 60px 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Element */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background-color: #0052CC;
+        }
+
+        /* Left Column: Content */
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 40px;
+            letter-spacing: -1px;
+        }
+
+        .feature-group {
+            margin-bottom: 40px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0052CC;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #E0E0E0;
+            padding-bottom: 8px;
+            display: inline-block;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-item {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            color: #333;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .feature-item i {
+            color: #0052CC;
+            margin-right: 12px;
+            margin-top: 4px;
+            font-size: 16px;
+        }
+
+        /* Right Column: Visual */
+        .visual-column {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #E6E6E6;
+            border-radius: 4px;
+            padding: 20px;
+            height: 100%;
+        }
+
+        .ui-mockup {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: contain;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-radius: 12px;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            left: 80px;
+            font-size: 14px;
+            color: #999;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 40px;
+            right: 80px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0052CC;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="content-column">
+            <h2 class="section-title">交互体验<br>视觉诱导与沉浸</h2>
+            
+            <div class="feature-group">
+                <div class="feature-title">列表页 (List View)</div>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <i class="fas fa-eye"></i>
+                        <span><strong>视觉重心：</strong>主色调强调价格与折扣，销量背书增加信任感。</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="fas fa-hand-pointer"></i>
+                        <span><strong>微交互：</strong>按压反馈与“抢购”按钮缩短决策路径。</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="feature-group">
+                <div class="feature-title">详情页 (Detail View)</div>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                        <span><strong>共享元素转场：</strong>图片平滑放大，背景高斯模糊，营造沉浸感。</span>
+                    </li>
+                    <li class="feature-item">
+                        <i class="fas fa-list-ul"></i>
+                        <span><strong>结构化菜单：</strong>时间轴展示上菜顺序，折叠过长内容。</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="visual-column">
+            <img src="/home/ubuntu/findme-demo/slides_assets/ux_list_view.png" alt="List View UI" class="ui-mockup">
+        </div>
+
+        <div class="footer">FIND ME Group Buying System Architecture</div>
+        <div class="page-number">02</div>
+    </div>
+</body>
+</html>

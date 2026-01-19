@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #F2F2F2;
+            color: #1A1A1A;
+            padding: 60px 80px 24px; /* keep top padding (60px) as required, reduce bottom to shrink overall height */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Element */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background-color: #0052CC;
+        }
+
+        /* Left Column: Highlights */
+        .highlights-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 40px; /* slightly reduced to save height but not upper padding */
+            letter-spacing: -1px;
+        }
+
+        .highlight-box {
+            background: #FFFFFF;
+            padding: 24px; /* reduced from 32px */
+            border-left: 6px solid #0052CC;
+            margin-bottom: 20px; /* reduced from 30px */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .highlight-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0052CC;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .highlight-title i {
+            margin-right: 12px;
+        }
+
+        .highlight-desc {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Right Column: Next Steps */
+        .steps-column {
+            background-color: #0052CC;
+            color: #FFFFFF;
+            padding: 36px; /* reduced from 50px */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Extend the blue background to the right edge */
+        .steps-column::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -1000px; /* Large enough to cover */
+            bottom: 0;
+            width: 1000px;
+            background-color: #0052CC;
+        }
+
+        .column-header {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 24px; /* reduced from 40px */
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 12px; /* reduced from 20px */
+        }
+
+        .step-item {
+            display: flex;
+            margin-bottom: 18px; /* reduced from 30px */
+            align-items: flex-start;
+        }
+
+        .step-number {
+            font-size: 48px;
+            font-weight: 900;
+            color: rgba(255,255,255,0.2);
+            line-height: 1;
+            margin-right: 16px;
+            min-width: 60px;
+        }
+
+        .step-content {
+            padding-top: 8px;
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            font-size: 16px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            left: 80px;
+            font-size: 14px;
+            color: #999;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 40px;
+            right: 80px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+        
+        .page-number.on-dark {
+            color: #FFFFFF;
+            right: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="highlights-column">
+            <h1 class="main-title">总结与下一步<br>Summary & Next Steps</h1>
+            
+            <div class="highlight-box">
+                <div class="highlight-title">
+                    <i class="fas fa-magic"></i> 极致交互 (UX)
+                </div>
+                <div class="highlight-desc">
+                    通过共享元素转场、底部浮层下单及仪式感核销动画，打造了沉浸式、无缝衔接的消费体验。
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <div class="highlight-title">
+                    <i class="fas fa-server"></i> 严谨逻辑 (Backend)
+                </div>
+                <div class="highlight-desc">
+                    基于状态机的订单流转、Redis 原子库存扣减及高安全性的核销码算法，确保了交易的准确性与安全性。
+                </div>
+            </div>
+            
+            <div class="footer">FIND ME Group Buying System Architecture</div>
+        </div>
+
+        <div class="steps-column">
+            <div class="column-header">下一步计划 (Action Plan)</div>
+
+            <div class="step-item">
+                <div class="step-number">01</div>
+                <div class="step-content">
+                    <div class="step-title">开发排期与联调</div>
+                    <div class="step-desc">制定详细的前后端开发时间表，并安排 API 联调测试。</div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number">02</div>
+                <div class="step-content">
+                    <div class="step-title">压力测试 (Stress Test)</div>
+                    <div class="step-desc">针对秒杀场景进行高并发压测，验证 Redis 扣减与数据库性能。</div>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number">03</div>
+                <div class="step-content">
+                    <div class="step-title">数据埋点规划</div>
+                    <div class="step-desc">定义关键转化漏斗埋点，为后续运营优化提供数据支持。</div>
+                </div>
+            </div>
+            
+            <div class="page-number on-dark">10</div>
+        </div>
+    </div>
+</body>
+</html>

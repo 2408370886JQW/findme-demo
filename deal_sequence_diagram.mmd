@@ -1,0 +1,52 @@
+sequenceDiagram
+    autonumber
+    participant User as 用户端 (App)
+    participant Merchant as 商家端 (App/Web)
+    participant Server as 服务端 (API)
+    participant DB as 数据库/Redis
+    participant Payment as 支付网关 (微信/支付宝)
+
+    Note over User, Payment: 阶段一：购买流程 (Purchase Flow)
+
+    User->>Server: 1. 创建订单 (POST /orders)
+    Server->>DB: 1.1 预扣库存 (Redis Lua)
+    alt 库存不足
+        Server-->>User: 返回库存不足错误
+    else 库存充足
+        Server->>DB: 1.2 创建待支付订单 (PENDING_PAY)
+        Server-->>User: 返回 orderId & 支付参数
+    end
+
+    User->>Payment: 2. 调起支付 SDK
+    User-->>Server: (可选) 轮询订单状态
+    
+    Payment-->>User: 2.1 支付成功提示
+    Payment->>Server: 3. 异步回调 (Webhook)
+    
+    Server->>Server: 3.1 验签 & 校验金额
+    Server->>DB: 3.2 更新订单状态 (PAID)
+    Server->>Server: 3.3 生成核销码 (12位唯一码)
+    Server->>DB: 3.4 保存核销码 & 关联订单
+    
+    Server-->>User: 4. WebSocket 推送: 支付成功
+    User->>User: 4.1 展示全屏成功动画 & 核销码
+
+    Note over User, Payment: 阶段二：核销流程 (Redemption Flow)
+
+    User->>User: 5. 出示核销码 (屏幕高亮)
+    Merchant->>Server: 6. 扫码/输码核销 (POST /redeem)
+    
+    Server->>DB: 6.1 查询核销码状态
+    alt 状态无效 (已核销/退款/不存在)
+        Server-->>Merchant: 返回错误提示
+    else 状态有效 (PAID)
+        Server->>DB: 6.2 更新订单状态 (USED)
+        Server->>DB: 6.3 记录核销日志
+        Server-->>Merchant: 返回核销成功
+        
+        par 双端通知
+            Server-->>User: 7. WebSocket 推送: 核销成功
+            User->>User: 7.1 展示“已核销”盖章动画
+            Server-->>Merchant: 7.2 显示核销成功详情
+        end
+    end

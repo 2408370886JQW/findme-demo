@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&family=JetBrains+Mono:wght@500&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #F2F2F2;
+            color: #1A1A1A;
+            padding: 60px 80px 30px; /* reduced bottom padding */
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Element */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background-color: #0052CC;
+        }
+
+        /* Header */
+        .header-section {
+            border-bottom: 2px solid #E0E0E0;
+            padding-bottom: 20px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: #1A1A1A;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-top: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px; /* reduced gap */
+        }
+
+        /* Column Styles */
+        .column-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0052CC;
+            margin-bottom: 12px; /* reduced */
+            display: flex;
+            align-items: center;
+        }
+
+        .column-title i {
+            margin-right: 12px;
+        }
+
+        /* State Machine Visualization */
+        .state-flow {
+            position: relative;
+            padding-left: 30px;
+            border-left: 4px solid #E0E0E0;
+        }
+
+        .state-item {
+            position: relative;
+            margin-bottom: 12px; /* reduced */
+        }
+
+        .state-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .state-item::before {
+            content: '';
+            position: absolute;
+            left: -38px; /* 30px padding + 4px border + 4px offset */
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            background-color: #0052CC;
+            border-radius: 50%;
+            border: 4px solid #F2F2F2;
+        }
+
+        .state-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A1A1A;
+            background: #E6E6E6;
+            padding: 2px 6px; /* reduced */
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 6px; /* reduced */
+        }
+
+        .state-desc {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.3; /* slightly tighter */
+        }
+
+        .state-desc strong {
+            color: #0052CC;
+        }
+
+        /* Credentials Block */
+        .credential-card {
+            background: #FFFFFF;
+            padding: 12px; /* reduced */
+            border-left: 6px solid #0052CC;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 8px; /* reduced */
+        }
+
+        .field-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            color: #0052CC;
+            margin-bottom: 8px; /* reduced */
+            display: block;
+        }
+
+        .field-desc {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .field-desc span {
+            display: block;
+            margin-top: 6px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 30px; /* slight lift */
+            left: 80px;
+            font-size: 14px;
+            color: #999;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 30px; /* align with footer */
+            right: 80px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0052CC;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header-section">
+            <h1 class="main-title">数据模型 - 订单</h1>
+            <p class="subtitle">Data Model: Order State Machine & Credentials</p>
+        </div>
+
+        <div class="content-grid">
+            <!-- Left Column: State Machine -->
+            <div class="column">
+                <div class="column-title">
+                    <i class="fas fa-project-diagram"></i> 状态机 (State Machine)
+                </div>
+                <div class="state-flow">
+                    <div class="state-item">
+                        <div class="state-code">PENDING_PAY</div>
+                        <div class="state-desc">
+                            <strong>待支付</strong><br>
+                            订单创建，Redis 预扣库存，15分钟未支付自动释放。
+                        </div>
+                    </div>
+                    <div class="state-item">
+                        <div class="state-code">PAID</div>
+                        <div class="state-desc">
+                            <strong>已支付</strong><br>
+                            支付回调成功，生成核销码，库存正式扣减。
+                        </div>
+                    </div>
+                    <div class="state-item">
+                        <div class="state-code">USED</div>
+                        <div class="state-desc">
+                            <strong>已核销</strong><br>
+                            商家扫码验证通过，交易闭环（终态）。
+                        </div>
+                    </div>
+                    <div class="state-item">
+                        <div class="state-code" style="color: #666; background: #DDD;">REFUNDING / REFUNDED</div>
+                        <div class="state-desc">
+                            <strong>退款流程</strong><br>
+                            用户发起退款或系统自动退款，库存回滚。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Credentials -->
+            <div class="column">
+                <div class="column-title">
+                    <i class="fas fa-id-card"></i> 核销凭证 (Credentials)
+                </div>
+                
+                <div class="credential-card">
+                    <span class="field-name">redemptionCode</span>
+                    <div class="field-desc">
+                        12位唯一数字核销码
+                        <span>算法: (Timestamp + Random + Checksum) 混淆生成，确保全局唯一且不可预测。</span>
+                    </div>
+                </div>
+
+                <div class="credential-card">
+                    <span class="field-name">qrCodeUrl</span>
+                    <div class="field-desc">
+                        动态二维码链接
+                        <span>用于前端展示，支持高亮扫码。包含加密后的核销码信息。</span>
+                    </div>
+                </div>
+
+                <div class="credential-card" style="border-left-color: #666;">
+                    <span class="field-name" style="color: #666;">id (Primary Key)</span>
+                    <div class="field-desc">
+                        全局唯一订单号
+                        <span>格式: ord_20260119_xxxx，用于数据库索引与分表查询。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">FIND ME Group Buying System Architecture</div>
+        <div class="page-number">05</div>
+    </div>
+</body>
+</html>

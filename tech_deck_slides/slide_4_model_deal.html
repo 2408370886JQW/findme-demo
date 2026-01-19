@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #F2F2F2;
+            color: #1A1A1A;
+            padding: 60px 80px;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Element */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background-color: #0052CC;
+        }
+
+        /* Left Column: Visual UI */
+        .visual-column {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #E6E6E6;
+            border-radius: 12px;
+            padding: 20px;
+            height: 100%;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        .ui-mockup {
+            width: 100%;
+            height: auto;
+            max-height: 550px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        /* Right Column: Content */
+        .content-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            letter-spacing: -1px;
+        }
+
+        .code-block {
+            background: #FFFFFF;
+            border-left: 4px solid #0052CC;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .keyword { color: #0052CC; font-weight: 700; }
+        .type { color: #D32F2F; }
+        .comment { color: #888; font-style: italic; }
+        .string { color: #388E3C; }
+
+        .feature-group {
+            margin-top: 10px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-title i {
+            color: #0052CC;
+            margin-right: 10px;
+        }
+
+        .key-fields-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field-item {
+            background: #FFFFFF;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid #E0E0E0;
+        }
+
+        .field-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #0052CC;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .field-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            left: 80px;
+            font-size: 14px;
+            color: #999;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 40px;
+            right: 80px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0052CC;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="visual-column">
+            <img src="/home/ubuntu/findme-demo/slides_assets/ux_detail_view.png" alt="Structured Menu UI" class="ui-mockup">
+        </div>
+
+        <div class="content-column">
+            <h2 class="section-title">数据模型 - 套餐 (Deal)</h2>
+            
+            <div class="code-block">
+<span class="keyword">interface</span> Deal {
+  <span class="comment">// 结构化菜单 (支持时间轴展示)</span>
+  menu: {
+    category: <span class="type">string</span>; <span class="comment">// e.g. "前菜"</span>
+    items: {
+      name: <span class="type">string</span>;
+      imageUrl?: <span class="type">string</span>; <span class="comment">// 配图联动</span>
+    }[];
+  }[];
+
+  <span class="comment">// 结构化购买须知</span>
+  rules: {
+    validity: <span class="type">string</span>;
+    refundPolicy: <span class="type">string</span>;
+  };
+}
+            </div>
+
+            <div class="feature-group">
+                <div class="feature-title"><i class="fas fa-database"></i> 关键字段 (Key Fields)</div>
+                <div class="key-fields-grid">
+                    <div class="field-item">
+                        <div class="field-name">stock</div>
+                        <div class="field-desc">库存管理 (-1 为无限)</div>
+                    </div>
+                    <div class="field-item">
+                        <div class="field-name">salesCount</div>
+                        <div class="field-desc">销量展示 (半年售 1000+)</div>
+                    </div>
+                    <div class="field-item">
+                        <div class="field-name">status</div>
+                        <div class="field-desc">ACTIVE / SOLD_OUT / OFFLINE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">FIND ME Group Buying System Architecture</div>
+        <div class="page-number">04</div>
+    </div>
+</body>
+</html>

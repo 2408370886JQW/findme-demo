@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px; /* keep as required */
+            background-color: #F2F2F2;
+            color: #1A1A1A;
+            padding: 60px 80px;
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background-color: #0052CC;
+        }
+
+        .flow-column { display: flex; flex-direction: column; }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 24px; /* reduced to save vertical space */
+            letter-spacing: -1px;
+        }
+
+        /* Timeline: switched to two-column grid to reduce vertical length */
+        .timeline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 24px; /* row-gap, col-gap */
+            padding-left: 0; /* removed long vertical line */
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .timeline-marker {
+            width: 14px;
+            height: 14px;
+            background-color: #0052CC;
+            border-radius: 50%;
+            border: 3px solid #F2F2F2;
+            flex: 0 0 14px;
+            margin-top: 6px;
+        }
+
+        .timeline-content {
+            background: #FFFFFF;
+            padding: 16px 18px; /* slightly reduced padding */
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0052CC;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step-desc {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .security-column {
+            background-color: #E8F0FE;
+            padding: 28px; /* reduced */
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 4px solid #0052CC;
+        }
+
+        .security-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 18px; /* reduced */
+            color: #0052CC;
+            border-bottom: 2px solid #BDC3C7;
+            padding-bottom: 12px;
+        }
+
+        .security-item { margin-bottom: 16px; }
+
+        .security-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .security-title i { margin-right: 10px; color: #0052CC; }
+
+        .security-desc { font-size: 16px; color: #555; line-height: 1.5; }
+
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            left: 80px;
+            font-size: 14px;
+            color: #999;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 40px;
+            right: 80px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0052CC;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="flow-column">
+            <h2 class="section-title">系统时序<br>核销流程 (Redemption Flow)</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="step-title">
+                            <span>1. 用户出示</span>
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="step-desc">用户打开核销码页面，App 自动调亮屏幕至 100%，展示高对比度二维码。</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="step-title">
+                            <span>2. 商家扫码</span>
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="step-desc">商家使用 App 扫描二维码，调用服务端核销接口 (POST /redeem)。</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="step-title">
+                            <span>3. 服务端校验</span>
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="step-desc">校验券码有效性、订单状态 (PAID) 及所属店铺权限，原子更新状态为 USED。</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="step-title">
+                            <span>4. 双端闭环</span>
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="step-desc">WebSocket 同时推送：用户端展示“盖章”动画，商家端展示核销成功详情。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="security-column">
+            <div class="security-header"><i class="fas fa-shield-alt"></i> 安全机制 (Security)</div>
+
+            <div class="security-item">
+                <div class="security-title"><i class="fas fa-fingerprint"></i> 唯一性与不可预测</div>
+                <div class="security-desc">12位核销码基于混淆算法生成，无规律可循，防止暴力破解与伪造。</div>
+            </div>
+
+            <div class="security-item">
+                <div class="security-title"><i class="fas fa-redo"></i> 接口幂等性</div>
+                <div class="security-desc">核销接口设计支持幂等调用，防止网络重试导致的重复核销或状态异常。</div>
+            </div>
+        </div>
+
+        <div class="footer">FIND ME Group Buying System Architecture</div>
+        <div class="page-number">09</div>
+    </div>
+</body>
+</html>

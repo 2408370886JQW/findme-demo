@@ -11,7 +11,7 @@ export interface Shop {
   description: string;
   reviewCount: number;
   packageType: string; // 'couple' | 'bestie' | 'brother' | 'fun'
-  sceneTheme: string; // 'date' | 'anniversary' | 'afternoon_tea' | 'photo' | 'drink' | 'game' | 'cosplay' | 'private'
+  sceneTheme: string; // Updated scene themes
   deals?: {
     title: string;
     price: number;
@@ -54,33 +54,22 @@ export const PACKAGE_TYPES: PackageType[] = [
 ];
 
 export const SCENE_THEMES: SceneTheme[] = [
-  // Couple Scenes
-  { id: 'date', name: '浪漫约会', packageTypeId: 'couple' },
-  { id: 'anniversary', name: '纪念日', packageTypeId: 'couple' },
-  { id: 'university', name: '校园回忆', packageTypeId: 'couple' },
-  { id: 'proposal', name: '求婚策划', packageTypeId: 'couple' },
-  { id: 'weekend_drink', name: '周末微醺', packageTypeId: 'couple' },
+  // Couple Scenes (情侣套餐)
+  { id: 'couple_date', name: '两人约会', packageTypeId: 'couple' },
+  { id: 'couple_relax', name: '轻松或浪漫', packageTypeId: 'couple' },
 
-  // Bestie Scenes
-  { id: 'afternoon_tea', name: '下午茶', packageTypeId: 'bestie' },
-  { id: 'photo', name: '网红拍照', packageTypeId: 'bestie' },
-  { id: 'shopping', name: '逛街探店', packageTypeId: 'bestie' },
-  { id: 'spa', name: '美容SPA', packageTypeId: 'bestie' },
-  { id: 'diy', name: '手作DIY', packageTypeId: 'bestie' },
+  // Bestie Scenes (闺蜜套餐)
+  { id: 'bestie_chat', name: '闺蜜叙旧', packageTypeId: 'bestie' },
+  { id: 'bestie_photo', name: '可拍照', packageTypeId: 'bestie' },
+  { id: 'bestie_emotion', name: '有情绪价值', packageTypeId: 'bestie' },
 
-  // Brother Scenes
-  { id: 'drink', name: '喝酒撸串', packageTypeId: 'brother' },
-  { id: 'game', name: '电竞开黑', packageTypeId: 'brother' },
-  { id: 'sports', name: '运动竞技', packageTypeId: 'brother' },
-  { id: 'ktv', name: 'KTV狂欢', packageTypeId: 'brother' },
-  { id: 'bath', name: '洗浴汗蒸', packageTypeId: 'brother' },
+  // Brother Scenes (兄弟套餐)
+  { id: 'brother_party', name: '兄弟聚会', packageTypeId: 'brother' },
+  { id: 'brother_deep', name: '深度聊天', packageTypeId: 'brother' },
 
-  // Fun Scenes
-  { id: 'cosplay', name: '二次元', packageTypeId: 'fun' },
-  { id: 'private', name: '私密影院', packageTypeId: 'fun' },
-  { id: 'roleplay', name: '剧本杀', packageTypeId: 'fun' },
-  { id: 'bar', name: '主题酒吧', packageTypeId: 'fun' },
-  { id: 'escape', name: '密室逃脱', packageTypeId: 'fun' },
+  // Fun Scenes (情趣套餐)
+  { id: 'fun_heat', name: '感情升温', packageTypeId: 'fun' },
+  { id: 'fun_vibe', name: '氛围拉满', packageTypeId: 'fun' },
 ];
 
 export const MOCK_SHOPS: Shop[] = [
@@ -96,7 +85,7 @@ export const MOCK_SHOPS: Shop[] = [
     description: '浪漫的法式小馆，拥有绝佳的城市夜景视野，适合情侣约会。',
     reviewCount: 1205,
     packageType: 'couple',
-    sceneTheme: 'date',
+    sceneTheme: 'couple_date',
     deals: [
       { title: '浪漫双人烛光晚餐', price: 520, originalPrice: 888, tags: ['约会首选', '含红酒'] }
     ],
@@ -134,7 +123,7 @@ export const MOCK_SHOPS: Shop[] = [
     description: '在星空下小酌一杯，享受二人世界的静谧时光。',
     reviewCount: 856,
     packageType: 'couple',
-    sceneTheme: 'date',
+    sceneTheme: 'couple_relax',
     deals: [
       { title: '微醺双人鸡尾酒套餐', price: 298, originalPrice: 468, tags: ['特调饮品'] }
     ],
@@ -153,7 +142,7 @@ export const MOCK_SHOPS: Shop[] = [
     ]
   },
   
-  // Couple - Anniversary
+  // Couple - Anniversary (Mapped to couple_date for now)
   {
     id: '3',
     name: 'Rose Garden 玫瑰花园',
@@ -165,14 +154,14 @@ export const MOCK_SHOPS: Shop[] = [
     description: '被玫瑰花海包围的餐厅，提供纪念日布置服务。',
     reviewCount: 2100,
     packageType: 'couple',
-    sceneTheme: 'anniversary',
+    sceneTheme: 'couple_date',
     deals: [
       { title: '至尊纪念日晚宴', price: 1314, originalPrice: 1999, tags: ['包含布置', '送鲜花'] }
     ],
     coordinates: { lat: 31.2354, lng: 121.4787 }
   },
 
-  // Bestie - Afternoon Tea
+  // Bestie - Afternoon Tea (Mapped to bestie_photo)
   {
     id: '4',
     name: 'Alice\'s Tea Party 爱丽丝茶屋',
@@ -184,14 +173,14 @@ export const MOCK_SHOPS: Shop[] = [
     description: '仿佛置身童话世界的下午茶，每一款甜点都精致得让人舍不得吃。',
     reviewCount: 3420,
     packageType: 'bestie',
-    sceneTheme: 'afternoon_tea',
+    sceneTheme: 'bestie_photo',
     deals: [
       { title: '梦幻双人下午茶', price: 198, originalPrice: 368, tags: ['拍照出片', '无限续杯'] }
     ],
     coordinates: { lat: 31.2284, lng: 121.4717 }
   },
 
-  // Bestie - Photo
+  // Bestie - Photo (Mapped to bestie_photo)
   {
     id: '5',
     name: 'Pink Dream Studio 粉色梦境馆',
@@ -203,14 +192,14 @@ export const MOCK_SHOPS: Shop[] = [
     description: '30+主题场景任拍，提供百套服装，和闺蜜拍出大片。',
     reviewCount: 1560,
     packageType: 'bestie',
-    sceneTheme: 'photo',
+    sceneTheme: 'bestie_photo',
     deals: [
       { title: '双人畅拍2小时', price: 128, originalPrice: 256, tags: ['服装任选', '送精修'] }
     ],
     coordinates: { lat: 31.2384, lng: 121.4827 }
   },
 
-  // Brother - Drink
+  // Brother - Drink (Mapped to brother_party)
   {
     id: '6',
     name: 'Brothers\' BBQ 兄弟烧烤',
@@ -222,7 +211,7 @@ export const MOCK_SHOPS: Shop[] = [
     description: '大口吃肉，大碗喝酒，这就是兄弟聚会的正确打开方式。',
     reviewCount: 5600,
     packageType: 'brother',
-    sceneTheme: 'drink',
+    sceneTheme: 'brother_party',
     deals: [
       { title: '兄弟欢聚4人餐', price: 398, originalPrice: 588, tags: ['啤酒畅饮', '量大管饱'] }
     ],
@@ -240,7 +229,7 @@ export const MOCK_SHOPS: Shop[] = [
     ]
   },
 
-  // Brother - Game
+  // Brother - Game (Mapped to brother_party)
   {
     id: '7',
     name: 'CyberZone E-Sports 赛博电竞馆',
@@ -252,14 +241,14 @@ export const MOCK_SHOPS: Shop[] = [
     description: '顶级配置，专业电竞椅，带上兄弟一起开黑上分。',
     reviewCount: 2300,
     packageType: 'brother',
-    sceneTheme: 'game',
+    sceneTheme: 'brother_party',
     deals: [
       { title: '五连坐包房通宵卡', price: 299, originalPrice: 500, tags: ['送饮料', '私密包间'] }
     ],
     coordinates: { lat: 31.2274, lng: 121.4707 }
   },
 
-  // Fun - Cosplay
+  // Fun - Cosplay (Mapped to fun_vibe)
   {
     id: '8',
     name: 'Dimension Gate 次步元之门',
@@ -271,14 +260,14 @@ export const MOCK_SHOPS: Shop[] = [
     description: '二次元爱好者的天堂，定期举办Cosplay聚会。',
     reviewCount: 1890,
     packageType: 'fun',
-    sceneTheme: 'cosplay',
+    sceneTheme: 'fun_vibe',
     deals: [
       { title: '单人主题套餐+周边', price: 88, originalPrice: 128, tags: ['送限定徽章'] }
     ],
     coordinates: { lat: 31.2334, lng: 121.4767 }
   },
 
-  // Fun - Private
+  // Fun - Private (Mapped to fun_heat)
   {
     id: '9',
     name: 'Secret Garden Cinema 私密花园影院',
@@ -290,7 +279,7 @@ export const MOCK_SHOPS: Shop[] = [
     description: '私密舒适的观影空间，海量片源随心看。',
     reviewCount: 1120,
     packageType: 'fun',
-    sceneTheme: 'private',
+    sceneTheme: 'fun_heat',
     deals: [
       { title: '情侣观影3小时', price: 168, originalPrice: 298, tags: ['送爆米花', '可躺看'] }
     ],

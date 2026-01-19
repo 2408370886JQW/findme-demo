@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+SC:wght@400;700;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #F2F2F2;
+            color: #1A1A1A;
+            padding: 60px 40px; /* reduced horizontal padding to save space */
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 40px; /* slightly reduced gap */
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Element */
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background-color: #0052CC;
+        }
+
+        /* Left Column: Main Flow */
+        .flow-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 24px; /* reduced spacing */
+            letter-spacing: -1px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 10px;
+            bottom: 10px;
+            width: 2px;
+            background-color: #E0E0E0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 12px; /* reduced gap between steps */
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background-color: #0052CC;
+            border-radius: 50%;
+            border: 4px solid #F2F2F2;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            background: #FFFFFF;
+            padding: 12px 18px; /* reduced inner padding */
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0052CC;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .step-desc {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Right Column: Exceptions */
+        .exception-column {
+            background-color: #E6E6E6;
+            padding: 20px; /* reduced padding */
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .exception-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px; /* reduced spacing */
+            color: #333;
+            border-bottom: 2px solid #CCC;
+            padding-bottom: 12px;
+        }
+
+        .exception-item {
+            margin-bottom: 16px; /* reduced spacing */
+        }
+
+        .exception-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #D32F2F; /* Red for error/exception */
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .exception-title i {
+            margin-right: 10px;
+        }
+
+        .exception-desc {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 20px; /* moved up to save space */
+            left: 40px;
+            font-size: 14px;
+            color: #999;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 20px; /* moved up */
+            right: 40px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #0052CC;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="flow-column">
+            <h2 class="section-title">系统时序<br>购买流程 (Purchase Flow)</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="step-title">
+                            <span>1. 下单与预占</span>
+                            <i class="fas fa-cart-plus"></i>
+                        </div>
+                        <div class="step-desc">
+                            用户发起下单请求 (POST /orders)，服务端通过 Redis Lua 脚本执行原子库存预扣，防止超卖。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="step-title">
+                            <span>2. 支付回调</span>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="step-desc">
+                            接收支付网关异步通知 (Webhook)，验证签名与金额，将订单状态更新为 PAID。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="step-title">
+                            <span>3. 凭证生成</span>
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="step-desc">
+                            生成 12 位全局唯一核销码 (Redemption Code)，并持久化存储至数据库。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="step-title">
+                            <span>4. 实时通知</span>
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="step-desc">
+                            通过 WebSocket 推送支付成功消息，前端展示全屏成功动画与核销码。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="exception-column">
+            <div class="exception-header">
+                <i class="fas fa-exclamation-triangle"></i> 异常处理 (Exceptions)
+            </div>
+
+            <div class="exception-item">
+                <div class="exception-title">
+                    <i class="fas fa-ban"></i> 库存不足
+                </div>
+                <div class="exception-desc">
+                    Redis 预扣失败，直接返回 400 错误，提示用户“已抢光”，无需进入数据库层。
+                </div>
+            </div>
+
+            <div class="exception-item">
+                <div class="exception-title">
+                    <i class="fas fa-clock"></i> 支付超时
+                </div>
+                <div class="exception-desc">
+                    若 15 分钟内未收到支付回调，延时任务自动释放 Redis 预占库存，订单关闭。
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">FIND ME Group Buying System Architecture</div>
+        <div class="page-number">08</div>
+    </div>
+</body>
+</html>
