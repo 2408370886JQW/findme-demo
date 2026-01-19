@@ -329,6 +329,7 @@ export interface Order {
   createTime: string;
   payTime?: string;
   useTime?: string;
+  expireTime?: string; // 过期时间
   verifyCode?: string; // 核销码 (e.g., "8829 1034")
   qrCodeUrl?: string; // 二维码图片链接 (mock)
 }
@@ -347,6 +348,7 @@ export const MOCK_ORDERS: Order[] = [
     status: 'unused',
     createTime: '2023-10-25 14:30:00',
     payTime: '2023-10-25 14:32:15',
+    expireTime: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(), // 3小时后过期
     verifyCode: '8829 1034',
     qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FINDME-88291034'
   },
@@ -378,6 +380,7 @@ export const MOCK_ORDERS: Order[] = [
     quantity: 1,
     totalPrice: 198,
     status: 'pending', // 待付款
-    createTime: '2023-10-26 10:00:00'
+    createTime: '2023-10-26 10:00:00',
+    expireTime: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30分钟后过期
   }
 ];
