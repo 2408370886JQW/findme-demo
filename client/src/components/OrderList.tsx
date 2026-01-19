@@ -5,12 +5,12 @@ import { ShoppingBag, ArrowLeft } from 'lucide-react';
 
 interface OrderListProps {
   onBack: () => void;
-  onSelectOrder: (order: Order) => void;
+  onOrderClick: (order: Order) => void;
 }
 
 type FilterType = 'all' | OrderStatus;
 
-export function OrderList({ onBack, onSelectOrder }: OrderListProps) {
+export function OrderList({ onBack, onOrderClick }: OrderListProps) {
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
   const filters: { id: FilterType; label: string }[] = [
@@ -66,7 +66,7 @@ export function OrderList({ onBack, onSelectOrder }: OrderListProps) {
             <OrderCard 
               key={order.id} 
               order={order} 
-              onClick={onSelectOrder} 
+              onClick={onOrderClick} 
             />
           ))
         ) : (

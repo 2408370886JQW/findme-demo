@@ -14,6 +14,7 @@ interface MapOverlayProps {
   activeScene?: string;
   onSceneChange?: (sceneId: string) => void;
   userLocation?: { lat: number; lng: number } | null;
+  onShopClick?: (shop: Shop) => void;
 }
 
 export function MapOverlay({ 
@@ -25,7 +26,8 @@ export function MapOverlay({
   activeCategory,
   activeScene,
   onSceneChange,
-  userLocation: propUserLocation
+  userLocation: propUserLocation,
+  onShopClick
 }: MapOverlayProps) {
   const [selectedShopId, setSelectedShopId] = useState<string | undefined>(activeShopId);
   const [activeSubScene, setActiveSubScene] = useState<string | null>(activeScene || null);
@@ -124,6 +126,7 @@ export function MapOverlay({
 
       marker.addListener("click", () => {
         setSelectedShopId(shop.id);
+        onShopClick?.(shop);
       });
     });
 

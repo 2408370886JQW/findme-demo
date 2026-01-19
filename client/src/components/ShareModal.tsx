@@ -6,9 +6,10 @@ import { Shop } from '@/lib/data';
 interface ShareModalProps {
   shop: Shop;
   onClose: () => void;
+  isOpen: boolean;
 }
 
-export function ShareModal({ shop, onClose }: ShareModalProps) {
+export function ShareModal({ shop, onClose, isOpen }: ShareModalProps) {
   const posterRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -34,6 +35,8 @@ export function ShareModal({ shop, onClose }: ShareModalProps) {
       setIsGenerating(false);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-4">

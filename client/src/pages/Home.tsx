@@ -147,11 +147,11 @@ export default function Home() {
   // 获取分类副标题
   const getCategorySubtitle = (categoryId: string) => {
     switch (categoryId) {
-      case 'couple': return '甜蜜升温';
-      case 'bestie': return '轻松时刻';
-      case 'brother': return '畅所欲言';
-      case 'fun': return '氛围拉满';
-      default: return '精选推荐';
+      case 'couple': return '全城·2025';
+      case 'bestie': return '本地人推荐';
+      case 'brother': return '专程前往';
+      case 'fun': return '全城最热';
+      default: return '特色体验';
     }
   };
 
@@ -278,7 +278,7 @@ export default function Home() {
             ) : (
               <OrderList 
                 onBack={() => setShowOrders(false)} 
-                onSelectOrder={setSelectedOrder} 
+                onOrderClick={(order) => setSelectedOrder(order)}
               />
             )}
           </div>
@@ -286,16 +286,13 @@ export default function Home() {
 
         {/* 收藏夹浮层 */}
         {showFavorites && (
-          <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-xl flex flex-col animate-in fade-in duration-200">
+          <div className="absolute inset-0 z-50 bg-background flex flex-col animate-in slide-in-from-right duration-300">
             <div className="flex items-center justify-between p-4 border-b border-border">
-              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <h2 className="text-lg font-bold flex items-center gap-2">
                 <Heart className="w-5 h-5 fill-[#FF4D4F] text-[#FF4D4F]" />
                 我的收藏
               </h2>
-              <button 
-                onClick={() => setShowFavorites(false)}
-                className="p-2 hover:bg-muted rounded-full text-muted-foreground"
-              >
+              <button onClick={() => setShowFavorites(false)} className="p-2 hover:bg-muted rounded-full">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -400,104 +397,60 @@ export default function Home() {
                 </div>
 
                 {/* 优惠套餐 */}
-                <div className="mb-8">
+                <div>
                   <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
                     <span className="w-1 h-4 bg-[#FF4D4F] rounded-full"></span>
-                    超值套餐
+                    优惠套餐
                   </h2>
-                  <div className="space-y-3">
-                    {selectedShop.deals?.map((deal, i) => (
-                      <div key={i} className="bg-card border border-border rounded-xl p-4 shadow-sm flex justify-between items-center">
-                        <div>
-                          <h3 className="font-bold text-foreground mb-1">{deal.title}</h3>
-                          <div className="flex gap-2 mb-1">
-                            {deal.tags.map((t, idx) => (
-                              <span key={idx} className="text-[10px] text-[#FF4D4F] border border-[#FF4D4F]/30 px-1 rounded">
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-[#FF4D4F] font-bold text-lg">
-                            <span className="text-xs">¥</span>{deal.price}
-                          </div>
-                          <div className="text-muted-foreground/50 text-xs line-through">¥{deal.originalPrice}</div>
-                        </div>
+                  <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-bold text-foreground">{selectedShop.dealTitle}</h3>
+                      <div className="text-right">
+                        <span className="text-[#FF4D4F] font-bold text-lg">¥{selectedShop.price}</span>
+                        <span className="text-muted-foreground text-xs line-through ml-2">¥{Math.floor(selectedShop.price * 1.5)}</span>
                       </div>
-                    ))}
+                    </div>
+                    <div className="flex gap-2 mb-4">
+                      <span className="px-1.5 py-0.5 border border-[#FF4D4F]/30 text-[#FF4D4F] text-[10px] rounded">随时退</span>
+                      <span className="px-1.5 py-0.5 border border-[#FF4D4F]/30 text-[#FF4D4F] text-[10px] rounded">过期退</span>
+                    </div>
+                    <button className="w-full py-2.5 bg-[#FF4D4F] text-white rounded-lg font-bold text-sm hover:bg-[#ff3336] transition-colors shadow-lg shadow-[#FF4D4F]/20">
+                      立即抢购
+                    </button>
                   </div>
                 </div>
 
-                {/* 评价板块 */}
-                <div className="mb-8 pt-4 border-t border-border">
-                  <div className="flex items-center justify-between mb-4">
+                {/* 评价概览 */}
+                <div>
+                  <div className="flex justify-between items-center mb-3">
                     <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                       <span className="w-1 h-4 bg-[#FF4D4F] rounded-full"></span>
                       用户评价
                     </h2>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <span>4.9</span>
-                      <div className="flex text-[#FF9900]">
-                        <Star className="w-3 h-3 fill-current" />
-                        <Star className="w-3 h-3 fill-current" />
-                        <Star className="w-3 h-3 fill-current" />
-                        <Star className="w-3 h-3 fill-current" />
-                        <Star className="w-3 h-3 fill-current" />
-                      </div>
-                      <ChevronRight className="w-4 h-4" />
-                    </div>
+                    <span className="text-xs text-muted-foreground flex items-center">
+                      查看全部 <ChevronRight className="w-3 h-3" />
+                    </span>
                   </div>
-
-                  {/* 评价列表 */}
-                  <div className="space-y-4">
-                    {selectedShop.reviews && selectedShop.reviews.length > 0 ? (
-                      selectedShop.reviews.map((review, i) => (
-                        <div key={i} className="bg-card/50 rounded-xl p-3 border border-border/50">
-                          <div className="flex items-start gap-3 mb-2">
-                            <img src={review.userAvatar} alt={review.userName} className="w-8 h-8 rounded-full object-cover" />
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start">
-                                <span className="text-sm font-bold text-foreground">{review.userName}</span>
-                                <div className="flex flex-col items-end">
-                                  <div className="flex text-[#FF9900] scale-75 origin-right">
-                                    {[...Array(review.rating)].map((_, idx) => (
-                                      <Star key={idx} className="w-3 h-3 fill-current" />
-                                    ))}
-                                  </div>
-                                  <span className="text-[10px] text-muted-foreground">{review.date}</span>
-                                </div>
-                              </div>
-                            </div>
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex-none w-64 bg-muted/30 rounded-xl p-3 border border-border/50">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px]">
+                            U{i}
                           </div>
-                          <p className="text-sm text-foreground mb-2 leading-relaxed">{review.content}</p>
-                          {review.images && review.images.length > 0 && (
-                            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                              {review.images.map((img, idx) => (
-                                <img key={idx} src={img} alt="review" className="w-24 h-24 rounded-lg object-cover flex-none" />
-                              ))}
-                            </div>
-                          )}
-                          {review.tags && review.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mt-2">
-                              {review.tags.map((tag, idx) => (
-                                <span key={idx} className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                          <span className="text-xs font-bold">用户88{i}</span>
+                          <div className="flex ml-auto">
+                            {[1, 2, 3, 4, 5].map(s => (
+                              <Star key={s} className="w-2 h-2 fill-[#FF9900] text-[#FF9900]" />
+                            ))}
+                          </div>
                         </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                        <p className="text-sm">暂无评价，快来抢沙发吧！</p>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          环境非常棒，服务也很周到，特别是那个招牌菜真的很好吃！下次还会再来。
+                        </p>
                       </div>
-                    )}
+                    ))}
                   </div>
-
-                  {/* 写评价按钮 */}
                   <button className="w-full mt-4 py-2.5 rounded-full border border-[#FF4D4F] text-[#FF4D4F] font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#FF4D4F]/5 transition-colors">
                     <Camera className="w-4 h-4" />
                     写评价
@@ -530,84 +483,96 @@ export default function Home() {
         )}
         
         {/* 左侧手风琴导航栏 - 高德风格重构 */}
-        <nav className="w-[100px] flex-none bg-muted/30 backdrop-blur-sm flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-10 transition-all duration-300">
-          <div className="flex flex-col py-2 pb-20 gap-4">
-            {categories.map((category) => {
+        <nav className="w-[100px] flex-none bg-background flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-10 transition-all duration-300">
+          {/* 顶部全城筛选 */}
+          <div className="flex items-center justify-center py-4 cursor-pointer hover:text-[#FF4D4F] transition-colors">
+            <span className="text-sm font-bold text-foreground/80">全城</span>
+            <ChevronDown className="w-3 h-3 ml-1 text-muted-foreground" />
+          </div>
+
+          <div className="flex flex-col pb-20 gap-6">
+            {categories.map((category, index) => {
               const isActive = activeCategory === category.id;
               const isExpanded = expandedCategory === category.id;
               const subtitle = getCategorySubtitle(category.id);
               
+              // 第一个分类使用橙红色系，其他使用银灰色系
+              const isPrimary = index === 0;
+              const themeColor = isPrimary ? '#FF5500' : '#999999';
+              const titleColor = isPrimary ? 'text-[#FF5500]' : 'text-[#666666]';
+              const subtitleBg = isPrimary ? 'bg-[#FF5500]' : 'bg-[#999999]';
+              
               return (
-                <div key={category.id} className="flex flex-col">
+                <div key={category.id} className="flex flex-col items-center relative">
+                  {/* 分隔线 (除了第一个) */}
+                  {index > 0 && (
+                    <div className="w-8 h-[1px] bg-border/60 absolute -top-3 left-1/2 -translate-x-1/2"></div>
+                  )}
+
                   {/* 一级菜单项 - 榜单头部风格 */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleCategoryClick(category.id);
                     }}
-                    className={`
-                      relative w-full py-2 flex flex-col items-center justify-center gap-0.5 transition-all duration-300 group
-                    `}
+                    className="relative w-full flex flex-col items-center justify-center gap-1 group cursor-pointer"
                   >
-                    {/* 装饰性麦穗效果 (CSS模拟) */}
-                    <div className="flex items-center justify-center w-full relative">
+                    {/* 麦穗装饰 */}
+                    <div className="relative flex items-center justify-center w-full">
                       {/* 左麦穗 */}
-                      <div className={`
-                        absolute left-1 top-1/2 -translate-y-1/2 w-3 h-6 
-                        bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRkY5OTAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTcgMTBhMiAyIDAgMCAxIDIgMnY2Ii8+PHBhdGggZD0iTTUgMTJhMiAyIDAgMCAxIDIgMnY0Ii8+PHBhdGggZD0iTTMgMTRhMiAyIDAgMCAxIDIgMnYyIi8+PC9zdmc+')] 
-                        bg-contain bg-no-repeat opacity-0 transition-opacity duration-300
-                        ${isActive ? 'opacity-100' : 'opacity-0'}
-                      `}></div>
-                      
-                      {/* 右麦穗 */}
-                      <div className={`
-                        absolute right-1 top-1/2 -translate-y-1/2 w-3 h-6 
-                        bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRkY5OTAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE3IDEwYTIgMiAwIDAgMCAtMiAydjYiLz48cGF0aCBkPSJNMTkgMTJhMiAyIDAgMCAwIC0yIDJ2NCIvPjxwYXRoIGQ9Ik0yMSAxNGEyIDIgMCAwIDAgLTIgMnYyIi8+PC9zdmc+')] 
-                        bg-contain bg-no-repeat opacity-0 transition-opacity duration-300
-                        ${isActive ? 'opacity-100' : 'opacity-0'}
-                      `}></div>
+                      <svg width="16" height="32" viewBox="0 0 16 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute left-2 top-1/2 -translate-y-1/2 opacity-30">
+                        <path d="M8 4C6 6 4 10 4 16C4 22 6 26 8 28" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
+                        <path d="M12 8C10 10 9 13 9 16C9 19 10 22 12 24" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
+                        <path d="M15 12C14 13 13.5 14.5 13.5 16C13.5 17.5 14 19 15 20" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
+                      </svg>
 
-                      <span className={`
-                        text-[12px] font-bold tracking-wide transition-colors duration-300 whitespace-nowrap z-10
-                        ${isActive ? 'text-foreground scale-105' : 'text-muted-foreground/70'}
-                      `}>
+                      {/* 右麦穗 */}
+                      <svg width="16" height="32" viewBox="0 0 16 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute right-2 top-1/2 -translate-y-1/2 opacity-30 transform scale-x-[-1]">
+                        <path d="M8 4C6 6 4 10 4 16C4 22 6 26 8 28" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
+                        <path d="M12 8C10 10 9 13 9 16C9 19 10 22 12 24" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
+                        <path d="M15 12C14 13 13.5 14.5 13.5 16C13.5 17.5 14 19 15 20" stroke={themeColor} strokeWidth="1.5" strokeLinecap="round"/>
+                      </svg>
+
+                      {/* 主标题 */}
+                      <span className={`text-[15px] font-black tracking-wide z-10 ${titleColor}`}>
                         {category.name}
                       </span>
                     </div>
                     
-                    {/* 副标题已移除 */}
+                    {/* 副标题胶囊 */}
+                    <div className={`px-2 py-0.5 rounded-full ${subtitleBg} text-white text-[10px] font-medium scale-90`}>
+                      {subtitle}
+                    </div>
                   </button>
 
-                  {/* 二级菜单列表 (纯文本列表) */}
+                  {/* 二级菜单列表 */}
                   <div className={`
-                    overflow-hidden transition-all duration-300 ease-in-out
+                    w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col items-center gap-3 mt-3
                     ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
                   `}>
-                    <div className="flex flex-col py-1 gap-1">
-                      {category.subCategories.map((sub) => {
-                        const isSubActive = activeSubCategory === sub.id;
-                        return (
-                          <button
-                            key={sub.id}
-                            onClick={(e) => handleSubCategoryClick(e, sub.id)}
-                            className={`
-                              w-full py-1.5 text-center transition-all duration-200 relative flex items-center justify-center gap-1
-                              ${isSubActive 
-                                ? 'text-[#FF4D4F] font-bold' 
-                                : 'text-muted-foreground hover:text-foreground'}
-                            `}
-                          >
-                            {/* 选中态小红点 */}
-                            {isSubActive && (
-                              <div className="w-1 h-1 rounded-full bg-[#FF4D4F]" />
-                            )}
-                            <span className={`text-[12px] ${isSubActive ? 'scale-105' : ''}`}>
-                              {sub.name}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
+                    {category.subCategories.map((sub, subIndex) => {
+                      const isSubActive = activeSubCategory === sub.id;
+                      // 第一个子项高亮显示 (粉色胶囊)，其他为普通文本
+                      const isHighlight = subIndex === 0;
+                      
+                      return (
+                        <button
+                          key={sub.id}
+                          onClick={(e) => handleSubCategoryClick(e, sub.id)}
+                          className={`
+                            text-[13px] transition-all duration-200 relative flex items-center justify-center
+                            ${isHighlight 
+                              ? 'bg-[#FFF0F0] text-[#FF4D4F] font-bold px-3 py-1 rounded-full' 
+                              : 'text-foreground/70 hover:text-foreground font-medium'}
+                            ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-bold' : ''}
+                          `}
+                        >
+                          {sub.name}
+                        </button>
+                      );
+                    })}
+                    {/* 底部留白 */}
+                    <div className="h-1"></div>
                   </div>
                 </div>
               );
@@ -648,17 +613,20 @@ export default function Home() {
                   <div 
                     key={`guess-${shop.id}`}
                     onClick={() => setSelectedShop(shop)}
-                    className="flex-none w-48 bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-2 flex gap-2 cursor-pointer hover:bg-card/80 transition-colors"
+                    className="flex-none w-64 bg-card border border-border rounded-lg p-2 flex gap-2 cursor-pointer hover:bg-muted/50 transition-colors"
                   >
-                    <img src={shop.imageUrl} className="w-12 h-12 rounded-md object-cover flex-none" alt={shop.name} />
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <div className="flex items-center gap-1">
-                        <span className="text-[10px] px-1 rounded bg-[#FF4D4F] text-white flex-none">荐</span>
-                        <h4 className="text-xs font-bold truncate text-foreground">{shop.name}</h4>
+                    <img src={shop.imageUrl} alt={shop.name} className="w-16 h-16 rounded-md object-cover flex-none" />
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                      <h4 className="font-bold text-sm truncate">{shop.name}</h4>
+                      <div className="flex items-center gap-1 text-[#FF9900] text-xs">
+                        <Star className="w-3 h-3 fill-current" />
+                        <span>{shop.rating}</span>
+                        <span className="text-muted-foreground ml-1">¥{shop.price}/人</span>
                       </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[10px] text-[#FF9900] font-bold">★{shop.rating}</span>
-                        <span className="text-[10px] text-muted-foreground truncate">{shop.sceneTheme === 'drink' ? '深夜微醺' : '当下热门'}</span>
+                      <div className="flex gap-1">
+                        <span className="text-[10px] px-1 bg-[#FF4D4F]/10 text-[#FF4D4F] rounded">
+                          {shop.sceneTheme === 'couple_date' ? '约会首选' : '人气推荐'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -666,63 +634,51 @@ export default function Home() {
               </div>
             )}
 
-            {/* 筛选标签 */}
-            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+            {/* 筛选标签行 */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
               <button 
-                onClick={() => setFilters(prev => ({ ...prev, price: prev.price === 'all' ? 'low' : 'all' }))}
-                className={`flex-none px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
-                  filters.price !== 'all' 
-                    ? 'bg-[#FF4D4F]/10 text-[#FF4D4F] border-[#FF4D4F]/20' 
-                    : 'bg-muted/50 text-muted-foreground border-transparent hover:bg-muted'
-                }`}
+                onClick={() => setFilters(prev => ({ ...prev, price: 'all' }))}
+                className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors ${filters.price === 'all' ? 'bg-foreground text-background font-bold' : 'bg-muted text-muted-foreground'}`}
               >
                 价格不限
               </button>
               <button 
-                onClick={() => setFilters(prev => ({ ...prev, distance: prev.distance === 'all' ? 'near' : 'all' }))}
-                className={`flex-none px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
-                  filters.distance !== 'all' 
-                    ? 'bg-[#FF4D4F]/10 text-[#FF4D4F] border-[#FF4D4F]/20' 
-                    : 'bg-muted/50 text-muted-foreground border-transparent hover:bg-muted'
-                }`}
+                onClick={() => setFilters(prev => ({ ...prev, distance: 'all' }))}
+                className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors ${filters.distance === 'all' ? 'bg-foreground text-background font-bold' : 'bg-muted text-muted-foreground'}`}
               >
                 距离不限
               </button>
-              <button className="flex-none px-3 py-1 rounded-full text-xs font-medium bg-muted/50 text-muted-foreground border border-transparent hover:bg-muted transition-colors">
+              <button className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs whitespace-nowrap">
                 好评优先
               </button>
-              <button className="flex-none px-3 py-1 rounded-full text-xs font-medium bg-muted/50 text-muted-foreground border border-transparent hover:bg-muted transition-colors">
+              <button className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs whitespace-nowrap">
                 人均高低
               </button>
             </div>
           </div>
 
-          {/* 商家列表 */}
+          {/* 商家列表 - 虚拟滚动优化 */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3 pb-20">
             {isLoading ? (
               // 加载骨架屏
-              <>
-                <ShopSkeleton />
-                <ShopSkeleton />
-                <ShopSkeleton />
-              </>
+              Array(4).fill(0).map((_, i) => <ShopSkeleton key={i} />)
             ) : filteredShops.length > 0 ? (
-              filteredShops.map((shop) => (
+              filteredShops.map((shop, index) => (
                 <div 
                   key={shop.id}
                   onClick={() => setSelectedShop(shop)}
-                  className="bg-card rounded-xl overflow-hidden shadow-sm border border-border/50 hover:shadow-md transition-all duration-300 group"
+                  className="bg-card rounded-xl overflow-hidden shadow-sm border border-border hover:shadow-md transition-all duration-300 cursor-pointer group"
                 >
-                  {/* 卡片上半部分：图片和基本信息 */}
+                  {/* 卡片头部：图片与关键信息 */}
                   <div className="flex p-3 gap-3">
-                    <div className="relative w-24 h-24 flex-none">
+                    <div className="relative w-24 h-24 flex-none overflow-hidden rounded-lg">
                       <img 
                         src={shop.imageUrl} 
                         alt={shop.name} 
-                        className="w-full h-full object-cover rounded-lg"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
-                      {shop.rating >= 4.8 && (
-                        <div className="absolute -top-1 -left-1 bg-[#FF4D4F] text-white text-[10px] px-1.5 py-0.5 rounded-br-lg rounded-tl-lg shadow-sm z-10">
+                      {index < 3 && (
+                        <div className="absolute top-0 left-0 bg-[#FF4D4F] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-br-lg z-10">
                           精选
                         </div>
                       )}
@@ -732,20 +688,20 @@ export default function Home() {
                       <div>
                         <div className="flex justify-between items-start">
                           <h3 className="text-base font-bold text-foreground truncate pr-2">{shop.name}</h3>
-                          <span className="text-[10px] text-muted-foreground whitespace-nowrap mt-1">{shop.distance}</span>
+                          <span className="text-xs text-muted-foreground flex-none">{shop.distance}</span>
                         </div>
                         
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className="flex items-center gap-0.5 text-[#FF9900] text-xs font-bold">
-                            <Star className="w-3 h-3 fill-current" />
+                        <div className="flex items-center gap-2 mt-1 text-xs">
+                          <div className="flex items-center text-[#FF9900] font-bold">
+                            <Star className="w-3 h-3 fill-current mr-0.5" />
                             {shop.rating}
                           </div>
-                          <span className="text-xs text-muted-foreground">¥{shop.price}/人</span>
+                          <span className="text-muted-foreground">¥{shop.price}/人</span>
                         </div>
 
-                        <div className="flex flex-wrap gap-1 mt-2">
+                        <div className="flex flex-wrap gap-1.5 mt-2">
                           {shop.tags.slice(0, 3).map((tag, i) => (
-                            <span key={i} className="text-[10px] px-1.5 py-0.5 bg-muted/50 text-muted-foreground rounded">
+                            <span key={i} className="text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground rounded">
                               {tag}
                             </span>
                           ))}
@@ -754,27 +710,32 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* 卡片下半部分：优惠套餐 (如果有) */}
-                  {shop.deals && shop.deals.length > 0 && (
-                    <div className="px-3 pb-3 pt-0">
-                      <div className="bg-[#FF4D4F]/5 rounded-lg p-2 flex items-center justify-between border border-[#FF4D4F]/10">
-                        <div className="flex items-center gap-2 overflow-hidden">
-                          <span className="flex-none w-4 h-4 bg-[#FF4D4F] text-white text-[10px] flex items-center justify-center rounded">团</span>
-                          <span className="text-xs text-foreground truncate">{shop.deals[0].title}</span>
-                        </div>
-                        <div className="flex items-baseline gap-1 flex-none ml-2">
-                          <span className="text-[#FF4D4F] font-bold text-sm">¥{shop.deals[0].price}</span>
-                          <span className="text-muted-foreground/50 text-[10px] line-through">¥{shop.deals[0].originalPrice}</span>
-                        </div>
+                  {/* 优惠套餐条 - 仅在有套餐时显示 */}
+                  <div className="px-3 pb-3 pt-0">
+                    <div className="bg-[#FF4D4F]/5 rounded-lg p-2 flex items-center justify-between group-hover:bg-[#FF4D4F]/10 transition-colors">
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <span className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-none">团</span>
+                        <span className="text-xs font-medium text-foreground truncate">{shop.dealTitle}</span>
+                      </div>
+                      <div className="flex items-baseline gap-1 flex-none ml-2">
+                        <span className="text-[#FF4D4F] font-bold text-sm">¥{shop.price}</span>
+                        <span className="text-muted-foreground text-[10px] line-through">¥{Math.floor(shop.price * 1.5)}</span>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               ))
             ) : (
+              // 空状态
               <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-                <MapPin className="w-12 h-12 mb-2 opacity-20" />
-                <p>该分类下暂无商家</p>
+                <Search className="w-12 h-12 mb-4 opacity-20" />
+                <p>暂无符合条件的店铺</p>
+                <button 
+                  onClick={() => setFilters({ price: 'all', distance: 'all', cuisine: 'all' })}
+                  className="mt-4 text-[#FF4D4F] text-sm font-bold hover:underline"
+                >
+                  清除筛选条件
+                </button>
               </div>
             )}
             
@@ -787,21 +748,27 @@ export default function Home() {
           </div>
         </main>
 
-        {/* 分享弹窗 */}
-        {showShare && selectedShop && (
-          <ShareModal 
-            shop={selectedShop} 
-            onClose={() => setShowShare(false)} 
-          />
+        {/* 地图浮层 */}
+        {showMap && (
+          <div className="absolute inset-0 z-30 bg-background animate-in fade-in duration-300">
+            <MapOverlay 
+              shops={filteredShops} 
+              userLocation={userLocation}
+              onClose={() => setShowMap(false)}
+              onShopClick={(shop) => {
+                setSelectedShop(shop);
+                setShowMap(false);
+              }}
+            />
+          </div>
         )}
 
-        {/* 地图覆盖层 */}
-        {showMap && (
-          <MapOverlay 
-            shops={filteredShops} 
-            userLocation={userLocation}
-            onClose={() => setShowMap(false)}
-            activeShopId={selectedShop?.id}
+        {/* 分享弹窗 */}
+        {selectedShop && (
+          <ShareModal 
+            isOpen={showShare}
+            onClose={() => setShowShare(false)}
+            shop={selectedShop}
           />
         )}
       </div>

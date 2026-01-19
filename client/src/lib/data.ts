@@ -12,6 +12,7 @@ export interface Shop {
   reviewCount: number;
   packageType: string; // 'couple' | 'bestie' | 'brother' | 'fun'
   sceneTheme: string; // Updated scene themes
+  dealTitle?: string; // Main deal title for display
   deals?: {
     title: string;
     price: number;
