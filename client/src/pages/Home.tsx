@@ -496,11 +496,11 @@ export default function Home() {
               const isExpanded = expandedCategory === category.id;
               const subtitle = getCategorySubtitle(category.id);
               
-              // 第一个分类使用橙红色系，其他使用银灰色系
-              const isPrimary = index === 0;
-              const themeColor = isPrimary ? '#FF5500' : '#999999';
-              const titleColor = isPrimary ? 'text-[#FF5500]' : 'text-[#666666]';
-              const subtitleBg = isPrimary ? 'bg-[#FF5500]' : 'bg-[#999999]';
+              // 统一所有分类的交互状态，不再区分首项和非首项
+              // 选中状态下使用橙红色，未选中状态使用深灰色
+              const isSelected = isActive || isExpanded;
+              const titleColor = isSelected ? 'text-[#FF5500]' : 'text-[#333333]';
+              const subtitleBg = isSelected ? 'bg-[#FF5500]' : 'bg-[#FF5500]'; // 统一使用品牌色背景，或者未选中时用浅一点的颜色
               
               return (
                 <div key={category.id} className="flex flex-col items-center relative">
@@ -515,15 +515,15 @@ export default function Home() {
                       e.stopPropagation();
                       handleCategoryClick(category.id);
                     }}
-                    className="relative w-full flex flex-col items-center justify-center gap-1.5 group cursor-pointer py-1"
+                    className="relative w-full flex flex-col items-center justify-center gap-1.5 group cursor-pointer py-1 hover:opacity-80 transition-opacity"
                   >
                     {/* 主标题 - 纤细精致 */}
-                    <span className={`text-[13px] font-medium tracking-wide ${titleColor} opacity-90`}>
+                    <span className={`text-[13px] font-medium tracking-wide ${titleColor} transition-colors duration-200`}>
                       {category.name}
                     </span>
                     
-                    {/* 副标题胶囊 - 保持原样 */}
-                    <div className={`px-2.5 py-0.5 rounded-full ${subtitleBg} text-white text-[10px] font-normal scale-90 shadow-sm`}>
+                    {/* 副标题胶囊 - 统一使用品牌色，保持精致感 */}
+                    <div className={`px-2.5 py-0.5 rounded-full ${isSelected ? 'bg-[#FF5500]' : 'bg-[#FF8855]'} text-white text-[10px] font-normal scale-90 shadow-sm transition-colors duration-200`}>
                       {subtitle}
                     </div>
                   </button>
