@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2, Moon, Sun, MessageSquare, Camera, Sparkles, Trophy } from 'lucide-react';
-import { categories, shops, type Shop, type Category, type SubCategory } from '@/lib/data';
+import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2, Moon, Sun, MessageSquare, Camera, Sparkles, Trophy, ShoppingBag } from 'lucide-react';
+import { categories, shops, type Shop, type Category, type SubCategory, type Order } from '@/lib/data';
 import { MapOverlay } from '@/components/MapOverlay';
 import { ShareModal } from '@/components/ShareModal';
 import { ShopSkeleton } from '@/components/ShopSkeleton';
+import { OrderList } from '@/components/OrderList';
+import { OrderDetail } from '@/components/OrderDetail';
 import { 
   CoupleLeftIcon, CoupleRightIcon, 
   BestieLeftIcon, BestieRightIcon, 
@@ -29,6 +31,8 @@ export default function Home() {
     return saved ? JSON.parse(saved) : [];
   });
   const [showFavorites, setShowFavorites] = useState(false);
+  const [showOrders, setShowOrders] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [filters, setFilters] = useState({
     price: 'all', // all, low (<200), mid (200-500), high (>500)
     distance: 'all', // all, near (<1km), mid (1-3km), far (>3km)
@@ -223,6 +227,12 @@ export default function Home() {
               {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
             <button 
+              onClick={() => setShowOrders(true)}
+              className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ShoppingBag className="w-5 h-5" />
+            </button>
+            <button 
               onClick={() => setShowFavorites(!showFavorites)}
               className={`p-2 rounded-full transition-colors ${showFavorites ? 'bg-[#FF4D4F]/10 text-[#FF4D4F]' : 'hover:bg-muted text-muted-foreground hover:text-foreground'}`}
             >
@@ -246,6 +256,23 @@ export default function Home() {
 
       {/* 主体内容区 */}
       <div className="flex-1 flex overflow-hidden relative">
+        {/* 订单中心浮层 */}
+        {showOrders && (
+          <div className="absolute inset-0 z-50 bg-background flex flex-col animate-in slide-in-from-right duration-300">
+            {selectedOrder ? (
+              <OrderDetail 
+                order={selectedOrder} 
+                onBack={() => setSelectedOrder(null)} 
+              />
+            ) : (
+              <OrderList 
+                onBack={() => setShowOrders(false)} 
+                onSelectOrder={setSelectedOrder} 
+              />
+            )}
+          </div>
+        )}
+
         {/* 收藏夹浮层 */}
         {showFavorites && (
           <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-xl flex flex-col animate-in fade-in duration-200">

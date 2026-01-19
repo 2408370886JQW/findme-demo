@@ -312,3 +312,72 @@ export const categories: Category[] = PACKAGE_TYPES.map(pkg => ({
 }));
 
 export const shops = MOCK_SHOPS;
+
+export type OrderStatus = 'pending' | 'unused' | 'used' | 'refunded';
+
+export interface Order {
+  id: string;
+  shopId: string;
+  shopName: string;
+  shopImage: string;
+  dealTitle: string;
+  price: number;
+  originalPrice: number;
+  quantity: number;
+  totalPrice: number;
+  status: OrderStatus;
+  createTime: string;
+  payTime?: string;
+  useTime?: string;
+  verifyCode?: string; // 核销码 (e.g., "8829 1034")
+  qrCodeUrl?: string; // 二维码图片链接 (mock)
+}
+
+export const MOCK_ORDERS: Order[] = [
+  {
+    id: 'ORD-20231025-001',
+    shopId: '1',
+    shopName: 'Moonlight Bistro 月光法餐厅',
+    shopImage: 'https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?w=800&q=80',
+    dealTitle: '浪漫双人烛光晚餐',
+    price: 520,
+    originalPrice: 888,
+    quantity: 1,
+    totalPrice: 520,
+    status: 'unused',
+    createTime: '2023-10-25 14:30:00',
+    payTime: '2023-10-25 14:32:15',
+    verifyCode: '8829 1034',
+    qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FINDME-88291034'
+  },
+  {
+    id: 'ORD-20231020-002',
+    shopId: '6',
+    shopName: 'Brothers\' BBQ 兄弟烧烤',
+    shopImage: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80',
+    dealTitle: '兄弟欢聚4人餐',
+    price: 398,
+    originalPrice: 588,
+    quantity: 1,
+    totalPrice: 398,
+    status: 'used',
+    createTime: '2023-10-20 18:00:00',
+    payTime: '2023-10-20 18:05:00',
+    useTime: '2023-10-20 20:15:00',
+    verifyCode: '1029 3847',
+    qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FINDME-10293847'
+  },
+  {
+    id: 'ORD-20231026-003',
+    shopId: '4',
+    shopName: 'Alice\'s Tea Party 爱丽丝茶屋',
+    shopImage: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80',
+    dealTitle: '梦幻双人下午茶',
+    price: 198,
+    originalPrice: 368,
+    quantity: 1,
+    totalPrice: 198,
+    status: 'pending', // 待付款
+    createTime: '2023-10-26 10:00:00'
+  }
+];
