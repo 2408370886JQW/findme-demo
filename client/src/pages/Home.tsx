@@ -530,20 +530,14 @@ export default function Home() {
                       `}></div>
 
                       <span className={`
-                        text-[15px] font-black tracking-wide transition-colors duration-300 whitespace-nowrap z-10
+                        text-[13px] font-bold tracking-wide transition-colors duration-300 whitespace-nowrap z-10
                         ${isActive ? 'text-foreground scale-105' : 'text-muted-foreground/70'}
                       `}>
                         {category.name}
                       </span>
                     </div>
                     
-                    {/* 副标题 */}
-                    <span className={`
-                      text-[10px] font-medium transition-all duration-300
-                      ${isActive ? 'text-[#FF9900] scale-100' : 'text-muted-foreground/50 scale-90'}
-                    `}>
-                      {subtitle}
-                    </span>
+                    {/* 副标题已移除 */}
                   </button>
 
                   {/* 二级菜单列表 (纯文本列表) */}
