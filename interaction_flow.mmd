@@ -1,0 +1,75 @@
+graph TD
+    %% 样式定义
+    classDef mainNode fill:#FF5500,stroke:#333,stroke-width:2px,color:white,font-weight:bold;
+    classDef subNode fill:#FFF5F0,stroke:#FF5500,stroke-width:1px,color:#333;
+    classDef actionNode fill:#E6F7FF,stroke:#1890FF,stroke-width:1px,color:#333;
+    classDef decisionNode fill:#FFF0F6,stroke:#EB2F96,stroke-width:1px,color:#333;
+
+    %% 底部TAB入口
+    Tab1[偶遇 Map]:::mainNode
+    Tab2[圈子 Moments]:::mainNode
+    Tab3[+ 发动态 Post]:::mainNode
+    Tab4[相见 Meet]:::mainNode
+    Tab5[消息 Chat]:::mainNode
+
+    %% 1. 偶遇流程
+    Tab1 --> MapView[地图视图]:::subNode
+    MapView --> Filter1{筛选兴趣标签}:::decisionNode
+    Filter1 -->|选中| ShowUsers[展示附近用户]:::subNode
+    ShowUsers --> ClickAvatar[点击头像]:::actionNode
+    ClickAvatar --> Profile[查看资料]:::subNode
+    Profile --> Interact1[发送表情/打招呼/AI破冰]:::actionNode
+    Interact1 --> Tab5
+
+    %% 2. 圈子流程
+    Tab2 --> FeedList[动态广场]:::subNode
+    FeedList --> Filter2{筛选标签/场景}:::decisionNode
+    Filter2 -->|选中| ViewFeed[浏览动态]:::subNode
+    ViewFeed --> Interact2[点赞/评论]:::actionNode
+    Interact2 --> Tab5
+
+    %% 3. 发动态流程 (核心)
+    Tab3 --> CreatePost[编辑动态]:::subNode
+    CreatePost --> AddContent[添加文字/图片/表情/位置]:::actionNode
+    CreatePost --> BindScene[绑定主题场景]:::actionNode
+    BindScene -->|例如| SceneEx[闺蜜下午茶/约会]:::subNode
+    AddContent --> Publish[发布]:::actionNode
+    BindScene --> Publish
+    Publish --> Tab2
+
+    %% 4. 相见流程 (商业闭环)
+    Tab4 --> ShopList[附近商家列表]:::subNode
+    ShopList --> Filter3{筛选套餐类型}:::decisionNode
+    Filter3 -->|闺蜜/情侣/兄弟| ShopDetail[商家/套餐详情]:::subNode
+    ShopDetail --> Order[智能点单]:::actionNode
+    Order --> Pay[AA支付]:::actionNode
+    Pay --> Verify[现场扫码核销]:::actionNode
+    Verify --> Consume[完成消费]:::subNode
+
+    %% 5. 消息流程
+    Tab5 --> MsgList[消息列表]:::subNode
+    MsgList --> ChatDetail[私聊/群聊]:::subNode
+    ChatDetail --> Interact3[表情互动]:::actionNode
+    ChatDetail --> JumpProfile[跳转用户档案]:::actionNode
+    ChatDetail --> JumpFeed[跳转相关动态]:::actionNode
+    JumpProfile --> Profile
+    JumpFeed --> ViewFeed
+
+    %% 用户闭环逻辑
+    subgraph UserLoop [用户社交闭环]
+        direction LR
+        Loop1(偶遇: 发现人) --> Loop2(圈子: 了解人)
+        Loop2 --> Loop3(发动态: 表达自己)
+        Loop3 --> Loop4(消息: 互动沟通)
+        Loop4 --> Loop5(相见: 线下社交+消费)
+    end
+
+    %% 连接闭环与模块
+    Tab1 -.-> Loop1
+    Tab2 -.-> Loop2
+    Tab3 -.-> Loop3
+    Tab5 -.-> Loop4
+    Tab4 -.-> Loop5
+
+    %% 布局调整
+    linkStyle default stroke:#999,stroke-width:1px;

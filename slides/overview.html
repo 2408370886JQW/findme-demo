@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Roboto:wght@300;400;500;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .left-panel {
+            width: 55%;
+            height: 100%;
+            padding: 80px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(135deg, #FFF5F0 0%, #FFFFFF 100%);
+            position: relative;
+        }
+
+        .right-panel {
+            width: 45%;
+            height: 100%;
+            background: #FF5500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+        }
+
+        .brand-tag {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255, 85, 0, 0.1);
+            color: #FF5500;
+            font-weight: 700;
+            font-size: 16px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            width: fit-content;
+        }
+
+        h1 {
+            font-size: 64px;
+            font-weight: 900;
+            color: #333333;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+
+        h1 span {
+            color: #FF5500;
+        }
+
+        .subtitle {
+            font-size: 28px;
+            color: #666666;
+            font-weight: 400;
+            margin-bottom: 60px;
+            line-height: 1.4;
+        }
+
+        .features {
+            display: flex;
+            gap: 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: #FF5500;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 8px 16px rgba(255, 85, 0, 0.2);
+        }
+
+        .feature-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333333;
+        }
+
+        .visual-circle {
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .visual-circle::before {
+            content: '';
+            position: absolute;
+            width: 70%;
+            height: 70%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+
+        .main-icon {
+            font-size: 120px;
+            color: white;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+        }
+
+        .floating-card {
+            position: absolute;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .card-1 { top: 20%; right: 10%; animation-delay: 0s; }
+        .card-2 { bottom: 25%; left: 5%; animation-delay: 2s; }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            background: #FFF5F0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FF5500;
+        }
+
+        .card-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333333;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="left-panel">
+            <div class="brand-tag">PRODUCT OVERVIEW</div>
+            <h1>FIND <span>ME</span><br>场景化社交<br>消费决策平台</h1>
+            <div class="subtitle">从传统的“找店”模式转向<br>基于情感连接的“找感觉”决策体验</div>
+            
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+                    <div class="feature-text">场景驱动</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-user-friends"></i></div>
+                    <div class="feature-text">社交连接</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                    <div class="feature-text">智能决策</div>
+                </div>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="visual-circle">
+                <i class="fas fa-location-dot main-icon"></i>
+                
+                <div class="floating-card card-1">
+                    <div class="card-icon"><i class="fas fa-heart"></i></div>
+                    <div class="card-text">情侣约会</div>
+                </div>
+                
+                <div class="floating-card card-2">
+                    <div class="card-icon"><i class="fas fa-glass-cheers"></i></div>
+                    <div class="card-text">闺蜜聚会</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

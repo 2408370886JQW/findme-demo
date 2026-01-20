@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+
 interface ManusDialogProps {
   title?: string;
   logo?: string;
@@ -52,6 +53,8 @@ export function ManusDialog({
       onOpenChange={handleOpenChange}
     >
       <DialogContent className="py-5 bg-[#f8f8f7] rounded-[20px] w-[400px] shadow-[0px_4px_11px_0px_rgba(0,0,0,0.08)] border border-[rgba(0,0,0,0.08)] backdrop-blur-2xl p-0 gap-0 text-center">
+        {/* Accessible title - always present for screen readers */}
+        {!title && <DialogTitle className="sr-only">Login Dialog</DialogTitle>}
         <div className="flex flex-col items-center gap-2 p-5 pt-12">
           {logo ? (
             <div className="w-16 h-16 bg-white rounded-xl border border-[rgba(0,0,0,0.08)] flex items-center justify-center">
@@ -59,7 +62,7 @@ export function ManusDialog({
             </div>
           ) : null}
 
-          {/* Title and subtitle */}
+          {/* Title and subtitle - visible when provided */}
           {title ? (
             <DialogTitle className="text-xl font-semibold text-[#34322d] leading-[26px] tracking-[-0.44px]">
               {title}

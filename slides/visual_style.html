@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Roboto:wght@300;400;500;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px; /* keep as required */
+            background: #FFFFFF;
+            position: relative;
+            overflow: hidden;
+            padding: 60px 80px; /* keep top padding (title upper padding) */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            margin-bottom: 40px; /* slightly reduced to tighten layout */
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #FF5500;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 48px;
+            font-weight: 900;
+            color: #333333;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 20px;
+            color: #666666;
+            max-width: 800px;
+            line-height: 1.6;
+        }
+
+        .style-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 36px; /* horizontal gap tightened */
+            flex: 1;
+        }
+
+        .style-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .col-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px; /* reduced from 30 to save vertical space */
+            padding-bottom: 8px; /* reduced from 16 */
+            border-bottom: 2px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .col-title i {
+            color: #FF5500;
+            font-size: 20px;
+        }
+
+        /* Color Palette */
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px; /* reduced from 20 */
+            background: #FAFAFA;
+            padding: 8px; /* reduced from 12 */
+            border-radius: 12px;
+        }
+
+        .color-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .color-info h4 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .color-info span {
+            font-size: 14px;
+            color: #999;
+            font-family: monospace;
+        }
+
+        /* Typography */
+        .type-sample {
+            margin-bottom: 12px; /* reduced from 24 */
+            border-left: 4px solid #FF5500;
+            padding-left: 12px; /* reduced from 16 */
+        }
+
+        .type-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .type-text {
+            color: #333;
+        }
+
+        /* UI Elements */
+        .ui-sample {
+            background: #FAFAFA;
+            padding: 12px; /* reduced from 24 */
+            border-radius: 16px;
+            display: flex;
+            flex-direction: row; /* changed to row to save vertical space */
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .ui-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 160px;
+        }
+
+        .capsule-btn {
+            padding: 6px 16px; /* slightly reduced height */
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: default;
+        }
+
+        .capsule-active {
+            background: #FF5500;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 85, 0, 0.3);
+        }
+
+        .capsule-inactive {
+            background: white;
+            color: #333;
+            border: 1px solid #E0E0E0;
+        }
+
+        .card-mockup {
+            background: white;
+            border-radius: 12px;
+            padding: 12px; /* reduced from 16 */
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .card-img-placeholder {
+            width: 100%;
+            height: 64px; /* reduced from 100 */
+            background: #FFF5F0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FF8855;
+        }
+
+        .card-line {
+            height: 8px;
+            background: #F0F0F0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <span class="tag">VISUAL STYLE</span>
+            <h2>视觉风格：精致与透气感的融合</h2>
+            <p>通过高对比度的品牌色、清晰的层级排版和细腻的微交互，打造高品质、沉浸式的视觉体验。</p>
+        </div>
+
+        <div class="style-grid">
+            <!-- Column 1: Colors -->
+            <div class="style-column">
+                <div class="col-title"><i class="fas fa-palette"></i> 色彩体系</div>
+                
+                <div class="color-swatch">
+                    <div class="color-circle" style="background: #FF5500;"></div>
+                    <div class="color-info">
+                        <h4>活力橙</h4>
+                        <span>#FF5500 (Primary)</span>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-circle" style="background: #FF8855;"></div>
+                    <div class="color-info">
+                        <h4>浅橙色</h4>
+                        <span>#FF8855 (Secondary)</span>
+                    </div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="color-circle" style="background: #333333;"></div>
+                    <div class="color-info">
+                        <h4>深灰色</h4>
+                        <span>#333333 (Text)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: Typography -->
+            <div class="style-column">
+                <div class="col-title"><i class="fas fa-font"></i> 排版规范</div>
+                
+                <div class="type-sample">
+                    <div class="type-label">一级标题 (H1)</div>
+                    <div class="type-text" style="font-size: 24px; font-weight: 700;">情侣约会套餐</div>
+                </div>
+
+                <div class="type-sample">
+                    <div class="type-label">二级标题 (H2)</div>
+                    <div class="type-text" style="font-size: 18px; font-weight: 500;">浪漫烛光晚餐</div>
+                </div>
+
+                <div class="type-sample">
+                    <div class="type-label">正文 (Body)</div>
+                    <div class="type-text" style="font-size: 14px; line-height: 1.6; color: #666;">
+                        精选高品质餐厅，为您打造难忘的约会体验。环境优雅，服务周到。
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 3: UI Elements -->
+            <div class="style-column">
+                <div class="col-title"><i class="fas fa-layer-group"></i> 界面元素</div>
+                
+                <div class="ui-sample">
+                    <div class="ui-left">
+                        <div class="type-label">胶囊按钮</div>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <div class="capsule-btn capsule-active">两人约会</div>
+                            <div class="capsule-btn capsule-inactive">纪念日</div>
+                        </div>
+                    </div>
+
+                    <div class="card-mockup">
+                        <div class="card-img-placeholder"><i class="fas fa-image"></i></div>
+                        <div class="card-line" style="width: 70%;"></div>
+                        <div class="card-line" style="width: 40%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

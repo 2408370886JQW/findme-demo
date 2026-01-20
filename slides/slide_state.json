@@ -1,0 +1,72 @@
+{
+  "project_info": {
+    "title": "产品概览：重新定义本地生活决策",
+    "created": 1768845444.7128787,
+    "last_updated": 1768845765.0126271,
+    "total_slides": 5
+  },
+  "slides": [
+    {
+      "id": "overview",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "ia_structure",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "user_flow",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "layout_interaction",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "visual_style",
+      "state": "edited",
+      "pageNum": 5
+    }
+  ],
+  "outline": [
+    {
+      "id": "overview",
+      "title": "产品概览：重新定义本地生活决策",
+      "summary": "介绍 FIND ME 的核心价值主张，即从传统的品类搜索转向场景化社交决策。",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "ia_structure",
+      "title": "信息架构：以场景为核心的层级设计",
+      "summary": "展示扁平化的信息架构，强调侧边栏作为一级导航的场景化分类逻辑。",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "user_flow",
+      "title": "用户流程：从灵感到决策的闭环",
+      "summary": "演示用户从选择社交场景、智能筛选到最终下单核销的完整操作路径。",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "layout_interaction",
+      "title": "布局与交互：多端适配的沉浸体验",
+      "summary": "解析桌面端固定侧边栏与移动端抽屉导航的响应式设计策略。",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "visual_style",
+      "title": "视觉风格：精致与透气感的融合",
+      "summary": "展示品牌色系、排版规范及微交互细节，体现高品质的视觉调性。",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Roboto:wght@300;400;500;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #FFFFFF;
+            position: relative;
+            overflow: hidden;
+            padding-top: 60px;
+        }
+
+        .header {
+            padding: 0 80px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #FF5500;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 48px;
+            font-weight: 900;
+            color: #333333;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 20px;
+            color: #666666;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .diagram-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 60px;
+        }
+
+        .root-node {
+            background: #FF5500;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(255, 85, 0, 0.2);
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .root-node::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            width: 2px;
+            height: 40px;
+            background: #E0E0E0;
+            transform: translateX(-50%);
+        }
+
+        .level-1-container {
+            display: flex;
+            gap: 40px;
+            position: relative;
+        }
+
+        .level-1-container::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 140px; /* Adjust based on first child width */
+            right: 140px; /* Adjust based on last child width */
+            height: 2px;
+            background: #E0E0E0;
+        }
+
+        .node-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 240px;
+            position: relative;
+        }
+
+        .node-group::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background: #E0E0E0;
+            transform: translateX(-50%);
+        }
+
+        .l1-node {
+            background: #FFF5F0;
+            border: 2px solid #FF5500;
+            color: #FF5500;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .l2-list {
+            background: #F8F9FA;
+            width: 100%;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .l2-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #555;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .l2-item i {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .connector-dot {
+            width: 8px;
+            height: 8px;
+            background: #E0E0E0;
+            border-radius: 50%;
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <span class="tag">INFORMATION ARCHITECTURE</span>
+            <h2>信息架构：以场景为核心</h2>
+            <p>扁平化的层级设计，将“社交场景”作为一级入口，减少用户决策路径，实现从需求到解决方案的快速直达。</p>
+        </div>
+
+        <div class="diagram-container">
+            <div class="root-node">
+                <i class="fas fa-map-marker-alt" style="margin-right: 10px;"></i> FIND ME 首页
+            </div>
+
+            <div class="level-1-container">
+                <!-- Group 1 -->
+                <div class="node-group">
+                    <div class="connector-dot"></div>
+                    <div class="l1-node">
+                        <i class="fas fa-heart"></i> 情侣套餐
+                    </div>
+                    <div class="l2-list">
+                        <div class="l2-item">两人约会</div>
+                        <div class="l2-item">纪念日</div>
+                        <div class="l2-item">求婚策划</div>
+                    </div>
+                </div>
+
+                <!-- Group 2 -->
+                <div class="node-group">
+                    <div class="connector-dot"></div>
+                    <div class="l1-node">
+                        <i class="fas fa-glass-cheers"></i> 闺蜜套餐
+                    </div>
+                    <div class="l2-list">
+                        <div class="l2-item">下午茶</div>
+                        <div class="l2-item">拍照打卡</div>
+                        <div class="l2-item">美甲SPA</div>
+                    </div>
+                </div>
+
+                <!-- Group 3 -->
+                <div class="node-group">
+                    <div class="connector-dot"></div>
+                    <div class="l1-node">
+                        <i class="fas fa-gamepad"></i> 兄弟套餐
+                    </div>
+                    <div class="l2-list">
+                        <div class="l2-item">开黑电竞</div>
+                        <div class="l2-item">烧烤夜宵</div>
+                        <div class="l2-item">足浴按摩</div>
+                    </div>
+                </div>
+
+                <!-- Group 4 -->
+                <div class="node-group">
+                    <div class="connector-dot"></div>
+                    <div class="l1-node">
+                        <i class="fas fa-fire"></i> 情趣套餐
+                    </div>
+                    <div class="l2-list">
+                        <div class="l2-item">主题酒店</div>
+                        <div class="l2-item">情趣用品</div>
+                        <div class="l2-item">私密影院</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

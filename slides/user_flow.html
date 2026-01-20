@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Roboto:wght@300;400;500;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', 'Noto Sans SC', sans-serif; -webkit-font-smoothing: antialiased; }
+
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background: #F5F7FA;
+            position: relative;
+            overflow: hidden;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            margin-bottom: 60px;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #FF5500;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 48px;
+            font-weight: 900;
+            color: #333333;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 20px;
+            color: #666666;
+            max-width: 800px;
+            line-height: 1.6;
+        }
+
+        .flow-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .flow-container::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 100px;
+            right: 100px;
+            height: 4px;
+            background: #E0E0E0;
+            z-index: 0;
+            border-radius: 2px;
+        }
+
+        .step-card {
+            width: 260px;
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border: 4px solid #FF5500;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 900;
+            color: #FF5500;
+            margin-bottom: 24px;
+            box-shadow: 0 0 0 8px #F5F7FA; /* Fake spacing for line */
+        }
+
+        .step-icon {
+            font-size: 40px;
+            color: #333;
+            margin-bottom: 20px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .highlight-badge {
+            background: #FFF5F0;
+            color: #FF5500;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+
+        /* Arrow indicators */
+        .arrow {
+            position: absolute;
+            top: 32px;
+            font-size: 24px;
+            color: #E0E0E0;
+            z-index: 2;
+        }
+        .arrow-1 { left: 25%; }
+        .arrow-2 { left: 50%; transform: translateX(-50%); }
+        .arrow-3 { right: 25%; }
+
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <span class="tag">USER FLOW</span>
+            <h2>用户流程：从灵感到决策</h2>
+            <p>通过四个关键步骤，引导用户完成从模糊的社交需求到明确的消费决策的转化闭环。</p>
+        </div>
+
+        <div class="flow-container">
+            <!-- Step 1 -->
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon"><i class="fas fa-compass"></i></div>
+                <div class="step-title">场景选择</div>
+                <div class="step-desc">用户根据社交对象（情侣、闺蜜等）选择对应的一级入口。</div>
+                <div class="highlight-badge">侧边栏导航</div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon"><i class="fas fa-sliders-h"></i></div>
+                <div class="step-title">智能筛选</div>
+                <div class="step-desc">通过价格、距离或“猜你喜欢”快速缩小选择范围。</div>
+                <div class="highlight-badge">多维过滤</div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon"><i class="fas fa-store"></i></div>
+                <div class="step-title">决策转化</div>
+                <div class="step-desc">浏览高清大图、评分和特色标签，确认心仪店铺。</div>
+                <div class="highlight-badge">详情页交互</div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="step-title">交易闭环</div>
+                <div class="step-desc">购买专属团购套餐，生成核销码，完成到店消费。</div>
+                <div class="highlight-badge">支付与核销</div>
+            </div>
+
+            <i class="fas fa-chevron-right arrow arrow-1"></i>
+            <i class="fas fa-chevron-right arrow arrow-2"></i>
+            <i class="fas fa-chevron-right arrow arrow-3"></i>
+        </div>
+    </div>
+</body>
+</html>
