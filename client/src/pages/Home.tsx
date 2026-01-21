@@ -279,11 +279,11 @@ export default function Home() {
                                       setIsMobileMenuOpen(false); // 选择后关闭菜单
                                     }}
                                     className={`
-                                      text-[12px] transition-all duration-200 relative flex items-center justify-start cursor-pointer z-20 tracking-wide py-1
+                                      text-[12px] transition-all duration-200 relative flex items-center justify-start cursor-pointer z-20 tracking-wide py-2 px-3 rounded-md w-full
                                       ${isHighlight 
-                                        ? 'text-white font-[500] bg-[#FF5500] px-2.5 py-1 rounded-full shadow-sm' 
-                                        : 'text-[#666666] hover:text-[#333333] font-normal'}
-                                      ${isSubActive && !isHighlight ? 'text-[#FF5500] font-[500]' : ''}
+                                        ? 'text-white font-[500] bg-[#FF5500] shadow-sm' 
+                                        : 'text-[#666666] hover:text-[#FF5500] hover:bg-[#FFF5F0] font-normal'}
+                                      ${isSubActive && !isHighlight ? 'text-[#FF5500] font-[500] bg-[#FFF5F0]' : ''}
                                     `}
                                   >
                                     {sub.name}
@@ -635,10 +635,11 @@ export default function Home() {
                           onClick={(e) => handleSubCategoryClick(e, sub.id)}
                           className={`
                             text-[12px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20 tracking-wide
+                            w-full py-1.5 px-2 rounded-md
                             ${isHighlight 
-                              ? 'text-white font-[500] bg-[#FF5500] px-3 py-1.5 rounded-full shadow-sm' 
-                              : 'text-[#666666] hover:text-[#333333] font-normal'}
-                            ${isSubActive && !isHighlight ? 'text-[#FF5500] font-[500]' : ''}
+                              ? 'text-white font-[500] bg-[#FF5500] shadow-sm' 
+                              : 'text-[#666666] hover:text-[#FF5500] hover:bg-[#FFF5F0] font-normal'}
+                            ${isSubActive && !isHighlight ? 'text-[#FF5500] font-[500] bg-[#FFF5F0]' : ''}
                           `}
                         >
                           {sub.name}
