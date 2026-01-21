@@ -255,14 +255,11 @@ export default function Home() {
                               className="relative w-full flex items-center justify-between py-2 group cursor-pointer hover:opacity-80 transition-opacity"
                             >
                               <div className="flex items-center gap-3">
-                                <span className={`text-[14px] font-medium tracking-wide ${titleColor} transition-colors duration-200`}>
+                                <span className={`text-[13px] font-[500] tracking-wide ${titleColor} transition-colors duration-200`}>
                                   {category.name}
                                 </span>
-                                <div className={`px-2 py-0.5 rounded-full ${isSelected ? 'bg-[#FF5500]' : 'bg-[#FF8855]'} text-white text-[10px] font-normal shadow-sm transition-colors duration-200`}>
-                                  {subtitle}
-                                </div>
                               </div>
-                              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                              <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
                             </button>
 
                             {/* 二级菜单列表 */}
@@ -282,11 +279,11 @@ export default function Home() {
                                       setIsMobileMenuOpen(false); // 选择后关闭菜单
                                     }}
                                     className={`
-                                      text-[13px] transition-all duration-200 relative flex items-center justify-start cursor-pointer z-20 tracking-wide py-1.5
+                                      text-[12px] transition-all duration-200 relative flex items-center justify-start cursor-pointer z-20 tracking-wide py-1
                                       ${isHighlight 
-                                        ? 'text-[#FF4D4F] font-medium' 
-                                        : 'text-[#444444] hover:text-[#000000] font-normal'}
-                                      ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-medium' : ''}
+                                        ? 'text-white font-[500] bg-[#FF5500] px-2.5 py-1 rounded-full shadow-sm' 
+                                        : 'text-[#666666] hover:text-[#333333] font-normal'}
+                                      ${isSubActive && !isHighlight ? 'text-[#FF5500] font-[500]' : ''}
                                     `}
                                   >
                                     {sub.name}
@@ -614,17 +611,12 @@ export default function Home() {
                       e.stopPropagation();
                       handleCategoryClick(category.id);
                     }}
-                    className="relative w-full flex flex-col items-center justify-center gap-1.5 group cursor-pointer py-1 hover:opacity-80 transition-opacity"
+                    className="relative w-full flex flex-col items-center justify-center gap-1 group cursor-pointer py-1 hover:opacity-80 transition-opacity"
                   >
                     {/* 主标题 - 纤细精致 */}
-                    <span className={`text-[13px] font-medium tracking-wide ${titleColor} transition-colors duration-200`}>
+                    <span className={`text-[14px] font-[500] tracking-wide ${titleColor} transition-colors duration-200`}>
                       {category.name}
                     </span>
-                    
-                    {/* 副标题胶囊 - 统一使用品牌色，保持精致感 */}
-                    <div className={`px-2.5 py-0.5 rounded-full ${isSelected ? 'bg-[#FF5500]' : 'bg-[#FF8855]'} text-white text-[10px] font-normal scale-90 shadow-sm transition-colors duration-200`}>
-                      {subtitle}
-                    </div>
                   </button>
 
                   {/* 二级菜单列表 */}
@@ -642,11 +634,11 @@ export default function Home() {
                           key={sub.id}
                           onClick={(e) => handleSubCategoryClick(e, sub.id)}
                           className={`
-                            text-[11px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20 tracking-wide
+                            text-[12px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20 tracking-wide
                             ${isHighlight 
-                              ? 'bg-[#FFF0F0] text-[#FF4D4F] font-medium px-3 py-1 rounded-full shadow-sm' 
-                              : 'text-[#444444] hover:text-[#000000] font-normal'}
-                            ${isSubActive && !isHighlight ? 'text-[#FF4D4F] font-medium' : ''}
+                              ? 'text-white font-[500] bg-[#FF5500] px-3 py-1.5 rounded-full shadow-sm' 
+                              : 'text-[#666666] hover:text-[#333333] font-normal'}
+                            ${isSubActive && !isHighlight ? 'text-[#FF5500] font-[500]' : ''}
                           `}
                         >
                           {sub.name}
