@@ -255,7 +255,7 @@ export default function Home() {
                               className="relative w-full flex items-center justify-between py-2 group cursor-pointer hover:opacity-80 transition-opacity"
                             >
                               <div className="flex items-center gap-3">
-                                <span className={`text-[13px] font-[500] tracking-wide ${titleColor} transition-colors duration-200`}>
+                                <span className={`text-[15px] font-[500] tracking-wide ${titleColor} transition-colors duration-200 font-system`}>
                                   {category.name}
                                 </span>
                               </div>
@@ -279,11 +279,10 @@ export default function Home() {
                                       setIsMobileMenuOpen(false); // 选择后关闭菜单
                                     }}
                                     className={`
-                                      text-[12px] transition-all duration-200 relative flex items-center justify-start cursor-pointer z-20 tracking-wide py-2 px-3 rounded-md w-full
-                                      ${isHighlight 
-                                        ? 'text-white font-[500] bg-[#FF5500] shadow-sm' 
-                                        : 'text-[#666666] hover:text-[#FF5500] hover:bg-[#FFF5F0] font-normal'}
-                                      ${isSubActive && !isHighlight ? 'text-[#FF5500] font-[500] bg-[#FFF5F0]' : ''}
+                                      text-[13px] transition-all duration-200 relative flex items-center justify-start cursor-pointer z-20 tracking-wide py-2 px-3 rounded-md w-full font-system
+                                      ${isSubActive 
+                                        ? 'text-white font-[400] bg-[#FF5500] shadow-sm' 
+                                        : 'text-[#666666] hover:text-[#FF5500] hover:bg-[#FFF5F0] font-[400]'}
                                     `}
                                   >
                                     {sub.name}
@@ -614,7 +613,7 @@ export default function Home() {
                     className="relative w-full flex flex-col items-center justify-center gap-1 group cursor-pointer py-1 hover:opacity-80 transition-opacity"
                   >
                     {/* 主标题 - 纤细精致 */}
-                    <span className={`text-[14px] font-[500] tracking-wide ${titleColor} transition-colors duration-200`}>
+                    <span className={`text-[15px] font-[500] tracking-wide ${titleColor} transition-colors duration-200 font-system`}>
                       {category.name}
                     </span>
                   </button>
@@ -634,12 +633,11 @@ export default function Home() {
                           key={sub.id}
                           onClick={(e) => handleSubCategoryClick(e, sub.id)}
                           className={`
-                            text-[12px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20 tracking-wide
-                            w-full py-1.5 px-2 rounded-md
-                            ${isHighlight 
-                              ? 'text-white font-[500] bg-[#FF5500] shadow-sm' 
-                              : 'text-[#666666] hover:text-[#FF5500] hover:bg-[#FFF5F0] font-normal'}
-                            ${isSubActive && !isHighlight ? 'text-[#FF5500] font-[500] bg-[#FFF5F0]' : ''}
+                            text-[13px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20 tracking-wide
+                            w-full py-1.5 px-2 rounded-md font-system
+                            ${isSubActive 
+                              ? 'text-white font-[400] bg-[#FF5500] shadow-sm' 
+                              : 'text-[#666666] hover:text-[#FF5500] hover:bg-[#FFF5F0] font-[400]'}
                           `}
                         >
                           {sub.name}
