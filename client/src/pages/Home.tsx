@@ -579,10 +579,10 @@ export default function Home() {
         
         {/* 左侧手风琴导航栏 - 高德风格重构 */}
         <nav className="w-[88px] flex-none bg-background flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-30 transition-all duration-300 relative">
-          {/* 顶部全城筛选 */}
-          <div className="flex items-center justify-center py-4 cursor-pointer hover:text-[#FF4D4F] transition-colors">
-            <span className="text-sm font-bold text-foreground/80">全城</span>
-            <ChevronDown className="w-3 h-3 ml-1 text-muted-foreground" />
+          {/* 顶部全城筛选 - 增加点击反馈 */}
+          <div className="flex items-center justify-center py-4 cursor-pointer group transition-colors active:scale-95 duration-200">
+            <span className="text-[14px] font-[600] text-[#222222] group-hover:text-[#FF5500] transition-colors font-system tracking-tight">全城</span>
+            <ChevronDown className="w-3 h-3 ml-1 text-[#999999] group-hover:text-[#FF5500] transition-colors" />
           </div>
 
           <div className="flex flex-col pb-20 gap-6">
@@ -613,7 +613,7 @@ export default function Home() {
                     className="relative w-full flex flex-col items-center justify-center gap-1 group cursor-pointer py-1 hover:opacity-80 transition-opacity"
                   >
                     {/* 主标题 - 纤细精致 */}
-                    <span className={`text-[15px] font-[500] tracking-wide ${titleColor} transition-colors duration-200 font-system`}>
+                    <span className={`text-[14px] font-[500] tracking-[0.02em] ${titleColor} transition-colors duration-200 font-system leading-tight`}>
                       {category.name}
                     </span>
                   </button>
@@ -633,10 +633,10 @@ export default function Home() {
                           key={sub.id}
                           onClick={(e) => handleSubCategoryClick(e, sub.id)}
                           className={`
-                            text-[13px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20 tracking-wide
-                            w-full py-1.5 px-2 rounded-md font-system
+                            text-[12px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20 tracking-[0.01em]
+                            w-full py-1.5 px-2 rounded-md font-system leading-none
                             ${isSubActive 
-                              ? 'text-white font-[400] bg-[#FF5500] shadow-sm' 
+                              ? 'text-white font-[500] bg-[#FF5500] shadow-sm' 
                               : 'text-[#666666] hover:text-[#FF5500] hover:bg-[#FFF5F0] font-[400]'}
                           `}
                         >
@@ -719,7 +719,7 @@ export default function Home() {
                 onClick={() => setFilters(prev => ({ ...prev, distance: 'all' }))}
                 className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors ${filters.distance === 'all' ? 'bg-foreground text-background font-bold' : 'bg-muted text-muted-foreground'}`}
               >
-                姬绮伟
+                距离不限
               </button>
               <button className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs whitespace-nowrap">
                 好评优先
