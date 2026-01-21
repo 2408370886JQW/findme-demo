@@ -761,7 +761,27 @@ export default function Home() {
                       <div>
                         <div className="flex justify-between items-start">
                           <h3 className="text-base font-bold text-foreground truncate pr-2">{shop.name}</h3>
-                          <span className="text-xs text-muted-foreground flex-none">{shop.distance}</span>
+                          <div className="flex items-center gap-2 flex-none">
+                            <span className="text-xs text-muted-foreground">{shop.distance}</span>
+                            <button
+                              onClick={(e) => toggleFavorite(e, shop.id)}
+                              className="group/fav relative p-1 -mr-1"
+                            >
+                              <Heart 
+                                className={`
+                                  w-4 h-4 transition-all duration-300 ease-spring
+                                  ${favorites.includes(shop.id) 
+                                    ? 'fill-[#FF4D4F] text-[#FF4D4F] scale-110' 
+                                    : 'text-muted-foreground/50 group-hover/fav:text-[#FF4D4F] group-hover/fav:scale-110'}
+                                  group-active/fav:scale-90
+                                `} 
+                              />
+                              <span className={`
+                                absolute inset-0 rounded-full bg-[#FF4D4F]/10 scale-0 transition-transform duration-300
+                                ${favorites.includes(shop.id) ? 'scale-150 opacity-0' : 'group-active/fav:scale-150'}
+                              `} />
+                            </button>
+                          </div>
                         </div>
                         
                         <div className="flex items-center gap-2 mt-1 text-xs">
