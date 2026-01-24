@@ -336,7 +336,7 @@ export default function Home() {
           </div>
 
           {/* Search Bar - 自适应宽度 */}
-          <div className="flex-1 max-w-md mx-2">
+          <div className="flex-1 max-w-md mx-2 min-w-0">
             <div className="relative group">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-muted-foreground group-focus-within:text-[#FF4D4F] transition-colors" />
@@ -344,28 +344,28 @@ export default function Home() {
               <input
                 type="text"
                 className="w-full bg-muted/50 border-none rounded-full py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-[#FF4D4F]/20 focus:bg-background transition-all"
-                placeholder="搜索好去处..."
+                placeholder="搜索..."
               />
             </div>
           </div>
 
           {/* Action Buttons - 紧凑排列 */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-0.5 flex-shrink-0">
             <button 
               onClick={toggleDarkMode}
-              className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              className="p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
             >
               {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
             <button 
               onClick={() => setShowOrders(true)}
-              className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              className="p-1.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             >
               <ShoppingBag className="w-5 h-5" />
             </button>
             <Link href="/favorites">
               <button 
-                className={`p-2 rounded-full transition-colors hover:bg-muted text-muted-foreground hover:text-foreground`}
+                className={`p-1.5 rounded-full transition-colors hover:bg-muted text-muted-foreground hover:text-foreground`}
               >
                 <Heart className={`w-5 h-5`} />
               </button>
@@ -373,14 +373,14 @@ export default function Home() {
             <button 
               onClick={() => setShowMap(!showMap)}
               className={`
-                flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold transition-all
+                flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold transition-all ml-1
                 ${showMap 
                   ? 'bg-[#FF4D4F] text-white shadow-lg shadow-[#FF4D4F]/30' 
                   : 'bg-muted text-foreground hover:bg-muted/80'}
               `}
             >
-              <MapIcon className="w-4 h-4" />
-              <span className="hidden xs:inline">地图</span>
+              <MapIcon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">地图</span>
             </button>
           </div>
         </div>
@@ -772,9 +772,9 @@ export default function Home() {
                       
                       {/* 右侧内容区域 */}
                       <div className="flex-1 min-w-0 flex flex-col min-h-[110px]">
-                        <div className="flex justify-between items-start relative">
-                          <h3 className="font-bold text-[#222222] text-[16px] leading-tight truncate pr-14">{bestShop.name}</h3>
-                          <div className="flex gap-2 absolute top-0 right-0 z-10 pl-1">
+                        <div className="flex justify-between items-start relative min-w-0">
+                          <h3 className="font-bold text-[#222222] text-[16px] leading-tight truncate flex-1 mr-12">{bestShop.name}</h3>
+                          <div className="flex gap-2 absolute top-0 right-0 z-10 pl-1 bg-gradient-to-l from-[#FFF0E5] via-[#FFF0E5] to-transparent">
                             <button onClick={(e) => { e.stopPropagation(); setShowShare(true); }}>
                               <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600" />
                             </button>
@@ -784,23 +784,26 @@ export default function Home() {
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-2 mt-1 flex-wrap">
-                          <div className="flex items-center text-[#FF6600] font-bold text-sm">
+                        <div className="flex items-center gap-2 mt-1 flex-wrap text-xs">
+                          <div className="flex items-center text-[#FF6600] font-bold">
                             <span className="text-[14px]">{bestShop.rating}</span>
                             <span className="text-[10px] ml-0.5">分</span>
                           </div>
                           <div className="w-[1px] h-3 bg-gray-300"></div>
-                          <span className="text-[#FF4D4F] font-bold text-[12px]">¥{bestShop.price}/人</span>
+                          <span className="text-[#FF4D4F] font-bold">¥{bestShop.price}/人</span>
                           <div className="w-[1px] h-3 bg-gray-300"></div>
-                          <span className="text-[#666666] text-[10px]">{bestShop.area} · {bestShop.distance}</span>
+                          <span className="text-[#666666] truncate max-w-[80px]">{bestShop.area}</span>
+                          <span className="text-[#666666] flex-shrink-0">· {bestShop.distance}</span>
                         </div>
 
                         <div className="mt-auto pt-2 border-t border-[#FF5500]/10">
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-1.5 min-w-0">
                             <span className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-none">团</span>
-                            <span className="text-[#333333] text-[12px] font-medium truncate">{bestShop.deals?.[0]?.title || bestShop.dealTitle}</span>
-                            <span className="text-[#FF4D4F] font-bold text-[12px] ml-auto">¥{bestShop.deals?.[0]?.price || bestShop.price}</span>
-                            <span className="text-[#999999] text-[10px] line-through decoration-gray-400">¥{bestShop.deals?.[0]?.originalPrice || (bestShop.price * 1.5).toFixed(0)}</span>
+                            <span className="text-[#333333] text-[12px] font-medium truncate flex-1">{bestShop.deals?.[0]?.title || bestShop.dealTitle}</span>
+                            <div className="flex items-center gap-1 flex-none">
+                              <span className="text-[#FF4D4F] font-bold text-[12px]">¥{bestShop.deals?.[0]?.price || bestShop.price}</span>
+                              <span className="text-[#999999] text-[10px] line-through decoration-gray-400 hidden xs:inline">¥{bestShop.deals?.[0]?.originalPrice || (bestShop.price * 1.5).toFixed(0)}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -827,28 +830,28 @@ export default function Home() {
                   {/* 右侧内容区 */}
                   <div className="flex-1 flex flex-col justify-between h-[110px]">
                     {/* 标题与操作栏 */}
-                    <div className="flex justify-between items-start relative">
-                      <h3 className="font-bold text-[#333333] text-[16px] leading-tight truncate pr-14">{shop.name}</h3>
-                      <div className="flex gap-2 absolute top-0 right-0 z-10 bg-white pl-1">
-                        <button onClick={(e) => { e.stopPropagation(); setShowShare(true); }}>
-                          <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                        </button>
-                        <button onClick={(e) => toggleFavorite(e, shop.id)}>
-                          <Heart className={`w-4 h-4 transition-colors ${favorites.includes(shop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400 hover:text-gray-600'}`} />
-                        </button>
-                      </div>
-                    </div>
+                        <div className="flex justify-between items-start relative min-w-0">
+                          <h3 className="font-bold text-[#333333] text-[16px] leading-tight truncate flex-1 mr-12">{shop.name}</h3>
+                          <div className="flex gap-2 absolute top-0 right-0 z-10 bg-white pl-2">
+                            <button onClick={(e) => { e.stopPropagation(); setShowShare(true); }}>
+                              <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                            </button>
+                            <button onClick={(e) => toggleFavorite(e, shop.id)}>
+                              <Heart className={`w-4 h-4 transition-colors ${favorites.includes(shop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400 hover:text-gray-600'}`} />
+                            </button>
+                          </div>
+                        </div>
 
                     {/* 评分与价格 */}
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <div className="flex items-center text-[#FF6600] font-bold text-[14px]">
-                        <span>{shop.rating}分</span>
-                      </div>
-                      <div className="w-[1px] h-3 bg-gray-300"></div>
-                      <span className="text-[#666666] text-[12px]">¥{shop.price}/人</span>
-                      <div className="w-[1px] h-3 bg-gray-300"></div>
-                      <span className="text-[#999999] text-[12px]">{shop.distance}</span>
-                    </div>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap text-xs">
+                          <div className="flex items-center text-[#FF6600] font-bold">
+                            <span>{shop.rating}分</span>
+                          </div>
+                          <div className="w-[1px] h-3 bg-gray-300"></div>
+                          <span className="text-[#666666]">¥{shop.price}/人</span>
+                          <div className="w-[1px] h-3 bg-gray-300"></div>
+                          <span className="text-[#999999] flex-shrink-0">{shop.distance}</span>
+                        </div>
 
                     {/* 榜单标签 */}
                     {shop.ranking && (
