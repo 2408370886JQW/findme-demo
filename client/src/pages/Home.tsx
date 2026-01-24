@@ -42,6 +42,7 @@ export default function Home() {
     cuisine: 'all', // all, western, bar, bbq, etc.
     district: null as string | null,
     area: null as string | null,
+    services: [] as string[], // 'openNow', 'hasPrivateRoom', 'hasParking'
     sort: 'distance' // distance, rating, price_asc, price_desc, sales
   });
   const [guessYouLike, setGuessYouLike] = useState<Shop[]>([]);
@@ -193,6 +194,13 @@ export default function Home() {
       if (filters.distance === 'near' && distInKm >= 1) return false;
       if (filters.distance === 'mid' && (distInKm < 1 || distInKm > 3)) return false;
       if (filters.distance === 'far' && distInKm <= 3) return false;
+    }
+
+    // 服务标签筛选
+    if (filters.services.length > 0) {
+      if (filters.services.includes('openNow') && !shop.services?.openNow) return false;
+      if (filters.services.includes('hasPrivateRoom') && !shop.services?.hasPrivateRoom) return false;
+      if (filters.services.includes('hasParking') && !shop.services?.hasParking) return false;
     }
 
     return true;
@@ -721,6 +729,45 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* 服务筛选 */}
+              <div className="relative group">
+                <button 
+                  className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 cursor-pointer active:scale-95 ${filters.services.length > 0 ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-white/90 text-gray-600 border-gray-100 hover:bg-white'}`}
+                >
+                  {filters.services.length > 0 ? `已选${filters.services.length}项` : '服务筛选'}
+                  <ChevronDown className={`w-3 h-3 ${filters.services.length > 0 ? 'text-[#FF5500]' : 'text-[#999999]'}`} />
+                </button>
+                <div className="absolute top-full left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-border/50 z-50 hidden group-hover:block animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-2 space-y-1">
+                    {[
+                      { id: 'openNow', label: '营业中' },
+                      { id: 'hasPrivateRoom', label: '有包间' },
+                      { id: 'hasParking', label: '可停车' }
+                    ].map(service => (
+                      <button
+                        key={service.id}
+                        onClick={() => {
+                          setFilters(prev => {
+                            const newServices = prev.services.includes(service.id)
+                              ? prev.services.filter(id => id !== service.id)
+                              : [...prev.services, service.id];
+                            return { ...prev, services: newServices };
+                          });
+                        }}
+                        className={`w-full text-left px-3 py-2 text-xs rounded-md transition-colors flex items-center justify-between ${
+                          filters.services.includes(service.id)
+                            ? 'bg-[#FFF0E5] text-[#FF5500] font-bold'
+                            : 'hover:bg-muted text-[#333333]'
+                        }`}
+                      >
+                        {service.label}
+                        {filters.services.includes(service.id) && <span className="text-[#FF5500]">✓</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
               {/* 价格筛选 */}
               <div className="relative group">
                 <button 
@@ -807,16 +854,18 @@ export default function Home() {
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-2 mt-1 flex-wrap text-xs">
-                          <div className="flex items-center text-[#FF6600] font-bold">
+                        <div className="flex items-center gap-2 mt-1 flex-wrap text-xs min-w-0">
+                          <div className="flex items-center text-[#FF6600] font-bold flex-shrink-0">
                             <span className="text-[14px]">{bestShop.rating}</span>
                             <span className="text-[10px] ml-0.5">分</span>
                           </div>
-                          <div className="w-[1px] h-3 bg-gray-300"></div>
-                          <span className="text-[#FF4D4F] font-bold">¥{bestShop.price}/人</span>
-                          <div className="w-[1px] h-3 bg-gray-300"></div>
-                          <span className="text-[#666666] truncate max-w-[80px]">{bestShop.area}</span>
-                          <span className="text-[#666666] flex-shrink-0">· {bestShop.distance}</span>
+                          <div className="w-[1px] h-3 bg-gray-300 flex-shrink-0"></div>
+                          <span className="text-[#FF4D4F] font-bold flex-shrink-0">¥{bestShop.price}/人</span>
+                          <div className="w-[1px] h-3 bg-gray-300 flex-shrink-0"></div>
+                          <div className="flex items-center min-w-0 flex-1">
+                            <span className="text-[#666666] truncate">{bestShop.area}</span>
+                            <span className="text-[#666666] flex-shrink-0 ml-1">· {bestShop.distance}</span>
+                          </div>
                         </div>
 
                         <div className="mt-auto pt-2 border-t border-[#FF5500]/10">
@@ -866,13 +915,13 @@ export default function Home() {
                         </div>
 
                     {/* 评分与价格 */}
-                        <div className="flex items-center gap-2 mt-1 flex-wrap text-xs">
-                          <div className="flex items-center text-[#FF6600] font-bold">
+                        <div className="flex items-center gap-2 mt-1 flex-wrap text-xs min-w-0">
+                          <div className="flex items-center text-[#FF6600] font-bold flex-shrink-0">
                             <span>{shop.rating}分</span>
                           </div>
-                          <div className="w-[1px] h-3 bg-gray-300"></div>
-                          <span className="text-[#666666]">¥{shop.price}/人</span>
-                          <div className="w-[1px] h-3 bg-gray-300"></div>
+                          <div className="w-[1px] h-3 bg-gray-300 flex-shrink-0"></div>
+                          <span className="text-[#666666] flex-shrink-0">¥{shop.price}/人</span>
+                          <div className="w-[1px] h-3 bg-gray-300 flex-shrink-0"></div>
                           <span className="text-[#999999] flex-shrink-0">{shop.distance}</span>
                         </div>
 
@@ -885,13 +934,18 @@ export default function Home() {
                       </div>
                     )}
 
-                    {/* 标签 */}
+                    {/* 标签与服务 */}
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                       {shop.tags.slice(0, 3).map((tag, i) => (
                         <span key={i} className="text-[10px] px-1 py-0.5 border border-[#E0E0E0] text-[#666666] rounded">
                           {tag}
                         </span>
                       ))}
+                      {shop.services?.openNow && (
+                        <span className="text-[10px] px-1 py-0.5 bg-green-50 text-green-600 rounded border border-green-100">
+                          营业中
+                        </span>
+                      )}
                     </div>
 
                     {/* 团购列表 (仅展示前2条) */}
@@ -919,7 +973,7 @@ export default function Home() {
                 <Search className="w-12 h-12 mb-4 opacity-20" />
                 <p>暂无符合条件的店铺</p>
                 <button 
-                  onClick={() => setFilters({ price: 'all', distance: 'all', cuisine: 'all', district: null, area: null, sort: 'distance' })}
+                  onClick={() => setFilters({ price: 'all', distance: 'all', cuisine: 'all', district: null, area: null, services: [], sort: 'distance' })}
                   className="mt-4 text-[#FF4D4F] text-sm font-bold hover:underline"
                 >
                   清除筛选条件
