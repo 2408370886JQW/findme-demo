@@ -734,17 +734,67 @@ export default function Home() {
         {/* 右侧内容区 */}
         <main className="flex-1 flex flex-col bg-background relative min-w-0 overflow-hidden">
           {/* 沉浸式顶部背景 */}
-          <div className="absolute top-0 left-0 w-full h-[180px] z-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-0 w-full h-[220px] z-0 overflow-hidden pointer-events-none">
             {categories.map(cat => (
               <div 
                 key={cat.id}
                 className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${activeCategory === cat.id ? 'opacity-100' : 'opacity-0'}`}
               >
                 <img src={cat.backgroundImage} alt="" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/80 to-background"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/70 to-background"></div>
               </div>
             ))}
           </div>
+
+          {/* 今日最佳推荐卡片 - 毛玻璃风格 */}
+          {!isLoading && (
+            <div className="absolute top-[50px] right-4 z-10 w-[180px] animate-in fade-in slide-in-from-right-4 duration-700">
+              {(() => {
+                // 简单的推荐逻辑：选择当前分类下评分最高的店铺
+                const currentCategoryShops = shops.filter(s => 
+                  categories.find(c => c.id === activeCategory)?.subCategories.some(sub => sub.id === s.sceneTheme)
+                );
+                const bestShop = currentCategoryShops.sort((a, b) => b.rating - a.rating)[0];
+                
+                if (!bestShop) return null;
+
+                return (
+                  <div 
+                    onClick={() => setSelectedShop(bestShop)}
+                    className="relative bg-white/30 backdrop-blur-md border border-white/40 rounded-xl p-2 shadow-lg cursor-pointer hover:bg-white/40 transition-all group overflow-hidden"
+                  >
+                    {/* 闪光特效 */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
+                    
+                    <div className="flex items-start gap-2">
+                      <div className="relative w-10 h-10 flex-none">
+                        <img src={bestShop.imageUrl} alt={bestShop.name} className="w-full h-full rounded-lg object-cover shadow-sm" />
+                        <div className="absolute -top-1 -left-1 bg-[#FF4D4F] text-white text-[8px] font-bold px-1 rounded-sm shadow-sm">
+                          今日甄选
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[12px] font-bold text-[#222222] truncate leading-tight mb-0.5">{bestShop.name}</h4>
+                        <div className="flex items-center gap-1">
+                          <div className="flex items-center text-[#FF6600] text-[10px] font-bold">
+                            <Star className="w-2.5 h-2.5 fill-current" />
+                            <span>{bestShop.rating}</span>
+                          </div>
+                          <span className="text-[#666666] text-[10px]">¥{bestShop.price}/人</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-1.5 flex items-center justify-between">
+                      <span className="text-[9px] text-[#666666] bg-white/50 px-1 rounded truncate max-w-[100px]">
+                        "{bestShop.dealTitle || '超值体验'}"
+                      </span>
+                      <ChevronRight className="w-3 h-3 text-[#999999]" />
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
 
           {/* 顶部筛选栏 - 移动端横向滚动优化 */}
           <div className="flex-none px-3 py-2 bg-transparent z-20 flex flex-col gap-2 relative">
