@@ -43,6 +43,7 @@ export default function Home() {
     district: null as string | null,
     area: null as string | null,
     services: [] as string[], // 'openNow', 'hasPrivateRoom', 'hasParking'
+    scenario: null as 'weekend' | 'midnight' | null, // 场景筛选
     sort: 'distance' // distance, rating, price_asc, price_desc, sales
   });
   const [guessYouLike, setGuessYouLike] = useState<Shop[]>([]);
@@ -259,6 +260,19 @@ export default function Home() {
       if (filters.services.includes('openNow') && !shop.services?.openNow) return false;
       if (filters.services.includes('hasPrivateRoom') && !shop.services?.hasPrivateRoom) return false;
       if (filters.services.includes('hasParking') && !shop.services?.hasParking) return false;
+    }
+
+    // 场景筛选
+    if (filters.scenario === 'weekend') {
+      // 周末去哪儿：景观、休闲、互动、拍照
+      const weekendThemes = ['couple_view', 'couple_relax', 'couple_activity', 'bestie_photo', 'bestie_chat', 'bestie_shopping'];
+      if (!weekendThemes.includes(shop.sceneTheme)) return false;
+    } else if (filters.scenario === 'midnight') {
+      // 深夜食堂：烧烤、酒吧、夜宵
+      const midnightThemes = ['brother_bbq', 'brother_drink', 'brother_game', 'fun_bar'];
+      if (!midnightThemes.includes(shop.sceneTheme) && !shop.tags.includes('夜宵')) return false;
+      // 必须营业中
+      if (!shop.services?.openNow) return false;
     }
 
     return true;
@@ -748,6 +762,29 @@ export default function Home() {
           <div className="sticky top-0 z-40 transition-all duration-300">
             {/* 顶部状态栏 (猜你喜欢/距离) */}
             <div className="px-4 pt-4 pb-2 flex items-center justify-between text-white/90 relative z-50">
+              {/* 场景化搜索入口 */}
+              <div className="flex gap-2 overflow-x-auto no-scrollbar absolute top-14 left-0 right-0 px-4 pb-2 z-40">
+                <button
+                  onClick={() => setFilters(prev => ({ ...prev, scenario: prev.scenario === 'weekend' ? null : 'weekend' }))}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-md border transition-all flex items-center gap-1.5 ${
+                    filters.scenario === 'weekend' 
+                      ? 'bg-[#FF5500]/90 text-white border-[#FF5500]' 
+                      : 'bg-white/20 text-white border-white/20 hover:bg-white/30'
+                  }`}
+                >
+                  <span className="text-sm">🎡</span> 周末去哪儿
+                </button>
+                <button
+                  onClick={() => setFilters(prev => ({ ...prev, scenario: prev.scenario === 'midnight' ? null : 'midnight' }))}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-md border transition-all flex items-center gap-1.5 ${
+                    filters.scenario === 'midnight' 
+                      ? 'bg-[#722ED1]/90 text-white border-[#722ED1]' 
+                      : 'bg-white/20 text-white border-white/20 hover:bg-white/30'
+                  }`}
+                >
+                  <span className="text-sm">🌙</span> 深夜食堂
+                </button>
+              </div>
               <div 
                 className="flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-sm cursor-pointer active:scale-95 transition-transform"
                 onClick={() => {
@@ -766,7 +803,7 @@ export default function Home() {
             </div>
 
             {/* 筛选栏 - 吸顶时增加背景 */}
-            <div className="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar mask-linear-fade relative z-50 sticky-header-bg">
+            <div className="px-4 py-2 mt-10 flex gap-2 overflow-x-auto no-scrollbar mask-linear-fade relative z-50 sticky-header-bg">
               {/* 综合排序/距离筛选 */}
               <div className="relative group">
                 <button 
@@ -1045,7 +1082,7 @@ export default function Home() {
                 <Search className="w-12 h-12 mb-4 opacity-20" />
                 <p>暂无符合条件的店铺</p>
                 <button 
-                  onClick={() => setFilters({ price: 'all', distance: 'all', cuisine: 'all', district: null, area: null, services: [], sort: 'distance' })}
+                  onClick={() => setFilters({ price: 'all', distance: 'all', cuisine: 'all', district: null, area: null, services: [], scenario: null, sort: 'distance' })}
                   className="mt-4 text-[#FF4D4F] text-sm font-bold hover:underline"
                 >
                   清除筛选条件
