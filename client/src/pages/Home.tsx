@@ -200,9 +200,9 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background transition-colors duration-300">
+    <div className="flex flex-col h-screen bg-[#F5F5F5] transition-colors duration-300">
       {/* 顶部导航栏 - 移动端优化布局 */}
-      <header className="flex-none glass px-3 py-2 z-20 sticky top-0">
+      <header className="flex-none bg-white px-3 py-2 z-20 sticky top-0 shadow-sm">
         <div className="flex items-center justify-between gap-2 max-w-full overflow-hidden">
           {/* Logo & Brand */}
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -399,26 +399,73 @@ export default function Home() {
                       setSelectedShop(shop);
                       setShowFavorites(false);
                     }}>
-                      <img src={shop.imageUrl} alt={shop.name} className="w-24 h-24 rounded-lg object-cover flex-none" />
-                      <div className="flex-1 min-w-0">
+                      {/* 左侧图片区域 */}
+                      <div className="relative w-[110px] h-[110px] flex-none">
+                        <img src={shop.imageUrl} alt={shop.name} className="w-full h-full rounded-lg object-cover" />
+                        {shop.ranking && (
+                          <div className="absolute top-0 left-0 bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-tl-lg rounded-br-lg shadow-sm">
+                            榜单TOP
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* 右侧内容区域 */}
+                      <div className="flex-1 min-w-0 flex flex-col h-[110px]">
+                        {/* 标题与操作栏 */}
                         <div className="flex justify-between items-start">
-                          <h3 className="font-bold text-foreground truncate">{shop.name}</h3>
-                          <button onClick={(e) => toggleFavorite(e, shop.id)}>
-                            <Heart className="w-4 h-4 fill-[#FF4D4F] text-[#FF4D4F]" />
-                          </button>
+                          <h3 className="font-bold text-[#333333] text-[16px] leading-tight truncate pr-2">{shop.name}</h3>
+                          <div className="flex gap-2">
+                            <button onClick={(e) => { e.stopPropagation(); setShowShare(true); }}>
+                              <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                            </button>
+                            <button onClick={(e) => toggleFavorite(e, shop.id)}>
+                              <Heart className={`w-4 h-4 transition-colors ${favorites.includes(shop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400 hover:text-gray-600'}`} />
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1 text-[#FF9900] text-xs mt-1">
-                          <Star className="w-3 h-3 fill-current" />
-                          <span className="font-bold">{shop.rating}</span>
-                          <span className="text-muted-foreground ml-1">¥{shop.price}/人</span>
+
+                        {/* 评分与价格 */}
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="flex items-center text-[#FF6600] font-bold text-[14px]">
+                            <span>{shop.rating}分</span>
+                          </div>
+                          <span className="text-[#666666] text-[12px]">¥{shop.price}/人</span>
+                          <span className="text-[#999999] text-[12px] ml-auto">{shop.distance}</span>
                         </div>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {shop.tags.slice(0, 2).map((tag, i) => (
-                            <span key={i} className="text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground rounded">
+
+                        {/* 榜单标签 */}
+                        {shop.ranking && (
+                          <div className="mt-1">
+                            <span className="inline-block bg-[#FFF5E5] text-[#FF8800] text-[11px] px-1.5 py-0.5 rounded">
+                              {shop.ranking}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* 标签 */}
+                        <div className="flex flex-wrap gap-1.5 mt-1.5">
+                          {shop.tags.slice(0, 3).map((tag, i) => (
+                            <span key={i} className="text-[10px] px-1 py-0.5 border border-[#E0E0E0] text-[#666666] rounded">
                               {tag}
                             </span>
                           ))}
                         </div>
+
+                        {/* 团购列表 (仅展示前2条) */}
+                        {shop.deals && shop.deals.length > 0 && (
+                          <div className="mt-auto pt-2 space-y-1">
+                            {shop.deals.slice(0, 2).map((deal, idx) => (
+                              <div key={idx} className="flex items-center gap-1.5">
+                                <span className="bg-[#FFEEF0] text-[#FF4D4F] text-[10px] font-bold px-1 py-0.5 rounded">团</span>
+                                <span className="text-[#333333] text-[12px] truncate flex-1">{deal.title}</span>
+                                <div className="flex items-baseline gap-1">
+                                  <span className="text-[#FF4D4F] font-bold text-[14px]">¥{deal.price}</span>
+                                  <span className="text-[#999999] text-[10px] line-through">¥{deal.originalPrice}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -578,7 +625,7 @@ export default function Home() {
         )}
         
         {/* 左侧手风琴导航栏 - 高德风格重构 */}
-        <nav className="w-[88px] flex-none bg-background flex flex-col overflow-y-auto border-r border-border/50 no-scrollbar z-30 transition-all duration-300 relative">
+        <nav className="w-[88px] flex-none bg-white flex flex-col overflow-y-auto border-r border-[#EEEEEE] no-scrollbar z-30 transition-all duration-300 relative">
           {/* 顶部全城筛选 - 增加点击反馈 */}
           <div className="flex items-center justify-center py-4 cursor-pointer group transition-colors active:scale-95 duration-200">
             <span className="text-[14px] font-[600] text-[#222222] group-hover:text-[#FF5500] transition-colors font-system tracking-tight">全城</span>
@@ -634,10 +681,10 @@ export default function Home() {
                           onClick={(e) => handleSubCategoryClick(e, sub.id)}
                           className={`
                             text-[12px] transition-all duration-200 relative flex items-center justify-center cursor-pointer z-20 tracking-[0.01em]
-                            w-full py-1.5 px-2 rounded-md font-system leading-none
+                            w-full py-1.5 px-2 rounded-xl font-system leading-none mx-2
                             ${isSubActive 
-                              ? 'text-white font-[500] bg-[#FF5500] shadow-sm' 
-                              : 'text-[#666666] hover:text-[#FF5500] hover:bg-[#FFF5F0] font-[400]'}
+                              ? 'text-white font-bold bg-[#FF5500] shadow-sm' 
+                              : 'text-[#666666] hover:text-[#FF5500] hover:bg-[#FFF5F0] font-normal'}
                           `}
                         >
                           {sub.name}
@@ -711,21 +758,21 @@ export default function Home() {
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
               <button 
                 onClick={() => setFilters(prev => ({ ...prev, price: 'all' }))}
-                className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors ${filters.price === 'all' ? 'bg-foreground text-background font-bold' : 'bg-muted text-muted-foreground'}`}
+                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.price === 'all' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
               >
-                价格不限
+                价格不限 <ChevronDown className={`w-3 h-3 ${filters.price === 'all' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />
               </button>
               <button 
                 onClick={() => setFilters(prev => ({ ...prev, distance: 'all' }))}
-                className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors ${filters.distance === 'all' ? 'bg-foreground text-background font-bold' : 'bg-muted text-muted-foreground'}`}
+                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.distance === 'all' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
               >
-                距离不限
+                距离不限 <ChevronDown className={`w-3 h-3 ${filters.distance === 'all' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />
               </button>
-              <button className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs whitespace-nowrap">
+              <button className="px-3 py-1.5 rounded-xl bg-[#F5F5F5] text-[#333333] text-xs whitespace-nowrap">
                 好评优先
               </button>
-              <button className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs whitespace-nowrap">
-                人均高低
+              <button className="px-3 py-1.5 rounded-xl bg-[#F5F5F5] text-[#333333] text-xs whitespace-nowrap flex items-center gap-1">
+                人均高低 <ChevronDown className="w-3 h-3 text-[#999999]" />
               </button>
             </div>
           </div>
@@ -740,81 +787,75 @@ export default function Home() {
                 <div 
                   key={shop.id}
                   onClick={() => setSelectedShop(shop)}
-                  className="bg-card rounded-xl overflow-hidden shadow-sm border border-border hover:shadow-md transition-all duration-300 cursor-pointer group"
+                  className="bg-white rounded-xl p-3 flex gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-transparent cursor-pointer hover:shadow-md transition-all mb-3"
                 >
-                  {/* 卡片头部：图片与关键信息 */}
-                  <div className="flex p-3 gap-3">
-                    <div className="relative w-24 h-24 flex-none overflow-hidden rounded-lg">
-                      <img 
-                        src={shop.imageUrl} 
-                        alt={shop.name} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      {index < 3 && (
-                        <div className="absolute top-0 left-0 bg-[#FF4D4F] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-br-lg z-10">
-                          精选
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-                      <div>
-                        <div className="flex justify-between items-start">
-                          <h3 className="text-base font-bold text-foreground truncate pr-2">{shop.name}</h3>
-                          <div className="flex items-center gap-2 flex-none">
-                            <span className="text-xs text-muted-foreground">{shop.distance}</span>
-                            <button
-                              onClick={(e) => toggleFavorite(e, shop.id)}
-                              className="group/fav relative p-1 -mr-1"
-                            >
-                              <Heart 
-                                className={`
-                                  w-4 h-4 transition-all duration-300 ease-spring
-                                  ${favorites.includes(shop.id) 
-                                    ? 'fill-[#FF4D4F] text-[#FF4D4F] scale-110' 
-                                    : 'text-muted-foreground/50 group-hover/fav:text-[#FF4D4F] group-hover/fav:scale-110'}
-                                  group-active/fav:scale-90
-                                `} 
-                              />
-                              <span className={`
-                                absolute inset-0 rounded-full bg-[#FF4D4F]/10 scale-0 transition-transform duration-300
-                                ${favorites.includes(shop.id) ? 'scale-150 opacity-0' : 'group-active/fav:scale-150'}
-                              `} />
-                            </button>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 mt-1 text-xs">
-                          <div className="flex items-center text-[#FF9900] font-bold">
-                            <Star className="w-3 h-3 fill-current mr-0.5" />
-                            {shop.rating}
-                          </div>
-                          <span className="text-muted-foreground">¥{shop.price}/人</span>
-                        </div>
-
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {shop.tags.slice(0, 3).map((tag, i) => (
-                            <span key={i} className="text-[10px] px-1.5 py-0.5 bg-muted text-muted-foreground rounded">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
+                  {/* 左侧图片区域 */}
+                  <div className="relative w-[110px] h-[110px] flex-none">
+                    <img src={shop.imageUrl} alt={shop.name} className="w-full h-full rounded-lg object-cover" />
+                    {shop.ranking && (
+                      <div className="absolute top-0 left-0 bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-tl-lg rounded-br-lg shadow-sm">
+                        榜单TOP
                       </div>
-                    </div>
+                    )}
                   </div>
-
-                  {/* 优惠套餐条 - 仅在有套餐时显示 */}
-                  <div className="px-3 pb-3 pt-0">
-                    <div className="bg-[#FF4D4F]/5 rounded-lg p-2 flex items-center justify-between group-hover:bg-[#FF4D4F]/10 transition-colors">
-                      <div className="flex items-center gap-2 overflow-hidden">
-                        <span className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-none">团</span>
-                        <span className="text-xs font-medium text-foreground truncate">{shop.dealTitle}</span>
-                      </div>
-                      <div className="flex items-baseline gap-1 flex-none ml-2">
-                        <span className="text-[#FF4D4F] font-bold text-sm">¥{shop.price}</span>
-                        <span className="text-muted-foreground text-[10px] line-through">¥{Math.floor(shop.price * 1.5)}</span>
+                  
+                  {/* 右侧内容区域 */}
+                  <div className="flex-1 min-w-0 flex flex-col min-h-[110px]">
+                    {/* 标题与操作栏 */}
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-bold text-[#333333] text-[16px] leading-tight truncate pr-2">{shop.name}</h3>
+                      <div className="flex gap-2">
+                        <button onClick={(e) => { e.stopPropagation(); setShowShare(true); }}>
+                          <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                        </button>
+                        <button onClick={(e) => toggleFavorite(e, shop.id)}>
+                          <Heart className={`w-4 h-4 transition-colors ${favorites.includes(shop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400 hover:text-gray-600'}`} />
+                        </button>
                       </div>
                     </div>
+
+                    {/* 评分与价格 */}
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center text-[#FF6600] font-bold text-[14px]">
+                        <span>{shop.rating}分</span>
+                      </div>
+                      <span className="text-[#666666] text-[12px]">¥{shop.price}/人</span>
+                      <span className="text-[#999999] text-[12px] ml-auto">{shop.distance}</span>
+                    </div>
+
+                    {/* 榜单标签 */}
+                    {shop.ranking && (
+                      <div className="mt-1">
+                        <span className="inline-block bg-[#FFF5E5] text-[#FF8800] text-[11px] px-1.5 py-0.5 rounded">
+                          {shop.ranking}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* 标签 */}
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {shop.tags.slice(0, 3).map((tag, i) => (
+                        <span key={i} className="text-[10px] px-1 py-0.5 border border-[#E0E0E0] text-[#666666] rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* 团购列表 (仅展示前2条) */}
+                    {shop.deals && shop.deals.length > 0 && (
+                      <div className="mt-auto pt-2 space-y-1">
+                        {shop.deals.slice(0, 2).map((deal, idx) => (
+                          <div key={idx} className="flex items-center gap-1.5">
+                            <span className="bg-[#FFEEF0] text-[#FF4D4F] text-[10px] font-bold px-1 py-0.5 rounded">团</span>
+                            <span className="text-[#333333] text-[12px] truncate flex-1">{deal.title}</span>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-[#FF4D4F] font-bold text-[14px]">¥{deal.price}</span>
+                              <span className="text-[#999999] text-[10px] line-through">¥{deal.originalPrice}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
