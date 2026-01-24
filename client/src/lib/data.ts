@@ -46,6 +46,7 @@ export interface PackageType {
   recommendTag: string; // New field for recommendation tag (e.g., "非常推荐")
   backgroundImage: string; // New field for immersive background image
   icon: any;
+  subCategories?: SceneTheme[]; // Optional subcategories for UI convenience
 }
 
 export interface SceneTheme {
@@ -53,13 +54,6 @@ export interface SceneTheme {
   name: string;
   packageTypeId: string;
 }
-
-export const PACKAGE_TYPES: PackageType[] = [
-  { id: 'couple', name: '情侣套餐', subTitle: '甜蜜升温', recommendTag: '约会首选', backgroundImage: '/images/bg_couple.jpg', icon: Heart },
-  { id: 'bestie', name: '闺蜜套餐', subTitle: '精致打卡', recommendTag: '出片圣地', backgroundImage: '/images/bg_bestie.jpg', icon: Sparkles },
-  { id: 'brother', name: '兄弟套餐', subTitle: '畅爽聚会', recommendTag: '聚会必去', backgroundImage: '/images/bg_brother.jpg', icon: Users },
-  { id: 'fun', name: '情趣套餐', subTitle: '私密探索', recommendTag: '人气推荐', backgroundImage: '/images/bg_fun.jpg', icon: PartyPopper },
-];
 
 export const SCENE_THEMES: SceneTheme[] = [
   // Couple Scenes (情侣套餐)
@@ -85,6 +79,45 @@ export const SCENE_THEMES: SceneTheme[] = [
   { id: 'fun_spa', name: '私密SPA', packageTypeId: 'fun' },
   { id: 'fun_bar', name: '氛围清吧', packageTypeId: 'fun' },
   { id: 'fun_show', name: '特色演出', packageTypeId: 'fun' },
+];
+
+export const PACKAGE_TYPES: PackageType[] = [
+  { 
+    id: 'couple', 
+    name: '情侣套餐', 
+    subTitle: '甜蜜升温', 
+    recommendTag: '约会首选', 
+    backgroundImage: '/images/bg_couple.jpg', 
+    icon: Heart,
+    subCategories: SCENE_THEMES.filter(s => s.packageTypeId === 'couple')
+  },
+  { 
+    id: 'bestie', 
+    name: '闺蜜套餐', 
+    subTitle: '精致打卡', 
+    recommendTag: '出片圣地', 
+    backgroundImage: '/images/bg_bestie.jpg', 
+    icon: Sparkles,
+    subCategories: SCENE_THEMES.filter(s => s.packageTypeId === 'bestie')
+  },
+  { 
+    id: 'brother', 
+    name: '兄弟套餐', 
+    subTitle: '畅爽聚会', 
+    recommendTag: '聚会必去', 
+    backgroundImage: '/images/bg_brother.jpg', 
+    icon: Users,
+    subCategories: SCENE_THEMES.filter(s => s.packageTypeId === 'brother')
+  },
+  { 
+    id: 'fun', 
+    name: '情趣套餐', 
+    subTitle: '私密探索', 
+    recommendTag: '人气推荐', 
+    backgroundImage: '/images/bg_fun.jpg', 
+    icon: PartyPopper,
+    subCategories: SCENE_THEMES.filter(s => s.packageTypeId === 'fun')
+  },
 ];
 
 export const MOCK_SHOPS: Shop[] = [
@@ -302,6 +335,133 @@ export const MOCK_SHOPS: Shop[] = [
       { title: '情侣观影3小时', price: 168, originalPrice: 298, soldCount: '半年售600+', tags: ['送爆米花', '可躺看'] }
     ],
     coordinates: { lat: 43.8800, lng: 87.5700 }
+  },
+  // Additional Urumqi Restaurants
+  {
+    id: '10',
+    name: '小尕子·明园店',
+    rating: 4.5,
+    price: 85,
+    distance: '3.2km',
+    tags: ['新疆菜', '老字号', '聚餐'],
+    imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80',
+    description: '地道新疆味，大盘鸡和烤包子一绝。',
+    reviewCount: 3400,
+    packageType: 'brother',
+    sceneTheme: 'brother_bbq',
+    district: '沙依巴克区',
+    area: '明园',
+    sales: 1500,
+    dealTitle: '经典大盘鸡4人餐',
+    deals: [
+      { title: '经典大盘鸡4人餐', price: 268, originalPrice: 358, soldCount: '半年售1500+', tags: ['分量足'] }
+    ],
+    coordinates: { lat: 43.8150, lng: 87.5950 }
+  },
+  {
+    id: '11',
+    name: '海尔巴格·延安路店',
+    rating: 4.8,
+    price: 120,
+    distance: '4.5km',
+    tags: ['异域风情', '歌舞表演', '自助餐'],
+    imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80',
+    description: '充满异域风情的用餐环境，晚上有精彩的歌舞表演。',
+    reviewCount: 2800,
+    packageType: 'couple',
+    sceneTheme: 'couple_date',
+    district: '天山区',
+    area: '延安路',
+    sales: 1800,
+    dealTitle: '异域风情双人自助',
+    deals: [
+      { title: '异域风情双人自助', price: 238, originalPrice: 298, soldCount: '半年售1800+', tags: ['含表演'] }
+    ],
+    coordinates: { lat: 43.7800, lng: 87.6200 }
+  },
+  {
+    id: '12',
+    name: '丝路有约·万象汇店',
+    rating: 4.7,
+    price: 100,
+    distance: '5.0km',
+    tags: ['创意新疆菜', '环境好', '排队王'],
+    imageUrl: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&q=80',
+    description: '新派新疆菜代表，环境时尚，菜品精致。',
+    reviewCount: 4500,
+    packageType: 'bestie',
+    sceneTheme: 'bestie_chat',
+    district: '新市区',
+    area: '万象汇',
+    sales: 3000,
+    dealTitle: '精致双人下午茶餐',
+    deals: [
+      { title: '精致双人下午茶餐', price: 188, originalPrice: 268, soldCount: '半年售3000+', tags: ['网红店'] }
+    ],
+    coordinates: { lat: 43.8600, lng: 87.5500 }
+  },
+  {
+    id: '13',
+    name: '柴窝堡辣子鸡·总店',
+    rating: 4.4,
+    price: 70,
+    distance: '35km',
+    tags: ['辣子鸡', '农家乐', '特色'],
+    imageUrl: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=800&q=80',
+    description: '乌鲁木齐必吃辣子鸡，虽然远但是值得。',
+    reviewCount: 1200,
+    packageType: 'brother',
+    sceneTheme: 'brother_bbq',
+    district: '达坂城区',
+    area: '柴窝堡',
+    sales: 800,
+    dealTitle: '招牌辣子鸡大份',
+    deals: [
+      { title: '招牌辣子鸡大份', price: 128, originalPrice: 158, soldCount: '半年售800+', tags: ['辣味十足'] }
+    ],
+    coordinates: { lat: 43.5000, lng: 88.0000 }
+  },
+  {
+    id: '14',
+    name: '南山牧场·星空毡房',
+    rating: 4.9,
+    price: 400,
+    distance: '45km',
+    tags: ['露营', '星空', '烧烤'],
+    imageUrl: 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=800&q=80',
+    description: '在南山脚下住进星空毡房，看满天繁星。',
+    reviewCount: 600,
+    packageType: 'fun',
+    sceneTheme: 'fun_hotel',
+    district: '乌鲁木齐县',
+    area: '南山',
+    sales: 200,
+    dealTitle: '星空毡房住宿+烧烤',
+    deals: [
+      { title: '星空毡房住宿+烧烤', price: 688, originalPrice: 988, soldCount: '半年售200+', tags: ['周末需预约'] }
+    ],
+    coordinates: { lat: 43.4000, lng: 87.4000 }
+  },
+  {
+    id: '15',
+    name: '米东·回民街美食',
+    rating: 4.5,
+    price: 60,
+    distance: '15km',
+    tags: ['小吃', '夜市', '清真'],
+    imageUrl: 'https://images.unsplash.com/photo-1555126634-323283e090fa?w=800&q=80',
+    description: '米东区最热闹的美食街，各种清真小吃应有尽有。',
+    reviewCount: 2200,
+    packageType: 'brother',
+    sceneTheme: 'brother_bbq',
+    district: '米东区',
+    area: '回民街',
+    sales: 3000,
+    dealTitle: '夜市通吃券',
+    deals: [
+      { title: '夜市通吃券', price: 50, originalPrice: 60, soldCount: '半年售3000+', tags: ['通用'] }
+    ],
+    coordinates: { lat: 43.9500, lng: 87.6500 }
   }
 ];
 
@@ -335,7 +495,49 @@ export const categories: Category[] = PACKAGE_TYPES.map(pkg => ({
 
 export const shops = MOCK_SHOPS;
 
-export type OrderStatus = 'pending' | 'unused' | 'used' | 'refunded';
+export const districts = [
+  {
+    name: '天山区',
+    areas: ['大巴扎', '红山', '延安路', '解放南路', '中山路']
+  },
+  {
+    name: '沙依巴克区',
+    areas: ['友好', '明园', '德汇万达', '火车站', '红庙子']
+  },
+  {
+    name: '新市区',
+    areas: ['铁路局', '长春路', '万象汇', '植物园', '小西沟']
+  },
+  {
+    name: '水磨沟区',
+    areas: ['南湖', '会展中心', '七道湾', '温泉路']
+  },
+  {
+    name: '头屯河区',
+    areas: ['经开万达', '高铁站', '白鸟湖']
+  },
+  {
+    name: '达坂城区',
+    areas: ['柴窝堡', '达坂城古镇']
+  },
+  {
+    name: '米东区',
+    areas: ['回民街', '古牧地', '卡子湾']
+  },
+  {
+    name: '乌鲁木齐县',
+    areas: ['南山', '水西沟', '板房沟']
+  }
+];
+
+export enum OrderStatus {
+  PENDING = 'pending',
+  PAID = 'paid',
+  USED = 'used',
+  REFUNDING = 'refunding',
+  REFUNDED = 'refunded',
+  CANCELLED = 'cancelled'
+}
 
 export interface Order {
   id: string;
@@ -344,127 +546,49 @@ export interface Order {
   shopImage: string;
   dealTitle: string;
   price: number;
-  originalPrice: number;
   quantity: number;
   totalPrice: number;
   status: OrderStatus;
   createTime: string;
   payTime?: string;
   useTime?: string;
-  expireTime?: string; // 过期时间
-  verifyCode?: string; // 核销码 (e.g., "8829 1034")
-  qrCodeUrl?: string; // 二维码图片链接 (mock)
+  qrCode?: string;
 }
+
+// Export aliases for compatibility
+// export const categories = PACKAGE_TYPES;
+// export const shops = MOCK_SHOPS;
+// export type Category = PackageType;
+// export type SubCategory = SceneTheme;
 
 export const MOCK_ORDERS: Order[] = [
   {
-    id: 'ORD-20231025-001',
+    id: 'o1',
     shopId: '1',
     shopName: '丝路星光·旋转餐厅',
-    shopImage: 'https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?w=800&q=80',
+    shopImage: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     dealTitle: '星光浪漫双人餐',
     price: 520,
-    originalPrice: 888,
     quantity: 1,
     totalPrice: 520,
-    status: 'unused',
-    createTime: '2023-10-25 14:30:00',
-    payTime: '2023-10-25 14:32:15',
-    expireTime: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(), // 3小时后过期
-    verifyCode: '8829 1034',
-    qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FINDME-88291034'
+    status: OrderStatus.USED,
+    createTime: '2023-10-15 18:30',
+    payTime: '2023-10-15 18:35',
+    useTime: '2023-10-15 20:00',
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ORDER-123456'
   },
   {
-    id: 'ORD-20231020-002',
+    id: 'o2',
     shopId: '6',
     shopName: '兄弟烤肉·大巴扎店',
     shopImage: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&q=80',
-    dealTitle: '兄弟欢聚4人餐',
-    price: 398,
-    originalPrice: 588,
+    dealTitle: '兄弟畅饮4人套餐',
+    price: 388,
     quantity: 1,
-    totalPrice: 398,
-    status: 'used',
-    createTime: '2023-10-20 18:00:00',
-    payTime: '2023-10-20 18:05:00',
-    useTime: '2023-10-20 20:15:00',
-    verifyCode: '1029 3847',
-    qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FINDME-10293847'
-  },
-  {
-    id: 'ORD-20231026-003',
-    shopId: '4',
-    shopName: '花田错·下午茶',
-    shopImage: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80',
-    dealTitle: '梦幻双人下午茶',
-    price: 198,
-    originalPrice: 368,
-    quantity: 1,
-    totalPrice: 198,
-    status: 'pending', // 待付款
-    createTime: '2023-10-26 10:00:00',
-    expireTime: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30分钟后过期
-  }
-];
-
-// District and Area Data (Urumqi)
-export interface Area {
-  id: string;
-  name: string;
-}
-
-export interface District {
-  id: string;
-  name: string;
-  areas: Area[];
-}
-
-export const DISTRICTS: District[] = [
-  {
-    id: 'tianshan',
-    name: '天山区',
-    areas: [
-      { id: 'dabazha', name: '大巴扎' },
-      { id: 'hongshan', name: '红山' },
-      { id: 'jiefanglu', name: '解放路' },
-      { id: 'zhongshanlu', name: '中山路' }
-    ]
-  },
-  {
-    id: 'shayibake',
-    name: '沙依巴克区',
-    areas: [
-      { id: 'youhao', name: '友好' },
-      { id: 'dehuiwanda', name: '德汇万达' },
-      { id: 'hongshan', name: '红山' }, // Shared area
-      { id: 'nongda', name: '农大' }
-    ]
-  },
-  {
-    id: 'xinshi',
-    name: '新市区',
-    areas: [
-      { id: 'tieluju', name: '铁路局' },
-      { id: 'changchunlu', name: '长春路' },
-      { id: 'xiaoxigou', name: '小西沟' },
-      { id: 'zhiwuyuan', name: '植物园' }
-    ]
-  },
-  {
-    id: 'shuimogou',
-    name: '水磨沟区',
-    areas: [
-      { id: 'nanhu', name: '南湖' },
-      { id: 'huizhan', name: '会展中心' },
-      { id: 'liudaowan', name: '六道湾' }
-    ]
-  },
-  {
-    id: 'toutunhe',
-    name: '头屯河区',
-    areas: [
-      { id: 'jingkaiwanda', name: '经开万达' },
-      { id: 'gaotie', name: '高铁站' }
-    ]
+    totalPrice: 388,
+    status: OrderStatus.PAID,
+    createTime: '2023-10-20 19:00',
+    payTime: '2023-10-20 19:05',
+    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ORDER-789012'
   }
 ];

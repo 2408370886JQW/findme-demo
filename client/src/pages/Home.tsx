@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Map as MapIcon, Navigation2, Star, ThumbsUp, ChevronDown, ChevronUp, MapPin, Locate, Heart, X, ChevronLeft, ChevronRight, Share2, Moon, Sun, MessageSquare, Camera, Sparkles, Trophy, ShoppingBag, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { categories, shops, type Shop, type Category, type SubCategory, type Order } from '@/lib/data';
+import { PACKAGE_TYPES as categories, MOCK_SHOPS as shops, type Shop, type PackageType as Category, type SceneTheme as SubCategory, type Order, OrderStatus } from '@/lib/data';
 import { MapOverlay } from '@/components/MapOverlay';
 import { ShareModal } from '@/components/ShareModal';
 import { ShopSkeleton } from '@/components/ShopSkeleton';
@@ -132,7 +132,7 @@ export default function Home() {
       setActiveCategory(categoryId);
       // 默认选中第一个子分类
       const category = categories.find(c => c.id === categoryId);
-      if (category && category.subCategories.length > 0) {
+      if (category && category.subCategories && category.subCategories.length > 0) {
         setActiveSubCategory(category.subCategories[0].id);
       }
       // 展开当前分类
@@ -294,7 +294,7 @@ export default function Home() {
                               w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col gap-2 pl-4
                               ${isExpanded ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0'}
                             `}>
-                              {category.subCategories.map((sub, subIndex) => {
+                              {category.subCategories?.map((sub, subIndex) => {
                                 const isSubActive = activeSubCategory === sub.id;
                                 const isHighlight = subIndex === 0;
                                 
@@ -701,7 +701,7 @@ export default function Home() {
                     w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col items-center gap-2 mt-1
                     ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
                   `}>
-                    {category.subCategories.map((sub, subIndex) => {
+                    {category.subCategories?.map((sub, subIndex) => {
                       const isSubActive = activeSubCategory === sub.id;
                       // 第一个子项高亮显示 (粉色胶囊)，其他为普通文本
                       const isHighlight = subIndex === 0;
@@ -733,79 +733,47 @@ export default function Home() {
 
         {/* 右侧内容区 */}
         <main className="flex-1 flex flex-col bg-background relative min-w-0 overflow-hidden">
-          {/* 沉浸式顶部背景 */}
-          <div className="absolute top-0 left-0 w-full h-[220px] z-0 overflow-hidden pointer-events-none">
+          {/* 沉浸式背景图 - 固定在顶部 */}
+          <div className="absolute top-0 left-0 right-0 h-[280px] z-0 pointer-events-none">
             {categories.map(cat => (
               <div 
                 key={cat.id}
-                className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${activeCategory === cat.id ? 'opacity-100' : 'opacity-0'}`}
+                className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                  activeCategory === cat.id ? 'opacity-100' : 'opacity-0'
+                }`}
               >
-                <img src={cat.backgroundImage} alt="" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/70 to-background"></div>
+                <img 
+                  src={cat.backgroundImage} 
+                  alt={cat.name}
+                  className="w-full h-full object-cover"
+                />
+                {/* 渐变遮罩，确保文字可读性 */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[#F5F5F5]" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
               </div>
             ))}
           </div>
 
-
-
-          {/* 顶部筛选栏 - 移动端横向滚动优化 */}
-          <div className="flex-none px-3 py-2 bg-white/10 backdrop-blur-sm z-20 flex flex-col gap-2 relative">
-            {/* 标题行 */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 overflow-hidden">
-                <h2 className="text-[20px] font-[800] text-[#222222] flex items-center gap-2 truncate tracking-tight font-system drop-shadow-sm bg-white/50 px-2 py-0.5 rounded-lg backdrop-blur-md">
-                  {categories.find(c => c.id === activeCategory)?.subCategories.find(s => s.id === activeSubCategory)?.name}
-                </h2>
-                
-                {/* 猜你喜欢入口 */}
-                <div className="flex items-center gap-1 px-2 py-0.5 bg-white/80 backdrop-blur-md rounded-full border border-[#FF4D4F]/20 shadow-sm">
-                  <Sparkles className="w-3 h-3 text-[#FF4D4F] animate-pulse" />
-                  <span className="text-[10px] font-medium bg-clip-text text-transparent bg-gradient-to-r from-[#FF4D4F] to-[#FF9900]">
-                    猜你喜欢
-                  </span>
-                </div>
+          {/* 顶部吸顶区域容器 */}
+          <div className="sticky top-0 z-40 transition-all duration-300">
+            {/* 顶部状态栏 (猜你喜欢/距离) */}
+            <div className="px-4 pt-4 pb-2 flex items-center justify-between text-white/90 relative z-50">
+              <div className="flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-[#FFD700]" />
+                <span className="text-xs font-medium tracking-wide">猜你喜欢</span>
               </div>
-
-              <div className="flex items-center gap-2 text-xs text-[#333333] font-medium whitespace-nowrap bg-white/80 backdrop-blur-md px-2 py-1 rounded-full shadow-sm">
-                <Locate className="w-3 h-3 text-[#FF5500]" />
-                <span>距您 500m</span>
+              <div className="flex items-center gap-1 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-sm">
+                <MapPin className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium tracking-wide">距离 500m</span>
               </div>
             </div>
 
-            {/* 猜你喜欢推荐卡片 (仅在有推荐且非加载状态显示) */}
-            {!isLoading && guessYouLike.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto pb-2 mb-1 pr-4">
-                {guessYouLike.map(shop => (
-                  <div 
-                    key={`guess-${shop.id}`}
-                    onClick={() => setSelectedShop(shop)}
-                    className="flex-none w-64 bg-card border border-border rounded-lg p-2 flex gap-2 cursor-pointer hover:bg-muted/50 transition-colors"
-                  >
-                    <img src={shop.imageUrl} alt={shop.name} className="w-16 h-16 rounded-md object-cover flex-none" />
-                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-                      <h4 className="font-bold text-sm truncate">{shop.name}</h4>
-                      <div className="flex items-center gap-1 text-[#FF9900] text-xs">
-                        <Star className="w-3 h-3 fill-current" />
-                        <span>{shop.rating}</span>
-                        <span className="text-muted-foreground ml-1">¥{shop.price}/人</span>
-                      </div>
-                      <div className="flex gap-1">
-                        <span className="text-[10px] px-1 bg-[#FF4D4F]/10 text-[#FF4D4F] rounded">
-                          {shop.sceneTheme === 'couple_date' ? '约会首选' : '人气推荐'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* 筛选标签行 */}
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            {/* 筛选栏 - 吸顶时增加背景 */}
+            <div className="px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar mask-linear-fade relative z-50 sticky-header-bg">
               {/* 综合排序/距离筛选 */}
               <div className="relative group">
                 <button 
-                  className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.sort === 'distance' || filters.sort === 'sales' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
+                  className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 cursor-pointer active:scale-95 ${filters.sort === 'distance' || filters.sort === 'sales' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-white/90 text-gray-600 border-gray-100 hover:bg-white'}`}
                 >
                   {filters.sort === 'distance' ? '离我最近' : filters.sort === 'sales' ? '销量最高' : '综合排序'} 
                   <ChevronDown className={`w-3 h-3 ${filters.sort === 'distance' || filters.sort === 'sales' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />
@@ -832,7 +800,7 @@ export default function Home() {
               {/* 价格筛选 */}
               <div className="relative group">
                 <button 
-                  className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.price !== 'all' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
+                  className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 cursor-pointer active:scale-95 ${filters.price !== 'all' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-white/90 text-gray-600 border-gray-100 hover:bg-white'}`}
                 >
                   {filters.price === 'low' ? '¥200以下' : filters.price === 'mid' ? '¥200-500' : filters.price === 'high' ? '¥500以上' : '价格不限'}
                   <ChevronDown className={`w-3 h-3 ${filters.price !== 'all' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />
@@ -850,7 +818,7 @@ export default function Home() {
               {/* 好评优先 */}
               <button 
                 onClick={() => setFilters(prev => ({ ...prev, sort: prev.sort === 'rating' ? 'distance' : 'rating' }))}
-                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors ${filters.sort === 'rating' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
+                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors cursor-pointer active:scale-95 ${filters.sort === 'rating' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-white/90 text-gray-600 border-gray-100 hover:bg-white'}`}
               >
                 好评优先
               </button>
@@ -858,7 +826,7 @@ export default function Home() {
               {/* 人均高低 */}
               <button 
                 onClick={() => setFilters(prev => ({ ...prev, sort: prev.sort === 'price_asc' ? 'price_desc' : 'price_asc' }))}
-                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.sort === 'price_asc' || filters.sort === 'price_desc' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
+                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 cursor-pointer active:scale-95 ${filters.sort === 'price_asc' || filters.sort === 'price_desc' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-white/90 text-gray-600 border-gray-100 hover:bg-white'}`}
               >
                 {filters.sort === 'price_asc' ? '人均从低到高' : filters.sort === 'price_desc' ? '人均从高到低' : '人均排序'}
                 {filters.sort === 'price_asc' ? <ChevronUp className="w-3 h-3 text-[#FF5500]" /> : <ChevronDown className={`w-3 h-3 ${filters.sort === 'price_desc' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />}
@@ -876,7 +844,7 @@ export default function Home() {
                 {/* 今日最佳推荐卡片 - 列表首位 */}
                 {(() => {
                   const currentCategoryShops = shops.filter(s => 
-                    categories.find(c => c.id === activeCategory)?.subCategories.some(sub => sub.id === s.sceneTheme)
+                    categories.find(c => c.id === activeCategory)?.subCategories?.some(sub => sub.id === s.sceneTheme)
                   );
                   const bestShop = currentCategoryShops.sort((a, b) => b.rating - a.rating)[0];
                   
@@ -953,8 +921,8 @@ export default function Home() {
                     )}
                   </div>
                   
-                  {/* 右侧内容区域 */}
-                  <div className="flex-1 min-w-0 flex flex-col min-h-[110px]">
+                  {/* 右侧内容区 */}
+                  <div className="flex-1 flex flex-col justify-between h-[110px]">
                     {/* 标题与操作栏 */}
                     <div className="flex justify-between items-start">
                       <h3 className="font-bold text-[#333333] text-[16px] leading-tight truncate pr-2">{shop.name}</h3>
