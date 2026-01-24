@@ -46,6 +46,10 @@ export default function Home() {
     sort: 'distance' // distance, rating, price_asc, price_desc, sales
   });
   const [guessYouLike, setGuessYouLike] = useState<Shop[]>([]);
+  const [browsingHistory, setBrowsingHistory] = useState<string[]>(() => {
+    const saved = localStorage.getItem('browsingHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // 处理通知点击跳转
@@ -101,32 +105,86 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [activeCategory, activeSubCategory]);
 
-  // 智能推荐逻辑
+  // 记录浏览历史
+  useEffect(() => {
+    localStorage.setItem('browsingHistory', JSON.stringify(browsingHistory));
+  }, [browsingHistory]);
+
+  const addToHistory = (shopId: string) => {
+    setBrowsingHistory(prev => {
+      const newHistory = [shopId, ...prev.filter(id => id !== shopId)].slice(0, 20); // 保留最近20条
+      return newHistory;
+    });
+  };
+
+  // 智能推荐逻辑 (增强版)
   useEffect(() => {
     const hour = new Date().getHours();
-    let recommendType = '';
+    let timeBasedType = '';
     
-    // 根据时间段决定推荐类型
-    if (hour >= 6 && hour < 11) {
-      recommendType = 'bestie_chat'; // 早上推荐咖啡/早茶
-    } else if (hour >= 11 && hour < 14) {
-      recommendType = 'couple_date'; // 中午推荐约会餐厅
-    } else if (hour >= 14 && hour < 17) {
-      recommendType = 'bestie_photo'; // 下午推荐下午茶/拍照
-    } else if (hour >= 17 && hour < 21) {
-      recommendType = 'couple_relax'; // 晚上推荐浪漫晚餐
-    } else {
-      recommendType = 'brother_party'; // 深夜推荐酒吧/烧烤
-    }
+    // 1. 时间维度推荐
+    if (hour >= 6 && hour < 11) timeBasedType = 'bestie_chat';
+    else if (hour >= 11 && hour < 14) timeBasedType = 'couple_date';
+    else if (hour >= 14 && hour < 17) timeBasedType = 'bestie_photo';
+    else if (hour >= 17 && hour < 21) timeBasedType = 'couple_relax';
+    else timeBasedType = 'brother_party';
 
-    // 筛选推荐店铺 (排除当前分类，增加多样性)
+    // 2. 兴趣维度推荐 (基于收藏和历史)
+    const interestScores = new Map<string, number>();
+    
+    // 分析收藏偏好
+    favorites.forEach(shopId => {
+      const shop = shops.find(s => s.id === shopId);
+      if (shop) {
+        interestScores.set(shop.sceneTheme, (interestScores.get(shop.sceneTheme) || 0) + 3); // 收藏权重+3
+        interestScores.set(shop.packageType, (interestScores.get(shop.packageType) || 0) + 2);
+      }
+    });
+
+    // 分析浏览偏好
+    browsingHistory.forEach(shopId => {
+      const shop = shops.find(s => s.id === shopId);
+      if (shop) {
+        interestScores.set(shop.sceneTheme, (interestScores.get(shop.sceneTheme) || 0) + 1); // 浏览权重+1
+      }
+    });
+
+    // 找出得分最高的偏好类型
+    let preferredTheme = '';
+    let maxScore = 0;
+    interestScores.forEach((score, theme) => {
+      if (score > maxScore) {
+        maxScore = score;
+        preferredTheme = theme;
+      }
+    });
+
+    // 综合推荐列表
     const recommendations = shops
-      .filter(shop => shop.sceneTheme === recommendType || shop.rating >= 4.8)
-      .sort(() => Math.random() - 0.5) // 随机排序
-      .slice(0, 2); // 只取2个
+      .filter(shop => {
+        // 排除已收藏的 (推荐新店)
+        if (favorites.includes(shop.id)) return false;
+        
+        // 匹配规则：
+        // 1. 命中时间场景
+        // 2. 命中用户偏好场景
+        // 3. 高评分兜底
+        return (
+          shop.sceneTheme === timeBasedType || 
+          shop.sceneTheme === preferredTheme || 
+          shop.rating >= 4.9
+        );
+      })
+      .sort((a, b) => {
+        // 优先推荐命中偏好的
+        const aScore = (a.sceneTheme === preferredTheme ? 2 : 0) + (a.sceneTheme === timeBasedType ? 1 : 0);
+        const bScore = (b.sceneTheme === preferredTheme ? 2 : 0) + (b.sceneTheme === timeBasedType ? 1 : 0);
+        return bScore - aScore || b.rating - a.rating;
+      })
+      .slice(0, 3); // 取前3个
 
     setGuessYouLike(recommendations);
-  }, []);
+  }, [favorites, browsingHistory]);
 
   // 处理一级分类点击
   const handleCategoryClick = (categoryId: string) => {
@@ -690,9 +748,16 @@ export default function Home() {
           <div className="sticky top-0 z-40 transition-all duration-300">
             {/* 顶部状态栏 (猜你喜欢/距离) */}
             <div className="px-4 pt-4 pb-2 flex items-center justify-between text-white/90 relative z-50">
-              <div className="flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-sm">
+              <div 
+                className="flex items-center gap-2 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-sm cursor-pointer active:scale-95 transition-transform"
+                onClick={() => {
+                  // 滚动到推荐卡片
+                  const recommendCard = document.getElementById('recommend-card');
+                  recommendCard?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}
+              >
                 <Sparkles className="w-3.5 h-3.5 text-[#FFD700]" />
-                <span className="text-xs font-medium tracking-wide">猜你喜欢</span>
+                <span className="text-xs font-medium tracking-wide">猜你喜欢 {guessYouLike.length > 0 ? `(${guessYouLike.length})` : ''}</span>
               </div>
               <div className="flex items-center gap-1 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-sm">
                 <MapPin className="w-3.5 h-3.5" />
@@ -814,18 +879,22 @@ export default function Home() {
               </div>
             ) : filteredShops.length > 0 ? (
               <div className="flex flex-col gap-3">
-                {/* 今日最佳推荐卡片 - 列表首位 */}
+                {/* 智能推荐卡片 - 列表首位 */}
                 {(() => {
-                  const currentCategoryShops = shops.filter(s => 
+                  // 优先使用个性化推荐，如果没有则回退到分类最佳
+                  const recommendShop = guessYouLike[0] || shops.filter(s => 
                     categories.find(c => c.id === activeCategory)?.subCategories?.some(sub => sub.id === s.sceneTheme)
-                  );
-                  const bestShop = currentCategoryShops.sort((a, b) => b.rating - a.rating)[0];
+                  ).sort((a, b) => b.rating - a.rating)[0];
                   
-                  if (!bestShop) return null;
+                  if (!recommendShop) return null;
 
                   return (
                     <div 
-                      onClick={() => setSelectedShop(bestShop)}
+                      id="recommend-card"
+                      onClick={() => {
+                        setSelectedShop(recommendShop);
+                        addToHistory(recommendShop.id);
+                      }}
                       className="relative bg-gradient-to-r from-[#FFF0E5] to-white rounded-xl p-3 flex gap-3 shadow-md border border-[#FF5500]/20 cursor-pointer hover:shadow-lg transition-all group overflow-hidden shrink-0"
                     >
                       {/* 闪光特效 */}
@@ -833,48 +902,48 @@ export default function Home() {
                       
                       {/* 左侧图片区域 */}
                       <div className="relative w-[110px] h-[110px] flex-none">
-                        <img src={bestShop.imageUrl} alt={bestShop.name} className="w-full h-full rounded-lg object-cover shadow-sm" />
+                        <img src={recommendShop.imageUrl} alt={recommendShop.name} className="w-full h-full rounded-lg object-cover shadow-sm" />
                         <div className="absolute -top-1 -left-1 bg-gradient-to-r from-[#FF4D4F] to-[#FF9900] text-white text-[10px] font-bold px-2 py-0.5 rounded-tl-lg rounded-br-lg shadow-sm flex items-center gap-1">
                           <Sparkles className="w-3 h-3 fill-white" />
-                          今日甄选
+                          {guessYouLike.includes(recommendShop) ? '猜你喜欢' : '今日甄选'}
                         </div>
                       </div>
                       
                       {/* 右侧内容区域 */}
                       <div className="flex-1 min-w-0 flex flex-col min-h-[110px]">
                         <div className="flex justify-between items-start relative min-w-0">
-                          <h3 className="font-bold text-[#222222] text-[16px] leading-tight truncate flex-1 mr-12">{bestShop.name}</h3>
+                          <h3 className="font-bold text-[#222222] text-[16px] leading-tight truncate flex-1 mr-12">{recommendShop.name}</h3>
                           <div className="flex gap-2 absolute top-0 right-0 z-10 pl-1 bg-gradient-to-l from-[#FFF0E5] via-[#FFF0E5] to-transparent">
                             <button onClick={(e) => { e.stopPropagation(); setShowShare(true); }}>
                               <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600" />
                             </button>
-                            <button onClick={(e) => toggleFavorite(e, bestShop.id)}>
-                              <Heart className={`w-4 h-4 transition-colors ${favorites.includes(bestShop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400 hover:text-gray-600'}`} />
+                            <button onClick={(e) => toggleFavorite(e, recommendShop.id)}>
+                              <Heart className={`w-4 h-4 transition-colors ${favorites.includes(recommendShop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400 hover:text-gray-600'}`} />
                             </button>
                           </div>
                         </div>
                         
                         <div className="flex items-center gap-2 mt-1 flex-wrap text-xs min-w-0">
                           <div className="flex items-center text-[#FF6600] font-bold flex-shrink-0">
-                            <span className="text-[14px]">{bestShop.rating}</span>
+                            <span className="text-[14px]">{recommendShop.rating}</span>
                             <span className="text-[10px] ml-0.5">分</span>
                           </div>
                           <div className="w-[1px] h-3 bg-gray-300 flex-shrink-0"></div>
-                          <span className="text-[#FF4D4F] font-bold flex-shrink-0">¥{bestShop.price}/人</span>
+                          <span className="text-[#FF4D4F] font-bold flex-shrink-0">¥{recommendShop.price}/人</span>
                           <div className="w-[1px] h-3 bg-gray-300 flex-shrink-0"></div>
                           <div className="flex items-center min-w-0 flex-1">
-                            <span className="text-[#666666] truncate">{bestShop.area}</span>
-                            <span className="text-[#666666] flex-shrink-0 ml-1">· {bestShop.distance}</span>
+                            <span className="text-[#666666] truncate">{recommendShop.area}</span>
+                            <span className="text-[#666666] flex-shrink-0 ml-1">· {recommendShop.distance}</span>
                           </div>
                         </div>
 
                         <div className="mt-auto pt-2 border-t border-[#FF5500]/10">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-none">团</span>
-                            <span className="text-[#333333] text-[12px] font-medium truncate flex-1">{bestShop.deals?.[0]?.title || bestShop.dealTitle}</span>
+                            <span className="text-[#333333] text-[12px] font-medium truncate flex-1">{recommendShop.deals?.[0]?.title || recommendShop.dealTitle}</span>
                             <div className="flex items-center gap-1 flex-none">
-                              <span className="text-[#FF4D4F] font-bold text-[12px]">¥{bestShop.deals?.[0]?.price || bestShop.price}</span>
-                              <span className="text-[#999999] text-[10px] line-through decoration-gray-400 hidden xs:inline">¥{bestShop.deals?.[0]?.originalPrice || (bestShop.price * 1.5).toFixed(0)}</span>
+                              <span className="text-[#FF4D4F] font-bold text-[12px]">¥{recommendShop.deals?.[0]?.price || recommendShop.price}</span>
+                              <span className="text-[#999999] text-[10px] line-through decoration-gray-400 hidden xs:inline">¥{recommendShop.deals?.[0]?.originalPrice || (recommendShop.price * 1.5).toFixed(0)}</span>
                             </div>
                           </div>
                         </div>
@@ -886,7 +955,10 @@ export default function Home() {
                 {filteredShops.map((shop, index) => (
                 <div 
                   key={shop.id}
-                  onClick={() => setSelectedShop(shop)}
+                  onClick={() => {
+                        setSelectedShop(shop);
+                        addToHistory(shop.id);
+                      }}
                   className="bg-white rounded-xl p-3 flex gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-transparent cursor-pointer hover:shadow-md transition-all shrink-0"
                 >
                   {/* 左侧图片区域 */}
@@ -900,11 +972,11 @@ export default function Home() {
                   </div>
                   
                   {/* 右侧内容区 */}
-                  <div className="flex-1 flex flex-col justify-between h-[110px]">
+                  <div className="flex-1 min-w-0 flex flex-col min-h-[110px]">
                     {/* 标题与操作栏 */}
                         <div className="flex justify-between items-start relative min-w-0">
                           <h3 className="font-bold text-[#333333] text-[16px] leading-tight truncate flex-1 mr-12">{shop.name}</h3>
-                          <div className="flex gap-2 absolute top-0 right-0 z-10 bg-white pl-2">
+                          <div className="flex gap-2 absolute top-0 right-0 z-10 bg-gradient-to-l from-white via-white to-transparent pl-2">
                             <button onClick={(e) => { e.stopPropagation(); setShowShare(true); }}>
                               <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600" />
                             </button>
