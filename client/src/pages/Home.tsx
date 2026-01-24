@@ -179,11 +179,16 @@ export default function Home() {
       if (filters.price === 'high' && shop.price <= 500) return false;
     }
 
-    // 距离筛选 (简单模拟，实际应计算坐标距离)
+    // 距离筛选 (解析距离字符串)
     if (filters.distance !== 'all') {
-      const dist = parseFloat(shop.distance);
-      const isKm = shop.distance.includes('km');
-      const distInKm = isKm ? dist : dist / 1000;
+      const distStr = shop.distance.toLowerCase();
+      let distInKm = 0;
+      
+      if (distStr.includes('km')) {
+        distInKm = parseFloat(distStr);
+      } else if (distStr.includes('m')) {
+        distInKm = parseFloat(distStr) / 1000;
+      }
       
       if (filters.distance === 'near' && distInKm >= 1) return false;
       if (filters.distance === 'mid' && (distInKm < 1 || distInKm > 3)) return false;
@@ -195,22 +200,38 @@ export default function Home() {
     // 排序逻辑
     switch (filters.sort) {
       case 'rating':
-        return b.rating - a.rating;
+        // 评分优先，评分相同时按距离排序
+        if (b.rating !== a.rating) return b.rating - a.rating;
+        break;
       case 'price_asc':
-        return a.price - b.price;
+        // 价格从低到高
+        if (a.price !== b.price) return a.price - b.price;
+        break;
       case 'price_desc':
-        return b.price - a.price;
+        // 价格从高到低
+        if (b.price !== a.price) return b.price - a.price;
+        break;
       case 'sales':
-        return (b.sales || 0) - (a.sales || 0);
+        // 销量优先
+        if ((b.sales || 0) !== (a.sales || 0)) return (b.sales || 0) - (a.sales || 0);
+        break;
       case 'distance':
       default:
-        // 简单模拟距离排序
-        const getDist = (s: Shop) => {
-          const val = parseFloat(s.distance);
-          return s.distance.includes('km') ? val * 1000 : val;
-        };
-        return getDist(a) - getDist(b);
+        // 默认距离排序
+        break;
     }
+    
+    // 辅助排序：距离 (所有排序方式的次级排序)
+    const getDist = (s: Shop) => {
+      const distStr = s.distance.toLowerCase();
+      if (distStr.includes('km')) {
+        return parseFloat(distStr) * 1000;
+      } else if (distStr.includes('m')) {
+        return parseFloat(distStr);
+      }
+      return 999999; // 未知距离排最后
+    };
+    return getDist(a) - getDist(b);
   });
 
   // 收藏列表筛选
