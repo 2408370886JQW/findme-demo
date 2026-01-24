@@ -14,6 +14,8 @@ export interface Shop {
   sceneTheme: string; // Updated scene themes
   dealTitle?: string; // Main deal title for display
   ranking?: string; // Ranking badge text (e.g., "朝阳区西餐好评榜第1名")
+  district?: string; // e.g., "朝阳区"
+  area?: string; // e.g., "三里屯"
   deals?: {
     title: string;
     price: number;
@@ -97,6 +99,8 @@ export const MOCK_SHOPS: Shop[] = [
     packageType: 'couple',
     sceneTheme: 'couple_date',
     ranking: '朝阳区西餐好评榜第1名',
+    district: '朝阳区',
+    area: '三里屯',
     dealTitle: '浪漫双人烛光晚餐',
     deals: [
       { title: '浪漫双人烛光晚餐', price: 520, originalPrice: 888, soldCount: '半年售2000+', tags: ['约会首选', '含红酒'] },
@@ -129,6 +133,8 @@ export const MOCK_SHOPS: Shop[] = [
     packageType: 'couple',
     sceneTheme: 'couple_date',
     ranking: '北京约会餐厅热门榜第2名',
+    district: '朝阳区',
+    area: '国贸',
     dealTitle: '520限定告白套餐',
     deals: [
       { title: '520限定告白套餐', price: 1314, originalPrice: 1999, soldCount: '半年售300+', tags: ['包含布置', '送鲜花'] }
@@ -147,6 +153,8 @@ export const MOCK_SHOPS: Shop[] = [
     reviewCount: 856,
     packageType: 'couple',
     sceneTheme: 'couple_relax',
+    district: '朝阳区',
+    area: '三里屯',
     dealTitle: '云端微醺双人套餐',
     deals: [
       { title: '云端微醺双人套餐', price: 398, originalPrice: 588, soldCount: '半年售1000+', tags: ['特调饮品'] },
@@ -169,6 +177,8 @@ export const MOCK_SHOPS: Shop[] = [
     packageType: 'bestie',
     sceneTheme: 'bestie_photo',
     ranking: '网红打卡圣地第1名',
+    district: '海淀区',
+    area: '五道口',
     dealTitle: '梦幻公主双人下午茶',
     deals: [
       { title: '梦幻公主双人下午茶', price: 268, originalPrice: 398, soldCount: '半年售5000+', tags: ['拍照出片', '无限续杯'] }
@@ -187,6 +197,8 @@ export const MOCK_SHOPS: Shop[] = [
     reviewCount: 1560,
     packageType: 'bestie',
     sceneTheme: 'bestie_photo',
+    district: '东城区',
+    area: '南锣鼓巷',
     dealTitle: '双人畅拍2小时',
     deals: [
       { title: '双人畅拍2小时', price: 128, originalPrice: 256, soldCount: '半年售800+', tags: ['服装任选', '送精修'] }
@@ -208,6 +220,8 @@ export const MOCK_SHOPS: Shop[] = [
     packageType: 'brother',
     sceneTheme: 'brother_bbq',
     ranking: '深夜食堂必吃榜',
+    district: '海淀区',
+    area: '中关村',
     dealTitle: '兄弟畅饮4人套餐',
     deals: [
       { title: '兄弟畅饮4人套餐', price: 388, originalPrice: 528, soldCount: '半年售2000+', tags: ['啤酒畅饮', '量大管饱'] },
@@ -227,6 +241,8 @@ export const MOCK_SHOPS: Shop[] = [
     reviewCount: 2300,
     packageType: 'brother',
     sceneTheme: 'brother_game',
+    district: '海淀区',
+    area: '五道口',
     dealTitle: '五连坐包房通宵卡',
     deals: [
       { title: '五连坐包房通宵卡', price: 299, originalPrice: 500, soldCount: '半年售500+', tags: ['送饮料', '私密包间'] }
@@ -247,6 +263,8 @@ export const MOCK_SHOPS: Shop[] = [
     reviewCount: 1890,
     packageType: 'fun',
     sceneTheme: 'fun_show',
+    district: '朝阳区',
+    area: '望京',
     dealTitle: '单人主题套餐+周边',
     deals: [
       { title: '单人主题套餐+周边', price: 88, originalPrice: 128, soldCount: '半年售1200+', tags: ['送限定徽章'] }
@@ -265,6 +283,8 @@ export const MOCK_SHOPS: Shop[] = [
     reviewCount: 1120,
     packageType: 'fun',
     sceneTheme: 'fun_hotel',
+    district: '朝阳区',
+    area: '大悦城',
     dealTitle: '情侣观影3小时',
     deals: [
       { title: '情侣观影3小时', price: 168, originalPrice: 298, soldCount: '半年售600+', tags: ['送爆米花', '可躺看'] }
@@ -368,5 +388,59 @@ export const MOCK_ORDERS: Order[] = [
     status: 'pending', // 待付款
     createTime: '2023-10-26 10:00:00',
     expireTime: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30分钟后过期
+  }
+];
+
+// District and Area Data
+export interface Area {
+  id: string;
+  name: string;
+}
+
+export interface District {
+  id: string;
+  name: string;
+  areas: Area[];
+}
+
+export const DISTRICTS: District[] = [
+  {
+    id: 'chaoyang',
+    name: '朝阳区',
+    areas: [
+      { id: 'sanlitun', name: '三里屯' },
+      { id: 'guomao', name: '国贸' },
+      { id: 'wangjing', name: '望京' },
+      { id: 'dayuecheng', name: '大悦城' },
+      { id: 'shuangjing', name: '双井' }
+    ]
+  },
+  {
+    id: 'haidian',
+    name: '海淀区',
+    areas: [
+      { id: 'wudaokou', name: '五道口' },
+      { id: 'zhongguancun', name: '中关村' },
+      { id: 'shangdi', name: '上地' },
+      { id: 'gongzhufen', name: '公主坟' }
+    ]
+  },
+  {
+    id: 'dongcheng',
+    name: '东城区',
+    areas: [
+      { id: 'wangfujing', name: '王府井' },
+      { id: 'nanluoguxiang', name: '南锣鼓巷' },
+      { id: 'dongzhimen', name: '东直门' }
+    ]
+  },
+  {
+    id: 'xicheng',
+    name: '西城区',
+    areas: [
+      { id: 'xidan', name: '西单' },
+      { id: 'shichahai', name: '什刹海' },
+      { id: 'jinrongjie', name: '金融街' }
+    ]
   }
 ];

@@ -38,7 +38,9 @@ export default function Home() {
   const [filters, setFilters] = useState({
     price: 'all', // all, low (<200), mid (200-500), high (>500)
     distance: 'all', // all, near (<1km), mid (1-3km), far (>3km)
-    cuisine: 'all' // all, western, bar, bbq, etc.
+    cuisine: 'all', // all, western, bar, bbq, etc.
+    district: null as string | null,
+    area: null as string | null
   });
   const [guessYouLike, setGuessYouLike] = useState<Shop[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -163,6 +165,10 @@ export default function Home() {
     if (shop.packageType !== activeCategory || shop.sceneTheme !== activeSubCategory) {
       return false;
     }
+
+    // 区域筛选
+    if (filters.district && shop.district !== filters.district) return false;
+    if (filters.area && shop.area !== filters.area) return false;
     
     // 价格筛选
     if (filters.price !== 'all') {
@@ -865,7 +871,7 @@ export default function Home() {
                 <Search className="w-12 h-12 mb-4 opacity-20" />
                 <p>暂无符合条件的店铺</p>
                 <button 
-                  onClick={() => setFilters({ price: 'all', distance: 'all', cuisine: 'all' })}
+                  onClick={() => setFilters({ price: 'all', distance: 'all', cuisine: 'all', district: null, area: null })}
                   className="mt-4 text-[#FF4D4F] text-sm font-bold hover:underline"
                 >
                   清除筛选条件
