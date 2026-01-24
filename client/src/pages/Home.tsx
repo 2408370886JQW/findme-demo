@@ -746,67 +746,19 @@ export default function Home() {
             ))}
           </div>
 
-          {/* 今日最佳推荐卡片 - 毛玻璃风格 */}
-          {!isLoading && (
-            <div className="absolute top-[50px] right-4 z-10 w-[180px] animate-in fade-in slide-in-from-right-4 duration-700">
-              {(() => {
-                // 简单的推荐逻辑：选择当前分类下评分最高的店铺
-                const currentCategoryShops = shops.filter(s => 
-                  categories.find(c => c.id === activeCategory)?.subCategories.some(sub => sub.id === s.sceneTheme)
-                );
-                const bestShop = currentCategoryShops.sort((a, b) => b.rating - a.rating)[0];
-                
-                if (!bestShop) return null;
 
-                return (
-                  <div 
-                    onClick={() => setSelectedShop(bestShop)}
-                    className="relative bg-white/30 backdrop-blur-md border border-white/40 rounded-xl p-2 shadow-lg cursor-pointer hover:bg-white/40 transition-all group overflow-hidden"
-                  >
-                    {/* 闪光特效 */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
-                    
-                    <div className="flex items-start gap-2">
-                      <div className="relative w-10 h-10 flex-none">
-                        <img src={bestShop.imageUrl} alt={bestShop.name} className="w-full h-full rounded-lg object-cover shadow-sm" />
-                        <div className="absolute -top-1 -left-1 bg-[#FF4D4F] text-white text-[8px] font-bold px-1 rounded-sm shadow-sm">
-                          今日甄选
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-[12px] font-bold text-[#222222] truncate leading-tight mb-0.5">{bestShop.name}</h4>
-                        <div className="flex items-center gap-1">
-                          <div className="flex items-center text-[#FF6600] text-[10px] font-bold">
-                            <Star className="w-2.5 h-2.5 fill-current" />
-                            <span>{bestShop.rating}</span>
-                          </div>
-                          <span className="text-[#666666] text-[10px]">¥{bestShop.price}/人</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-1.5 flex items-center justify-between">
-                      <span className="text-[9px] text-[#666666] bg-white/50 px-1 rounded truncate max-w-[100px]">
-                        "{bestShop.dealTitle || '超值体验'}"
-                      </span>
-                      <ChevronRight className="w-3 h-3 text-[#999999]" />
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
-          )}
 
           {/* 顶部筛选栏 - 移动端横向滚动优化 */}
-          <div className="flex-none px-3 py-2 bg-transparent z-20 flex flex-col gap-2 relative">
+          <div className="flex-none px-3 py-2 bg-white/10 backdrop-blur-sm z-20 flex flex-col gap-2 relative">
             {/* 标题行 */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 overflow-hidden">
-                <h2 className="text-[20px] font-[800] text-[#222222] flex items-center gap-2 truncate tracking-tight font-system drop-shadow-sm">
+                <h2 className="text-[20px] font-[800] text-[#222222] flex items-center gap-2 truncate tracking-tight font-system drop-shadow-sm bg-white/50 px-2 py-0.5 rounded-lg backdrop-blur-md">
                   {categories.find(c => c.id === activeCategory)?.subCategories.find(s => s.id === activeSubCategory)?.name}
                 </h2>
                 
                 {/* 猜你喜欢入口 */}
-                <div className="flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-[#FF4D4F]/10 to-[#FF9900]/10 rounded-full border border-[#FF4D4F]/20">
+                <div className="flex items-center gap-1 px-2 py-0.5 bg-white/80 backdrop-blur-md rounded-full border border-[#FF4D4F]/20 shadow-sm">
                   <Sparkles className="w-3 h-3 text-[#FF4D4F] animate-pulse" />
                   <span className="text-[10px] font-medium bg-clip-text text-transparent bg-gradient-to-r from-[#FF4D4F] to-[#FF9900]">
                     猜你喜欢
@@ -814,8 +766,8 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
-                <Locate className="w-3 h-3" />
+              <div className="flex items-center gap-2 text-xs text-[#333333] font-medium whitespace-nowrap bg-white/80 backdrop-blur-md px-2 py-1 rounded-full shadow-sm">
+                <Locate className="w-3 h-3 text-[#FF5500]" />
                 <span>距您 500m</span>
               </div>
             </div>
@@ -920,7 +872,72 @@ export default function Home() {
               // 加载骨架屏
               Array(4).fill(0).map((_, i) => <ShopSkeleton key={i} />)
             ) : filteredShops.length > 0 ? (
-              filteredShops.map((shop, index) => (
+              <>
+                {/* 今日最佳推荐卡片 - 列表首位 */}
+                {(() => {
+                  const currentCategoryShops = shops.filter(s => 
+                    categories.find(c => c.id === activeCategory)?.subCategories.some(sub => sub.id === s.sceneTheme)
+                  );
+                  const bestShop = currentCategoryShops.sort((a, b) => b.rating - a.rating)[0];
+                  
+                  if (!bestShop) return null;
+
+                  return (
+                    <div 
+                      onClick={() => setSelectedShop(bestShop)}
+                      className="mb-3 relative bg-gradient-to-r from-[#FFF0E5] to-white rounded-xl p-3 flex gap-3 shadow-md border border-[#FF5500]/20 cursor-pointer hover:shadow-lg transition-all group overflow-hidden"
+                    >
+                      {/* 闪光特效 */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/40 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
+                      
+                      {/* 左侧图片区域 */}
+                      <div className="relative w-[110px] h-[110px] flex-none">
+                        <img src={bestShop.imageUrl} alt={bestShop.name} className="w-full h-full rounded-lg object-cover shadow-sm" />
+                        <div className="absolute -top-1 -left-1 bg-gradient-to-r from-[#FF4D4F] to-[#FF9900] text-white text-[10px] font-bold px-2 py-0.5 rounded-tl-lg rounded-br-lg shadow-sm flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 fill-white" />
+                          今日甄选
+                        </div>
+                      </div>
+                      
+                      {/* 右侧内容区域 */}
+                      <div className="flex-1 min-w-0 flex flex-col min-h-[110px]">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-bold text-[#222222] text-[16px] leading-tight truncate pr-2">{bestShop.name}</h3>
+                          <div className="flex gap-2">
+                            <button onClick={(e) => { e.stopPropagation(); setShowShare(true); }}>
+                              <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                            </button>
+                            <button onClick={(e) => toggleFavorite(e, bestShop.id)}>
+                              <Heart className={`w-4 h-4 transition-colors ${favorites.includes(bestShop.id) ? 'fill-[#FF4D4F] text-[#FF4D4F]' : 'text-gray-400 hover:text-gray-600'}`} />
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="flex items-center text-[#FF6600] font-bold text-sm">
+                            <span className="text-[14px]">{bestShop.rating}</span>
+                            <span className="text-[10px] ml-0.5">分</span>
+                          </div>
+                          <div className="w-[1px] h-3 bg-gray-300"></div>
+                          <span className="text-[#FF4D4F] font-bold text-[12px]">¥{bestShop.price}/人</span>
+                          <div className="w-[1px] h-3 bg-gray-300"></div>
+                          <span className="text-[#666666] text-[10px]">{bestShop.area} · {bestShop.distance}</span>
+                        </div>
+
+                        <div className="mt-auto pt-2 border-t border-[#FF5500]/10">
+                          <div className="flex items-center gap-1.5">
+                            <span className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-none">团</span>
+                            <span className="text-[#333333] text-[12px] font-medium truncate">{bestShop.deals?.[0]?.title || bestShop.dealTitle}</span>
+                            <span className="text-[#FF4D4F] font-bold text-[12px] ml-auto">¥{bestShop.deals?.[0]?.price || bestShop.price}</span>
+                            <span className="text-[#999999] text-[10px] line-through decoration-gray-400">¥{bestShop.deals?.[0]?.originalPrice || (bestShop.price * 1.5).toFixed(0)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {filteredShops.map((shop, index) => (
                 <div 
                   key={shop.id}
                   onClick={() => setSelectedShop(shop)}
@@ -995,7 +1012,8 @@ export default function Home() {
                     )}
                   </div>
                 </div>
-              ))
+              ))}
+              </>
             ) : (
               // 空状态
               <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
