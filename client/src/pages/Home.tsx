@@ -738,12 +738,14 @@ export default function Home() {
           </div>
 
           {/* 商家列表 - 虚拟滚动优化 */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-3 pb-20">
+          <div className="flex-1 overflow-y-auto p-3 pb-20 relative z-0">
             {isLoading ? (
               // 加载骨架屏
-              Array(4).fill(0).map((_, i) => <ShopSkeleton key={i} />)
+              <div className="space-y-3">
+                {Array(4).fill(0).map((_, i) => <ShopSkeleton key={i} />)}
+              </div>
             ) : filteredShops.length > 0 ? (
-              <>
+              <div className="flex flex-col gap-3">
                 {/* 今日最佳推荐卡片 - 列表首位 */}
                 {(() => {
                   const currentCategoryShops = shops.filter(s => 
@@ -756,7 +758,7 @@ export default function Home() {
                   return (
                     <div 
                       onClick={() => setSelectedShop(bestShop)}
-                      className="mb-3 relative bg-gradient-to-r from-[#FFF0E5] to-white rounded-xl p-3 flex gap-3 shadow-md border border-[#FF5500]/20 cursor-pointer hover:shadow-lg transition-all group overflow-hidden"
+                      className="relative bg-gradient-to-r from-[#FFF0E5] to-white rounded-xl p-3 flex gap-3 shadow-md border border-[#FF5500]/20 cursor-pointer hover:shadow-lg transition-all group overflow-hidden shrink-0"
                     >
                       {/* 闪光特效 */}
                       <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/40 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
@@ -815,7 +817,7 @@ export default function Home() {
                 <div 
                   key={shop.id}
                   onClick={() => setSelectedShop(shop)}
-                  className="bg-white rounded-xl p-3 flex gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-transparent cursor-pointer hover:shadow-md transition-all mb-3"
+                  className="bg-white rounded-xl p-3 flex gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-transparent cursor-pointer hover:shadow-md transition-all shrink-0"
                 >
                   {/* 左侧图片区域 */}
                   <div className="relative w-[110px] h-[110px] flex-none">
@@ -889,7 +891,7 @@ export default function Home() {
                   </div>
                 </div>
               ))}
-              </>
+              </div>
             ) : (
               // 空状态
               <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
