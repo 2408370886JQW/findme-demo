@@ -684,11 +684,15 @@ export default function Home() {
                       e.stopPropagation();
                       handleCategoryClick(category.id);
                     }}
-                    className="relative w-full flex flex-col items-center justify-center gap-1 group cursor-pointer py-1 hover:opacity-80 transition-opacity"
+                    className="relative w-full flex flex-col items-center justify-center gap-0.5 group cursor-pointer py-1 hover:opacity-80 transition-opacity"
                   >
                     {/* 主标题 - 纤细精致 */}
-                    <span className={`text-[14px] font-[500] tracking-[0.02em] ${titleColor} transition-colors duration-200 font-system leading-tight`}>
+                    <span className={`text-[15px] font-[600] tracking-[0.02em] ${titleColor} transition-colors duration-200 font-system leading-tight`}>
                       {category.name}
+                    </span>
+                    {/* 推荐标签 - 高德风格 */}
+                    <span className={`text-[10px] transform scale-90 origin-center px-1.5 py-0.5 rounded-full mt-0.5 ${isSelected ? 'bg-[#FFF0E5] text-[#FF5500]' : 'bg-[#F5F5F5] text-[#999999]'}`}>
+                      {category.recommendTag}
                     </span>
                   </button>
 
@@ -734,7 +738,7 @@ export default function Home() {
             {/* 标题行 */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 overflow-hidden">
-                <h2 className="text-base font-bold text-foreground flex items-center gap-2 truncate">
+                <h2 className="text-[18px] font-[800] text-[#222222] flex items-center gap-2 truncate tracking-tight font-system">
                   {categories.find(c => c.id === activeCategory)?.subCategories.find(s => s.id === activeSubCategory)?.name}
                 </h2>
                 
