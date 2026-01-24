@@ -15,8 +15,8 @@ import {
   PassionLeftIcon, PassionRightIcon 
 } from '@/components/CategoryIcons';
 
-// 模拟用户位置 (上海市中心)
-const MOCK_USER_LOCATION = { lat: 31.2304, lng: 121.4737 };
+// 模拟用户位置 (乌鲁木齐市中心 - 大巴扎附近)
+const MOCK_USER_LOCATION = { lat: 43.7930, lng: 87.6177 };
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState<string>('couple');
@@ -40,7 +40,8 @@ export default function Home() {
     distance: 'all', // all, near (<1km), mid (1-3km), far (>3km)
     cuisine: 'all', // all, western, bar, bbq, etc.
     district: null as string | null,
-    area: null as string | null
+    area: null as string | null,
+    sort: 'distance' // distance, rating, price_asc, price_desc, sales
   });
   const [guessYouLike, setGuessYouLike] = useState<Shop[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -189,6 +190,26 @@ export default function Home() {
     }
 
     return true;
+  }).sort((a, b) => {
+    // 排序逻辑
+    switch (filters.sort) {
+      case 'rating':
+        return b.rating - a.rating;
+      case 'price_asc':
+        return a.price - b.price;
+      case 'price_desc':
+        return b.price - a.price;
+      case 'sales':
+        return (b.sales || 0) - (a.sales || 0);
+      case 'distance':
+      default:
+        // 简单模拟距离排序
+        const getDist = (s: Shop) => {
+          const val = parseFloat(s.distance);
+          return s.distance.includes('km') ? val * 1000 : val;
+        };
+        return getDist(a) - getDist(b);
+    }
   });
 
   // 收藏列表筛选
@@ -762,23 +783,66 @@ export default function Home() {
 
             {/* 筛选标签行 */}
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+              {/* 综合排序/距离筛选 */}
+              <div className="relative group">
+                <button 
+                  className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.sort === 'distance' || filters.sort === 'sales' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
+                >
+                  {filters.sort === 'distance' ? '离我最近' : filters.sort === 'sales' ? '销量最高' : '综合排序'} 
+                  <ChevronDown className={`w-3 h-3 ${filters.sort === 'distance' || filters.sort === 'sales' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />
+                </button>
+                {/* 下拉菜单 */}
+                <div className="absolute top-full left-0 mt-1 w-32 bg-white rounded-lg shadow-xl border border-border/50 z-50 hidden group-hover:block animate-in fade-in zoom-in-95 duration-200">
+                  <div className="py-1">
+                    <button 
+                      onClick={() => setFilters(prev => ({ ...prev, sort: 'distance' }))}
+                      className={`w-full text-left px-4 py-2 text-xs hover:bg-muted ${filters.sort === 'distance' ? 'text-[#FF5500] font-bold' : 'text-[#333333]'}`}
+                    >
+                      离我最近
+                    </button>
+                    <button 
+                      onClick={() => setFilters(prev => ({ ...prev, sort: 'sales' }))}
+                      className={`w-full text-left px-4 py-2 text-xs hover:bg-muted ${filters.sort === 'sales' ? 'text-[#FF5500] font-bold' : 'text-[#333333]'}`}
+                    >
+                      销量最高
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 价格筛选 */}
+              <div className="relative group">
+                <button 
+                  className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.price !== 'all' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
+                >
+                  {filters.price === 'low' ? '¥200以下' : filters.price === 'mid' ? '¥200-500' : filters.price === 'high' ? '¥500以上' : '价格不限'}
+                  <ChevronDown className={`w-3 h-3 ${filters.price !== 'all' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />
+                </button>
+                <div className="absolute top-full left-0 mt-1 w-32 bg-white rounded-lg shadow-xl border border-border/50 z-50 hidden group-hover:block animate-in fade-in zoom-in-95 duration-200">
+                  <div className="py-1">
+                    <button onClick={() => setFilters(prev => ({ ...prev, price: 'all' }))} className={`w-full text-left px-4 py-2 text-xs hover:bg-muted ${filters.price === 'all' ? 'text-[#FF5500] font-bold' : 'text-[#333333]'}`}>不限</button>
+                    <button onClick={() => setFilters(prev => ({ ...prev, price: 'low' }))} className={`w-full text-left px-4 py-2 text-xs hover:bg-muted ${filters.price === 'low' ? 'text-[#FF5500] font-bold' : 'text-[#333333]'}`}>¥200以下</button>
+                    <button onClick={() => setFilters(prev => ({ ...prev, price: 'mid' }))} className={`w-full text-left px-4 py-2 text-xs hover:bg-muted ${filters.price === 'mid' ? 'text-[#FF5500] font-bold' : 'text-[#333333]'}`}>¥200-500</button>
+                    <button onClick={() => setFilters(prev => ({ ...prev, price: 'high' }))} className={`w-full text-left px-4 py-2 text-xs hover:bg-muted ${filters.price === 'high' ? 'text-[#FF5500] font-bold' : 'text-[#333333]'}`}>¥500以上</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 好评优先 */}
               <button 
-                onClick={() => setFilters(prev => ({ ...prev, price: 'all' }))}
-                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.price === 'all' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
+                onClick={() => setFilters(prev => ({ ...prev, sort: prev.sort === 'rating' ? 'distance' : 'rating' }))}
+                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors ${filters.sort === 'rating' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
               >
-                价格不限 <ChevronDown className={`w-3 h-3 ${filters.price === 'all' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />
-              </button>
-              <button 
-                onClick={() => setFilters(prev => ({ ...prev, distance: 'all' }))}
-                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.distance === 'all' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
-              >
-                距离不限 <ChevronDown className={`w-3 h-3 ${filters.distance === 'all' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />
-              </button>
-              <button className="px-3 py-1.5 rounded-xl bg-[#F5F5F5] text-[#333333] text-xs whitespace-nowrap">
                 好评优先
               </button>
-              <button className="px-3 py-1.5 rounded-xl bg-[#F5F5F5] text-[#333333] text-xs whitespace-nowrap flex items-center gap-1">
-                人均高低 <ChevronDown className="w-3 h-3 text-[#999999]" />
+
+              {/* 人均高低 */}
+              <button 
+                onClick={() => setFilters(prev => ({ ...prev, sort: prev.sort === 'price_asc' ? 'price_desc' : 'price_asc' }))}
+                className={`px-3 py-1.5 rounded-xl text-xs whitespace-nowrap transition-colors flex items-center gap-1 ${filters.sort === 'price_asc' || filters.sort === 'price_desc' ? 'bg-[#FFF0E5] text-[#FF5500] font-bold border border-[#FF5500]' : 'bg-[#F5F5F5] text-[#333333]'}`}
+              >
+                {filters.sort === 'price_asc' ? '人均从低到高' : filters.sort === 'price_desc' ? '人均从高到低' : '人均排序'}
+                {filters.sort === 'price_asc' ? <ChevronUp className="w-3 h-3 text-[#FF5500]" /> : <ChevronDown className={`w-3 h-3 ${filters.sort === 'price_desc' ? 'text-[#FF5500]' : 'text-[#999999]'}`} />}
               </button>
             </div>
           </div>
@@ -871,7 +935,7 @@ export default function Home() {
                 <Search className="w-12 h-12 mb-4 opacity-20" />
                 <p>暂无符合条件的店铺</p>
                 <button 
-                  onClick={() => setFilters({ price: 'all', distance: 'all', cuisine: 'all', district: null, area: null })}
+                  onClick={() => setFilters({ price: 'all', distance: 'all', cuisine: 'all', district: null, area: null, sort: 'distance' })}
                   className="mt-4 text-[#FF4D4F] text-sm font-bold hover:underline"
                 >
                   清除筛选条件
