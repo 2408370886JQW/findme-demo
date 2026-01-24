@@ -44,6 +44,7 @@ export interface PackageType {
   name: string;
   subTitle: string; // New field for custom capsule text
   recommendTag: string; // New field for recommendation tag (e.g., "非常推荐")
+  backgroundImage: string; // New field for immersive background image
   icon: any;
 }
 
@@ -54,10 +55,10 @@ export interface SceneTheme {
 }
 
 export const PACKAGE_TYPES: PackageType[] = [
-  { id: 'couple', name: '情侣套餐', subTitle: '甜蜜升温', recommendTag: '约会首选', icon: Heart },
-  { id: 'bestie', name: '闺蜜套餐', subTitle: '精致打卡', recommendTag: '出片圣地', icon: Sparkles },
-  { id: 'brother', name: '兄弟套餐', subTitle: '畅爽聚会', recommendTag: '聚会必去', icon: Users },
-  { id: 'fun', name: '情趣套餐', subTitle: '私密探索', recommendTag: '人气推荐', icon: PartyPopper },
+  { id: 'couple', name: '情侣套餐', subTitle: '甜蜜升温', recommendTag: '约会首选', backgroundImage: '/images/bg_couple.jpg', icon: Heart },
+  { id: 'bestie', name: '闺蜜套餐', subTitle: '精致打卡', recommendTag: '出片圣地', backgroundImage: '/images/bg_bestie.jpg', icon: Sparkles },
+  { id: 'brother', name: '兄弟套餐', subTitle: '畅爽聚会', recommendTag: '聚会必去', backgroundImage: '/images/bg_brother.jpg', icon: Users },
+  { id: 'fun', name: '情趣套餐', subTitle: '私密探索', recommendTag: '人气推荐', backgroundImage: '/images/bg_fun.jpg', icon: PartyPopper },
 ];
 
 export const SCENE_THEMES: SceneTheme[] = [
@@ -314,6 +315,7 @@ export interface Category {
   name: string;
   label: string;
   recommendTag: string;
+  backgroundImage: string;
   subCategories: SubCategory[];
 }
 
@@ -322,6 +324,7 @@ export const categories: Category[] = PACKAGE_TYPES.map(pkg => ({
   name: pkg.name,
   label: pkg.subTitle,
   recommendTag: pkg.recommendTag,
+  backgroundImage: pkg.backgroundImage,
   subCategories: SCENE_THEMES
     .filter(scene => scene.packageTypeId === pkg.id)
     .map(scene => ({

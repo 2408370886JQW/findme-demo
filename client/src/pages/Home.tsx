@@ -659,7 +659,7 @@ export default function Home() {
             <ChevronDown className="w-3 h-3 ml-1 text-[#999999] group-hover:text-[#FF5500] transition-colors" />
           </div>
 
-          <div className="flex flex-col pb-20 gap-6">
+          <div className="flex flex-col pb-20 gap-2">
             {categories.map((category, index) => {
               const isActive = activeCategory === category.id;
               const isExpanded = expandedCategory === category.id;
@@ -675,7 +675,7 @@ export default function Home() {
                 <div key={category.id} className="flex flex-col items-center relative">
                   {/* 分隔线 (除了第一个) */}
                   {index > 0 && (
-                    <div className="w-6 h-[1px] bg-border/30 absolute -top-4 left-1/2 -translate-x-1/2"></div>
+                    <div className="w-6 h-[1px] bg-border/30 absolute -top-1 left-1/2 -translate-x-1/2"></div>
                   )}
 
                   {/* 一级菜单项 - 极简精致风格 */}
@@ -684,7 +684,7 @@ export default function Home() {
                       e.stopPropagation();
                       handleCategoryClick(category.id);
                     }}
-                    className="relative w-full flex flex-col items-center justify-center gap-0.5 group cursor-pointer py-1 hover:opacity-80 transition-opacity"
+                    className="relative w-full flex flex-col items-center justify-center gap-0.5 group cursor-pointer py-2 hover:opacity-80 transition-opacity"
                   >
                     {/* 主标题 - 纤细精致 */}
                     <span className={`text-[15px] font-[600] tracking-[0.02em] ${titleColor} transition-colors duration-200 font-system leading-tight`}>
@@ -698,7 +698,7 @@ export default function Home() {
 
                   {/* 二级菜单列表 */}
                   <div className={`
-                    w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col items-center gap-3 mt-4
+                    w-full overflow-hidden transition-all duration-300 ease-in-out flex flex-col items-center gap-2 mt-1
                     ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
                   `}>
                     {category.subCategories.map((sub, subIndex) => {
@@ -733,12 +733,25 @@ export default function Home() {
 
         {/* 右侧内容区 */}
         <main className="flex-1 flex flex-col bg-background relative min-w-0 overflow-hidden">
+          {/* 沉浸式顶部背景 */}
+          <div className="absolute top-0 left-0 w-full h-[180px] z-0 overflow-hidden pointer-events-none">
+            {categories.map(cat => (
+              <div 
+                key={cat.id}
+                className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${activeCategory === cat.id ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <img src={cat.backgroundImage} alt="" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/80 to-background"></div>
+              </div>
+            ))}
+          </div>
+
           {/* 顶部筛选栏 - 移动端横向滚动优化 */}
-          <div className="flex-none px-3 py-2 bg-background/80 backdrop-blur-md z-20 border-b border-border/50 flex flex-col gap-2">
+          <div className="flex-none px-3 py-2 bg-transparent z-20 flex flex-col gap-2 relative">
             {/* 标题行 */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 overflow-hidden">
-                <h2 className="text-[18px] font-[800] text-[#222222] flex items-center gap-2 truncate tracking-tight font-system">
+                <h2 className="text-[20px] font-[800] text-[#222222] flex items-center gap-2 truncate tracking-tight font-system drop-shadow-sm">
                   {categories.find(c => c.id === activeCategory)?.subCategories.find(s => s.id === activeSubCategory)?.name}
                 </h2>
                 
