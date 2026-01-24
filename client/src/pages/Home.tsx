@@ -975,14 +975,28 @@ export default function Home() {
                         </div>
 
                         <div className="mt-auto pt-2 border-t border-[#FF5500]/10">
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-none">团</span>
-                            <span className="text-[#333333] text-[12px] font-medium truncate flex-1">{recommendShop.deals?.[0]?.title || recommendShop.dealTitle}</span>
-                            <div className="flex items-center gap-1 flex-none">
-                              <span className="text-[#FF4D4F] font-bold text-[12px]">¥{recommendShop.deals?.[0]?.price || recommendShop.price}</span>
-                              <span className="text-[#999999] text-[10px] line-through decoration-gray-400 hidden xs:inline">¥{recommendShop.deals?.[0]?.originalPrice || (recommendShop.price * 1.5).toFixed(0)}</span>
+                          {recommendShop.specialOffer ? (
+                            <div className="flex items-center gap-1.5 min-w-0 bg-gradient-to-r from-[#FFF0E5] to-transparent -mx-1 px-1 py-0.5 rounded">
+                              <span className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-none animate-pulse">限时</span>
+                              <span className="text-[#FF4D4F] text-[12px] font-bold truncate flex-1">{recommendShop.specialOffer.title}</span>
+                              <div className="flex items-center gap-1 flex-none">
+                                <span className="text-[#FF4D4F] font-bold text-[12px]">¥{recommendShop.specialOffer.price}</span>
+                                <div className="flex flex-col items-end leading-none">
+                                  <span className="text-[#999999] text-[8px] line-through decoration-gray-400">¥{recommendShop.specialOffer.originalPrice}</span>
+                                  <span className="text-[#FF4D4F] text-[8px] scale-90 origin-right">仅剩 2h</span>
+                                </div>
+                              </div>
                             </div>
-                          </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className="bg-[#FF4D4F] text-white text-[10px] px-1 rounded flex-none">团</span>
+                              <span className="text-[#333333] text-[12px] font-medium truncate flex-1">{recommendShop.deals?.[0]?.title || recommendShop.dealTitle}</span>
+                              <div className="flex items-center gap-1 flex-none">
+                                <span className="text-[#FF4D4F] font-bold text-[12px]">¥{recommendShop.deals?.[0]?.price || recommendShop.price}</span>
+                                <span className="text-[#999999] text-[10px] line-through decoration-gray-400 hidden xs:inline">¥{recommendShop.deals?.[0]?.originalPrice || (recommendShop.price * 1.5).toFixed(0)}</span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

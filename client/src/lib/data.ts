@@ -31,6 +31,13 @@ export interface Shop {
     hasPrivateRoom?: boolean;
     hasParking?: boolean;
   };
+  specialOffer?: {
+    title: string;
+    price: number;
+    originalPrice: number;
+    endTime: string; // ISO string or relative time description
+    tag: string;
+  };
 }
 
 export interface Review {
@@ -150,6 +157,13 @@ export const MOCK_SHOPS: Shop[] = [
       { title: '经典新疆风味午餐', price: 168, originalPrice: 298, soldCount: '半年售500+', tags: ['工作日可用'] }
     ],
     coordinates: { lat: 43.7930, lng: 87.6177 },
+    specialOffer: {
+      title: '周末浪漫抵扣券',
+      price: 50,
+      originalPrice: 100,
+      endTime: '2026-01-26T23:59:59',
+      tag: '周末去哪儿'
+    },
     reviews: [
       {
         id: 'r1',
@@ -276,7 +290,14 @@ export const MOCK_SHOPS: Shop[] = [
       { title: '兄弟畅饮4人套餐', price: 388, originalPrice: 528, soldCount: '半年售2000+', tags: ['啤酒畅饮', '量大管饱'] },
       { title: '双人撸串套餐', price: 168, originalPrice: 228, soldCount: '半年售1000+', tags: ['经典搭配'] }
     ],
-    coordinates: { lat: 43.7930, lng: 87.6177 }
+    coordinates: { lat: 43.7930, lng: 87.6177 },
+    specialOffer: {
+      title: '深夜撸串特惠券',
+      price: 9.9,
+      originalPrice: 50,
+      endTime: '2026-01-26T04:00:00',
+      tag: '深夜食堂专属'
+    }
   },
   {
     id: '7',
